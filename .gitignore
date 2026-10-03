@@ -1,0 +1,23 @@
+# Synthetic data only — no real university or employer data is used.
+# Generated outputs (can be large) are never committed.
+data/
+data_snapshots/
+/prompts_unzipped/
+prompts.zip
+/prompts_tmp/
+*.pbix
+*.parquet
+!packages/**/fixtures/*.parquet
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+.venv/
+uv.lock
+*.egg-info/
+.env
+dist/
+build/
+docs/site/

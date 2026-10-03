@@ -1,0 +1,22 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: astral-sh/setup-uv@v3
+      - run: uv sync --group dev || pip install -e ".[dev]"
+      - run: ruff check . && ruff format --check .
+      - run: mypy packages/campus_synth/src/campus_synth
+      - run: pytest -q
+      - run: python -m campus_synth.cli generate --profile small --seed 42 --out data/raw --defects 0.03
