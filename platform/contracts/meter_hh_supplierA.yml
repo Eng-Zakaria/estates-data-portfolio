@@ -1,0 +1,10 @@
+source: meter_hh_supplierA
+business_key: [meter_id, local_time]
+description: Supplier A long-format HH, local time dd/mm/yyyy HH:MM, gaps deliberate
+columns:
+  - {name: meter_id, type: string, nullable: false, description: Meter id}
+  - {name: local_time, type: string, nullable: false, description: Local datetime dd/mm/yyyy HH:MM}
+  - {name: kwh, type: string, nullable: false, description: kWh as string (may be negative/spiked)}
+  - {name: unit, type: string, nullable: true, description: Unit}
+date_candidates: ["%d/%m/%Y %H:%M", "%d/%m/%Y %H:%M:%S", "%Y-%m-%d %H:%M"]
+units: {kwh: kWh}

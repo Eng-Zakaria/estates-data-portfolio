@@ -1,0 +1,6 @@
+# Building-name crosswalk is generated dynamically from data/truth/buildings.parquet at ingest time.
+# This file documents the rule; a static sample is below for the catalogue.
+# Rule: exact match on building_name → building_id; else fuzzy (rapidfuzz ≥85) suggestion in unmapped_values report.
+building_name_example,building_id_example
+Science Block 1,B001
+Building B,B002

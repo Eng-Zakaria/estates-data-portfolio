@@ -1,0 +1,9 @@
+source: sensors
+business_key: [sensor_id, ts_utc]
+description: Sensor readings tidy parquet (drift/stuck/dropout faults present)
+columns:
+  - {name: sensor_id, type: string, nullable: false, description: Sensor id}
+  - {name: ts_utc, type: string, nullable: false, description: UTC timestamp}
+  - {name: value, type: string, nullable: false, description: Reading value as string}
+date_candidates: ["%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%d %H:%M:%S%z", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d"]
+units: {value: ppm_or_count_or_C}

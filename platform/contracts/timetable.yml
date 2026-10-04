@@ -1,0 +1,13 @@
+source: timetable
+business_key: [event_id]
+description: Timetable module-style export (times as HH:MM-HH:MM, weeks as ranges)
+columns:
+  - {name: event_id, type: string, nullable: false, description: Event id}
+  - {name: space_id, type: string, nullable: false, description: Space id}
+  - {name: date, type: string, nullable: false, description: Local date}
+  - {name: time, type: string, nullable: false, description: Time range HH:MM-HH:MM}
+  - {name: weeks, type: string, nullable: true, description: Weeks range e.g. 1-10,12}
+  - {name: module_code, type: string, nullable: true, description: Module code}
+  - {name: group_size, type: string, nullable: true, description: Group size as string}
+date_candidates: ["%Y-%m-%d", "%d/%m/%Y"]
+units: {}

@@ -1,0 +1,11 @@
+source: space_register
+business_key: [Room]
+description: Space register extract (per-campus sheets, merged titles, names not IDs)
+columns:
+  - {name: building_name, type: string, nullable: false, description: Building name (not ID)}
+  - {name: Room, type: string, nullable: false, description: Room code, business key}
+  - {name: category_messy, type: string, nullable: false, description: Space category as recorded}
+  - {name: area_text, type: string, nullable: true, description: Area text e.g. '45.2 m2'/'sqm'}
+  - {name: Seats, type: string, nullable: true, description: Capacity seats as string}
+date_candidates: []
+units: {area_text: m2_or_sqm}

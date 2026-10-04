@@ -1,0 +1,13 @@
+source: statutory_inspections
+business_key: [inspection_id]
+description: Statutory inspections (free-text results, Excel serials and text dates)
+columns:
+  - {name: inspection_id, type: string, nullable: false, description: Inspection id}
+  - {name: building_id, type: string, nullable: false, description: Building id}
+  - {name: inspection_type_id, type: string, nullable: false, description: Inspection type}
+  - {name: due_messy, type: string, nullable: false, description: Due date (text or Excel serial)}
+  - {name: completed_messy, type: string, nullable: true, description: Completed date (text or Excel serial)}
+  - {name: result_text, type: string, nullable: true, description: Free-text result}
+  - {name: certificate_ref, type: string, nullable: true, description: Certificate ref}
+date_candidates: ["%Y-%m-%d", "%d/%m/%Y", "%Y-%m-%dT%H:%M:%S", "excel_serial"]
+units: {}

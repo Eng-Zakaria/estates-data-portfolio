@@ -1,0 +1,9 @@
+source: meter_hh_supplierB
+business_key: [meter_id, local_date]
+description: Supplier B wide-format HH (one row per meter-day, HH01.. columns), local dates
+columns:
+  - {name: meter_id, type: string, nullable: false, description: Meter id}
+  - {name: local_date, type: string, nullable: false, description: Local date}
+date_candidates: ["%Y-%m-%d", "%d/%m/%Y"]
+units: {HHxx: kWh}
+wide_prefix: HH

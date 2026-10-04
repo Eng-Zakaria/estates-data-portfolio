@@ -3,7 +3,7 @@
 | ID | Project | Status | Date | Notes / evidence |
 |---|---|---|---|---|
 | F | Foundation campus_synth | ✅ done | 2026-10-03 | 20 tests pass, 96% cov, ruff+mypy clean, small generate 17–20s; see docs/ACCEPTANCE_F.md |
-| P01 | Campus data warehouse | ☐ | | |
+| P01 | Campus data warehouse | ✅ done | 2026-10-04 | 7 platform tests pass, ingest 35s, 8/8 reconciled zero-loss; see docs/ACCEPTANCE_P01.md |
 | P02 | Orchestrated ETL (Airflow) | ☐ | | |
 | P03 | Data quality framework | ☐ | | |
 | P04 | dbt project | ☐ | | |

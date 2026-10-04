@@ -1,0 +1,23 @@
+source: cafm_workorders
+business_key: [WO_Number]
+description: CAFM work orders extract (renamed headers, mixed date formats, £ costs)
+columns:
+  - {name: WO_Number, type: string, nullable: false, description: Work order id}
+  - {name: AssetRef, type: string, nullable: false, description: Asset reference}
+  - {name: space_id, type: string, nullable: true, description: Space id}
+  - {name: building_id, type: string, nullable: true, description: Building id}
+  - {name: wo_type, type: string, nullable: true, allowed: [PPM, Reactive, Statutory, Project], description: Order type}
+  - {name: priority, type: string, nullable: true, allowed: [P1, P2, P3, P4], description: Priority}
+  - {name: Raised, type: string, nullable: false, description: Raised datetime, 3 formats}
+  - {name: target_ts, type: string, nullable: true, description: Target datetime}
+  - {name: started_ts, type: string, nullable: true, description: Started datetime}
+  - {name: Completed, type: string, nullable: true, description: Completed datetime, 3 formats}
+  - {name: Status, type: string, nullable: true, description: Status (Complete/COMP/Closed/Open/OPEN/Outstanding)}
+  - {name: trade, type: string, nullable: true, description: Trade}
+  - {name: contractor, type: string, nullable: true, description: Contractor}
+  - {name: labour_hours, type: string, nullable: true, description: Labour hours as string}
+  - {name: Cost, type: string, nullable: true, description: Cost e.g. £1,234.56}
+  - {name: fault_code, type: string, nullable: true, description: Fault code}
+  - {name: description, type: string, nullable: true, description: Description}
+date_candidates: ["%d/%m/%Y %H:%M", "%Y-%m-%dT%H:%M:%S", "%d-%b-%y %H:%M", "%Y-%m-%d %H:%M:%S%z", "%d/%m/%Y", "%Y-%m-%d"]
+units: {Cost: GBP, labour_hours: hours}

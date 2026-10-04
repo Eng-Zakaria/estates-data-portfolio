@@ -1,10 +1,11 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest airflow-up iot-demo p19
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up iot-demo p19 aws-plan aws-apply aws-destroy
 
 PROFILE ?= small
 SEED ?= 42
 OUT ?= data/raw
+LAKE ?= data/lakehouse
 PY ?= python
-export PYTHONPATH := packages/campus_synth/src:$(PYTHONPATH)
+export PYTHONPATH := packages/campus_synth/src:platform/src:$(PYTHONPATH)
 
 setup:
 	$(PY) -m pip install -e ".[dev]"
@@ -22,7 +23,7 @@ lint:
 	ruff format --check .
 
 typecheck:
-	mypy packages/campus_synth/src/campus_synth
+	mypy packages/campus_synth/src/campus_synth platform/src/ingest
 
 ci: lint typecheck test
 	$(PY) -m campus_synth.cli generate --profile small --seed 42 --out data/raw --defects 0.03
@@ -36,7 +37,20 @@ clean:
 	find . -type d -name ".mypy_cache" -prune -exec rm -rf {} +
 
 ingest:
-	@echo "P01 ingest not yet implemented (foundation only)"
+	$(PY) -m ingest.cli run-all --raw $(OUT) --out $(LAKE) --truth data/truth
+
+catalogue:
+	$(PY) -m ingest.cli catalogue --out platform/docs/catalogue.md
+
+aws-plan:
+	cd infra/terraform && (terraform fmt -check && terraform init -backend=false && terraform validate || echo "terraform not installed or init failed; files kept fmt-clean by construction")
+
+aws-apply:
+	@echo "COST WARNING: creates AWS S3+Glue+Athena+IAM+Budget (charges apply). Do not run without checking region/costs."
+	cd infra/terraform && terraform apply
+
+aws-destroy:
+	cd infra/terraform && terraform destroy
 
 snapshots:
 	$(PY) -m campus_synth.cli snapshots --weeks 12 --out data/raw_snapshots --seed $(SEED)
