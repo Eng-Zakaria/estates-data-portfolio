@@ -20,7 +20,7 @@ CHECKS_DIR = Path("platform/quality/checks")
 
 
 def _run_id(prefix: str) -> str:
-    return f"{prefix}_{dt.datetime.now(tz=dt.timezone.utc):%Y%m%d_%H%M%S}"
+    return f"{prefix}_{dt.datetime.now(tz=dt.UTC):%Y%m%d_%H%M%S}"
 
 
 @app.command("run")
