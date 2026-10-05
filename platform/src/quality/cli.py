@@ -39,7 +39,29 @@ def run_cmd(
     from .run import run_all
 
     rid = run_id or _run_id("dq")
-    summary = run_all(lake, truth, ground_truth, store, gx_root, gold, rid, profile, label, CHECKS_DIR)
+    summary = run_all(
+        lake,
+        truth,
+        ground_truth,
+        store,
+        gx_root,
+        gold,
+        rid,
+        profile,
+        label,
+        CHECKS_DIR,
+        datasets=[
+            "spaces",
+            "assets",
+            "work_orders",
+            "meters_a",
+            "meters_b",
+            "sensors",
+            "bms",
+            "inspections",
+            "timetable",
+        ],
+    )
     print(f"run {rid}: {summary.n_checks} checks, {summary.n_fail} failed, {summary.n_error_fail} error-fails")
     for dataset in sorted(summary.dataset_scores):
         print(f"  {dataset:12s} score {summary.dataset_scores[dataset]:6.2f}")

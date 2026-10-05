@@ -65,6 +65,7 @@ def run_suite(
     check_index: dict[tuple, str],
 ) -> list[GxResult]:
     """Run one suite; map each expectation result back to its check id."""
+    context.suites.add(suite)
     vd = gx.ValidationDefinition(data=batch_definition, suite=suite, name=f"vd_{suite.name}")
     context.validation_definitions.add(vd)
     result = vd.run(
@@ -80,7 +81,8 @@ def run_suite(
         )
     out: list[GxResult] = []
     for exp_result, exp_config in zip(result.results, suite.expectations, strict=True):
-        key = expectation_key(exp_config.expectation_type, exp_config.kwargs)
+        config = exp_config.configuration
+        key = expectation_key(config["type"], config["kwargs"])
         check_id = check_index[key]
         payload = exp_result.result or {}
         checked = int(payload.get("element_count", len(frame)))
@@ -89,7 +91,7 @@ def run_suite(
         if failed:
             cols = list(key[1])
             raw_values = payload.get("partial_unexpected_list", []) or []
-            if exp_config.expectation_type == "ExpectTableRowCountToBeBetween":
+            if config["type"] == "expect_table_row_count_to_be_between":
                 samples = [{"observed_value": str(payload.get("observed_value"))}]
             else:
                 samples = _frame_samples(frame, cols, list(raw_values))

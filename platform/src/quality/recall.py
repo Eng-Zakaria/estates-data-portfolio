@@ -200,7 +200,7 @@ def evaluate(
             _, _, bronzecol = KEYED[table]
             sub = "space_register" if table == "space_register" else table
             missing = con.execute(
-                f"SELECT COUNT(*) FROM (SELECT DISTINCT row_key FROM defects WHERE table = '{table}' "
+                f"SELECT COUNT(*) FROM (SELECT DISTINCT row_key FROM defects WHERE \"table\" = '{table}' "
                 f"AND type = 'misspelt_category') AS d ANTI JOIN "
                 f"(SELECT DISTINCT Room FROM read_parquet('{lake}/bronze/{sub}/*/*.parquet')) AS b "
                 f"ON d.row_key = b.Room"

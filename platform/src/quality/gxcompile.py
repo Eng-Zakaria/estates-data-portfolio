@@ -26,10 +26,14 @@ _EXPECTATION_FACTORY = {
 
 
 def expectation_key(expectation_type: str, kwargs: dict) -> tuple:
-    """Identity of an expectation within a suite: (type, columns)."""
+    """Identity of an expectation within a suite: (normalised_type, columns)."""
+    import re
+
+    # Normalise PascalCase (ExpectFoo) to snake_case (expect_foo)
+    snake = re.sub(r"(?<!^)(?=[A-Z])", "_", expectation_type).lower()
     col = kwargs.get("column")
     cols = tuple(kwargs.get("column_list", [col] if col else []))
-    return (expectation_type, cols)
+    return (snake, cols)
 
 
 def build_check_index(specs: list[CheckSpec]) -> dict[str, dict[tuple, str]]:

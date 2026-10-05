@@ -34,6 +34,7 @@ dev = [
 [project.scripts]
 campus-synth = "campus_synth.cli:app"
 lakehouse-ingest = "ingest.cli:app"
+dq = "quality.cli:app"
 
 [build-system]
 requires = ["hatchling"]
@@ -60,11 +61,14 @@ strict = true
 [[tool.mypy.overrides]]
 module = "ingest.*"
 strict = true
+[[tool.mypy.overrides]]
+module = "quality.*"
+strict = true
 
 [tool.pytest.ini_options]
 testpaths = ["packages/campus_synth/tests", "platform/tests"]
 pythonpath = ["packages/campus_synth/src", "platform/src"]
-addopts = "--cov=campus_synth --cov=ingest --cov-report=term-missing"
+addopts = "--cov=campus_synth --cov=ingest --cov=quality --cov-report=term-missing"
 
 [tool.coverage.run]
 source = ["packages/campus_synth/src", "platform/src"]
