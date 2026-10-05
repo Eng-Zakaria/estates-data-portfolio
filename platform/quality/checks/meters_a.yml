@@ -1,0 +1,218 @@
+# P03 checks: half-hourly meters, supplier A (long format).
+# Silver columns: meter_id, ts_utc, value, unit, quality_flag. Register: truth.meters.
+# Known silver leaks this layer catches: orphan *-Exx ids (no FK check in P01).
+checks:
+  - id: ma_id_not_null
+    dataset: meters_a
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Supplier A readings carry a meter id.
+    why_it_matters: Readings without meters cannot join the register.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: meter_id}
+
+  - id: ma_ts_not_null
+    dataset: meters_a
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Supplier A readings carry a UTC timestamp.
+    why_it_matters: Timestamp-less readings cannot build daily aggregates.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: ts_utc}
+
+  - id: ma_grain_unique
+    dataset: meters_a
+    dimension: uniqueness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Pair meter_id plus ts_utc is unique in supplier A silver.
+    why_it_matters: Duplicate periods double-count consumption.
+    engine: gx
+    expectation: ExpectCompoundColumnsToBeUnique
+    kwargs: {column_list: [meter_id, ts_utc]}
+
+  - id: ma_value_non_negative
+    dataset: meters_a
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Supplier A kWh values are zero or positive.
+    why_it_matters: Negative import readings are physically impossible.
+    engine: gx
+    expectation: ExpectColumnValuesToBeBetween
+    kwargs: {column: value, min_value: 0}
+
+  - id: ma_units_consistent
+    dataset: meters_a
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Supplier A unit column is always kWh.
+    why_it_matters: Mixed units silently corrupt aggregation.
+    engine: gx
+    expectation: ExpectColumnValuesToBeInSet
+    kwargs: {column: unit, value_set: [kWh]}
+
+  - id: ma_id_known
+    dataset: meters_a
+    dimension: referential_integrity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Supplier A meter ids exist in the meter register.
+    why_it_matters: Unknown ids (for example planted Exx masks) have no building or utility.
+    engine: sql
+    sql_checked: SELECT COUNT(DISTINCT meter_id) FROM silver_meters_a
+    sql_failed: SELECT DISTINCT s.meter_id FROM silver_meters_a AS s ANTI JOIN truth_meters AS r USING (meter_id)
+
+  - id: ma_no_future_ts
+    dataset: meters_a
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Supplier A timestamps do not exceed the synthetic window end.
+    why_it_matters: Future timestamps are planted defects or clock errors.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM silver_meters_a
+    sql_failed: SELECT meter_id, ts_utc, value FROM silver_meters_a WHERE CAST(ts_utc AS DATE) > DATE '{window_end}'
+
+  - id: ma_timeliness_per_meter
+    dataset: meters_a
+    dimension: timeliness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every supplier A meter has readings within 36 h of window end and none beyond it.
+    why_it_matters: Stale or future-dated meters indicate a feed failure.
+    engine: sql
+    sql_checked: SELECT COUNT(DISTINCT meter_id) FROM silver_meters_a
+    sql_failed: SELECT meter_id, MAX(ts_utc) AS latest FROM silver_meters_a GROUP BY 1 HAVING MAX(ts_utc) < CAST(DATE '{window_end}' AS TIMESTAMPTZ) - INTERVAL 36 HOUR OR MAX(ts_utc) > CAST(DATE '{window_end}' AS TIMESTAMPTZ) + INTERVAL 1 DAY
+
+  - id: ma_day_completeness
+    dataset: meters_a
+    dimension: consistency
+    severity: warn
+    threshold: 98.0
+    owner: estates-analytics
+    description: Meter-days carry the expected period count (48, or 46 on 2026-03-29 DST).
+    why_it_matters: Short days understate consumption, and the planted 348-period gap shows here.
+    engine: sql
+    building_col: building_id
+    by_building: true
+    sql_checked: SELECT COUNT(*) FROM (SELECT DISTINCT meter_id, CAST(ts_utc AS DATE) AS d FROM silver_meters_a)
+    sql_checked_by_building: SELECT r.building_id, COUNT(*) FROM (SELECT DISTINCT meter_id, CAST(ts_utc AS DATE) AS d FROM silver_meters_a) AS u JOIN truth_meters AS r USING (meter_id) GROUP BY 1
+    sql_failed: SELECT u.meter_id, r.building_id, u.d, COUNT(*) AS actual, CASE WHEN u.d = DATE '2026-03-29' THEN 46 ELSE 48 END AS expected FROM (SELECT meter_id, CAST(ts_utc AS DATE) AS d FROM silver_meters_a) AS u LEFT JOIN truth_meters AS r USING (meter_id) GROUP BY 1, 2, 3 HAVING COUNT(*) != CASE WHEN u.d = DATE '2026-03-29' THEN 46 ELSE 48 END
+
+  - id: ma_flatline_48
+    dataset: meters_a
+    dimension: consistency
+    severity: warn
+    threshold: 100.0
+    owner: estates-analytics
+    description: No meter repeats the identical kWh value for 48 or more consecutive periods.
+    why_it_matters: Flat-lines indicate stuck meters (planted in the default profile, absent in small).
+    engine: sql
+    sql_checked: SELECT COUNT(DISTINCT meter_id) FROM silver_meters_a
+    sql_failed: SELECT meter_id, MIN(ts_utc) AS run_start, COUNT(*) AS run_length FROM (SELECT meter_id, ts_utc, value, ROW_NUMBER() OVER (PARTITION BY meter_id ORDER BY ts_utc) - ROW_NUMBER() OVER (PARTITION BY meter_id, value ORDER BY ts_utc) AS grp FROM silver_meters_a) GROUP BY 1, grp HAVING COUNT(*) >= 48
+
+  - id: ma_spike_5x_median
+    dataset: meters_a
+    dimension: consistency
+    severity: warn
+    threshold: 100.0
+    owner: estates-analytics
+    description: No reading exceeds 5 times its trailing 48-period median.
+    why_it_matters: Spikes indicate register rollover mishandling or source errors.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM silver_meters_a
+    sql_failed: SELECT meter_id, ts_utc, value, med AS trailing_median FROM (SELECT meter_id, ts_utc, value, MEDIAN(value) OVER (PARTITION BY meter_id ORDER BY ts_utc ROWS BETWEEN 48 PRECEDING AND 1 PRECEDING) AS med FROM silver_meters_a) WHERE med IS NOT NULL AND med > 0 AND value > 5 * med
+
+  - id: ma_volume_3sigma
+    dataset: meters_a
+    dimension: consistency
+    severity: warn
+    threshold: 100.0
+    owner: estates-analytics
+    description: Daily supplier A row counts stay within 3 sigma of the trailing 28-day mean.
+    why_it_matters: Sudden volume changes reveal missing files or double loads.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM (SELECT DISTINCT CAST(ts_utc AS DATE) AS d FROM silver_meters_a)
+    sql_failed: SELECT d, n, mean_28, sd_28 FROM (SELECT d, n, AVG(n) OVER (ORDER BY d ROWS BETWEEN 28 PRECEDING AND 1 PRECEDING) AS mean_28, STDDEV(n) OVER (ORDER BY d ROWS BETWEEN 28 PRECEDING AND 1 PRECEDING) AS sd_28 FROM (SELECT CAST(ts_utc AS DATE) AS d, COUNT(*) AS n FROM silver_meters_a GROUP BY 1)) WHERE mean_28 IS NOT NULL AND sd_28 IS NOT NULL AND sd_28 > 0 AND ABS(n - mean_28) > 3 * sd_28
+
+  - id: ma_reconciled
+    dataset: meters_a
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Supplier A silver plus quarantine reconcile to bronze input.
+    why_it_matters: Unexplained row loss between layers hides data.
+    engine: sql
+    failed_is_scalar: true
+    sql_checked: SELECT COUNT(*) FROM read_parquet('{lake}/bronze/meter_hh_supplierA/*/*.parquet')
+    sql_failed: SELECT ABS((SELECT COUNT(*) FROM read_parquet('{lake}/bronze/meter_hh_supplierA/*/*.parquet')) - (SELECT COUNT(*) FROM silver_meters_a) - (SELECT COUNT(*) FROM quarantine_meters_a))
+
+  - id: ma_recall_nulls
+    dataset: meters_a
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted nulls_in_mandatory supplier A defect is quarantined.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: meter_hh_supplierA, defect_type: nulls_in_mandatory}
+
+  - id: ma_recall_duplicates
+    dataset: meters_a
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted duplicate supplier A reading is quarantined.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: meter_hh_supplierA, defect_type: duplicate_rows}
+
+  - id: ma_recall_out_of_range
+    dataset: meters_a
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted out-of-range supplier A reading is detected (quarantine negative-kWh or silver checks).
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: meter_hh_supplierA, defect_type: out_of_range}
+
+  - id: ma_recall_misspelt_category
+    dataset: meters_a
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted misspelt supplier A meter id (Exx) is detected via the known-id check.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: meter_hh_supplierA, defect_type: misspelt_category}
+
+  - id: ma_recall_gaps
+    dataset: meters_a
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: The planted 348-period supplier A gap is reported in the P01 gaps report.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: meter_hh_supplierA, defect_type: gaps}

@@ -1,0 +1,127 @@
+# P03 checks: asset register. No source register is ingested in P01, so these run
+# on the synthetic truth reference (documented limitation); they validate the
+# check logic green today and wire to silver when a register lands (P02/P07).
+checks:
+  - id: assets_id_not_null
+    dataset: assets
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every asset row carries an asset id.
+    why_it_matters: Assets without identifiers cannot join to work orders.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: asset_id}
+
+  - id: assets_id_unique
+    dataset: assets
+    dimension: uniqueness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: asset_id is unique in the register.
+    why_it_matters: Duplicate assets double-count backlog and replacement cost.
+    engine: gx
+    expectation: ExpectColumnValuesToBeUnique
+    kwargs: {column: asset_id}
+
+  - id: assets_install_not_null
+    dataset: assets
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: install_date is present for every asset.
+    why_it_matters: Age and remaining-life maths (P07) need an install date.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: install_date}
+
+  - id: assets_install_not_future
+    dataset: assets
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: install_date is on or before the synthetic window end.
+    why_it_matters: Future install dates produce negative ages.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM truth_assets WHERE install_date IS NOT NULL
+    sql_failed: SELECT asset_id, building_id, install_date FROM truth_assets WHERE install_date IS NOT NULL AND CAST(install_date AS DATE) > DATE '{window_end}'
+
+  - id: assets_grade_valid
+    dataset: assets
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: condition_grade is one of A, B, C, D.
+    why_it_matters: Condition grades drive backlog prioritisation (P07).
+    engine: gx
+    expectation: ExpectColumnValuesToBeInSet
+    kwargs: {column: condition_grade, value_set: [A, B, C, D]}
+
+  - id: assets_space_known
+    dataset: assets
+    dimension: referential_integrity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: asset space_id exists in the space master.
+    why_it_matters: Assets in unknown spaces fall out of room-level maintenance views.
+    engine: gx
+    expectation: ExpectColumnValuesToBeInSet
+    kwargs:
+      column: space_id
+      value_set_from: {truth_table: spaces, column: space_id}
+
+  - id: assets_building_known
+    dataset: assets
+    dimension: referential_integrity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: asset building_id exists in the building master.
+    why_it_matters: Orphan buildings break estate-level aggregation.
+    engine: gx
+    expectation: ExpectColumnValuesToBeInSet
+    kwargs:
+      column: building_id
+      value_set_from: {truth_table: buildings, column: building_id}
+
+  - id: assets_life_in_range
+    dataset: assets
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: expected_life_years is between 1 and 60.
+    why_it_matters: Out-of-range life expectancy corrupts remaining-life maths.
+    engine: gx
+    expectation: ExpectColumnValuesToBeBetween
+    kwargs: {column: expected_life_years, min_value: 1, max_value: 60}
+
+  - id: assets_cost_non_negative
+    dataset: assets
+    dimension: validity
+    severity: warn
+    threshold: 100.0
+    owner: estates-analytics
+    description: replacement_cost_gbp is zero or positive.
+    why_it_matters: Negative costs corrupt capital planning totals.
+    engine: gx
+    expectation: ExpectColumnValuesToBeBetween
+    kwargs: {column: replacement_cost_gbp, min_value: 0}
+
+  - id: assets_serial_unique_per_model
+    dataset: assets
+    dimension: uniqueness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: serial_no is unique within manufacturer plus model.
+    why_it_matters: Duplicate serials indicate merged or double-entered assets.
+    engine: gx
+    expectation: ExpectCompoundColumnsToBeUnique
+    kwargs: {column_list: [manufacturer, model, serial_no]}

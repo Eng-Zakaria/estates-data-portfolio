@@ -1,0 +1,187 @@
+# P03 checks: space register (silver) + quarantine recall + reconciliation.
+# Grain notes: silver key is room_code (B-...); truth canonical space_id is S-...;
+# recall joins quarantine on room_code and silver leaks on room_code.
+checks:
+  - id: spaces_room_not_null
+    dataset: spaces
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every silver space row carries a room code.
+    why_it_matters: Rooms without an identifier cannot join to timetable, assets or BIM.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: room_code}
+
+  - id: spaces_room_unique
+    dataset: spaces
+    dimension: uniqueness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: room_code is unique in the silver register.
+    why_it_matters: Duplicate rooms double-count area and break space joins.
+    engine: gx
+    expectation: ExpectColumnValuesToBeUnique
+    kwargs: {column: room_code}
+
+  - id: spaces_building_not_null
+    dataset: spaces
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every space resolves to a canonical building id.
+    why_it_matters: Spaces without buildings fall out of every building report.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: building_id}
+
+  - id: spaces_building_known
+    dataset: spaces
+    dimension: referential_integrity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: building_id exists in the building master (truth).
+    why_it_matters: Orphan buildings indicate a broken name crosswalk.
+    engine: gx
+    expectation: ExpectColumnValuesToBeInSet
+    kwargs:
+      column: building_id
+      value_set_from: {truth_table: buildings, column: building_id}
+
+  - id: spaces_category_valid
+    dataset: spaces
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: space_category is in the controlled list.
+    why_it_matters: Unmapped categories break HESA-style space returns (P10).
+    engine: gx
+    expectation: ExpectColumnValuesToBeInSet
+    kwargs:
+      column: space_category
+      value_set: [Teaching, Office, Laboratory, Library, Residential, Catering, Sports, Support]
+
+  - id: spaces_nia_in_range
+    dataset: spaces
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: 0 < nia_m2 < 2000 for every space.
+    why_it_matters: Zero or negative areas corrupt intensity metrics (kWh/m2).
+    engine: gx
+    expectation: ExpectColumnValuesToBeBetween
+    kwargs: {column: nia_m2, min_value: 0, strict_min: true, max_value: 2000, strict_max: true}
+
+  - id: spaces_capacity_non_negative
+    dataset: spaces
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: capacity_seats is zero or positive (planted negatives leak into silver here).
+    why_it_matters: Negative capacities corrupt utilisation denominators (P06).
+    engine: gx
+    expectation: ExpectColumnValuesToBeBetween
+    kwargs: {column: capacity_seats, min_value: 0}
+
+  - id: spaces_teaching_capacity
+    dataset: spaces
+    dimension: consistency
+    severity: warn
+    threshold: 98.0
+    owner: estates-analytics
+    description: Teaching spaces have capacity_seats above 0.
+    why_it_matters: Zero-capacity teaching rooms distort utilisation (P06).
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM silver_spaces WHERE space_category = 'Teaching'
+    sql_failed: SELECT room_code, building_id, space_category, capacity_seats FROM silver_spaces WHERE space_category = 'Teaching' AND (capacity_seats IS NULL OR capacity_seats <= 0)
+
+  - id: spaces_gia_consistent
+    dataset: spaces
+    dimension: consistency
+    severity: warn
+    threshold: 100.0
+    owner: estates-analytics
+    description: Sum of space NIA per building does not exceed building GIA.
+    why_it_matters: NIA above GIA is geometrically impossible and flags area errors.
+    engine: sql
+    building_col: building_id
+    by_building: true
+    sql_checked: SELECT COUNT(DISTINCT building_id) FROM silver_spaces
+    sql_checked_by_building: SELECT building_id, 1 FROM (SELECT DISTINCT building_id FROM silver_spaces)
+    sql_failed: SELECT s.building_id, SUM(s.nia_m2) AS sum_nia, MAX(b.gia_m2) AS gia_m2 FROM silver_spaces AS s JOIN truth_buildings AS b USING (building_id) GROUP BY 1 HAVING SUM(s.nia_m2) > MAX(b.gia_m2)
+
+  - id: spaces_reconciled
+    dataset: spaces
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Silver plus quarantine row counts reconcile to bronze input.
+    why_it_matters: Unexplained row loss between layers hides data.
+    engine: sql
+    failed_is_scalar: true
+    sql_checked: SELECT COUNT(*) FROM read_parquet('{lake}/bronze/space_register/*/*.parquet')
+    sql_failed: SELECT ABS((SELECT COUNT(*) FROM read_parquet('{lake}/bronze/space_register/*/*.parquet')) - (SELECT COUNT(*) FROM silver_spaces) - (SELECT COUNT(*) FROM quarantine_spaces))
+
+  - id: spaces_bronze_covers_truth
+    dataset: spaces
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every truth room appears in bronze (misspelt building names vanish from per-campus sheets before ingest).
+    why_it_matters: Source-level row loss is invisible to silver and quarantine reconciliation.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM truth_spaces
+    sql_failed: SELECT t.room_code AS room_code, t.building_id AS building_id FROM truth_spaces AS t ANTI JOIN (SELECT DISTINCT Room FROM read_parquet('{lake}/bronze/space_register/*/*.parquet')) AS b ON t.room_code = b.Room
+
+  - id: spaces_recall_nulls
+    dataset: spaces
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted nulls_in_mandatory space defect is quarantined.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: space_register, defect_type: nulls_in_mandatory}
+
+  - id: spaces_recall_duplicates
+    dataset: spaces
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted duplicate space row is quarantined.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: space_register, defect_type: duplicate_rows}
+
+  - id: spaces_recall_misspelt_category
+    dataset: spaces
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted misspelt-category space defect is detected via bronze coverage.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: space_register, defect_type: misspelt_category}
+
+  - id: spaces_recall_out_of_range
+    dataset: spaces
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted out-of-range space defect (negative Seats) is detected via the silver capacity check.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: space_register, defect_type: out_of_range}

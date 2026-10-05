@@ -1,0 +1,53 @@
+# P03 checks: weekly generator snapshots (spaces only) for trend scoring.
+# Snapshot shape: space_id (canonical S-...), building_id, nia_m2. Defect rate
+# falls 0.12 (week_01) to 0.01 (week_12), so scores must visibly improve.
+checks:
+  - id: snap_space_not_null
+    dataset: spaces_snapshot
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every snapshot row carries a space id.
+    why_it_matters: Trend scoring needs a stable grain.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: space_id}
+
+  - id: snap_space_unique
+    dataset: spaces_snapshot
+    dimension: uniqueness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: space_id is unique per weekly snapshot.
+    why_it_matters: Duplicate snapshot rows distort the trend.
+    engine: gx
+    expectation: ExpectColumnValuesToBeUnique
+    kwargs: {column: space_id}
+
+  - id: snap_building_known
+    dataset: spaces_snapshot
+    dimension: referential_integrity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Snapshot building_id exists in the building master.
+    why_it_matters: Orphan buildings break the per-building trend.
+    engine: gx
+    expectation: ExpectColumnValuesToBeInSet
+    kwargs:
+      column: building_id
+      value_set_from: {truth_table: buildings, column: building_id}
+
+  - id: snap_nia_in_range
+    dataset: spaces_snapshot
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: 0 < nia_m2 < 2000 in every snapshot row.
+    why_it_matters: The injected area defects show up here in early weeks.
+    engine: gx
+    expectation: ExpectColumnValuesToBeBetween
+    kwargs: {column: nia_m2, min_value: 0, strict_min: true, max_value: 2000, strict_max: true}

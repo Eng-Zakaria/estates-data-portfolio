@@ -1,0 +1,180 @@
+# P03 checks: timetable events (silver) + recall + reconciliation.
+# Silver columns: event_id, space_id, date, t_start, t_end, module_code, group_size.
+# Known silver leaks this layer catches: 2099 future dates and masked EV-...xx ids.
+checks:
+  - id: tt_event_not_null
+    dataset: timetable
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every timetable row carries an event id.
+    why_it_matters: The id is the grain for utilisation maths (P06).
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: event_id}
+
+  - id: tt_event_unique
+    dataset: timetable
+    dimension: uniqueness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: event_id is unique in silver.
+    why_it_matters: Duplicate events double-count booked hours.
+    engine: gx
+    expectation: ExpectColumnValuesToBeUnique
+    kwargs: {column: event_id}
+
+  - id: tt_event_id_pattern
+    dataset: timetable
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: event_id matches ^EV-[0-9]+$ (no planted xx masks).
+    why_it_matters: Masked ids from misspelt injection are untraceable.
+    engine: gx
+    expectation: ExpectColumnValuesToMatchRegex
+    kwargs: {column: event_id, regex: "^EV-[0-9]+$"}
+
+  - id: tt_space_not_null
+    dataset: timetable
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every event references a space.
+    why_it_matters: Spaceless events cannot feed room utilisation.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: space_id}
+
+  - id: tt_space_known_truth
+    dataset: timetable
+    dimension: referential_integrity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: event space_id exists in the space master.
+    why_it_matters: Events in unknown spaces fall out of room reports.
+    engine: gx
+    expectation: ExpectColumnValuesToBeInSet
+    kwargs:
+      column: space_id
+      value_set_from: {truth_table: spaces, column: space_id}
+
+  - id: tt_group_non_negative
+    dataset: timetable
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: group_size is zero or positive.
+    why_it_matters: Negative groups corrupt occupancy rates.
+    engine: gx
+    expectation: ExpectColumnValuesToBeBetween
+    kwargs: {column: group_size, min_value: 0}
+
+  - id: tt_no_future_date
+    dataset: timetable
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Event dates do not exceed the synthetic window end (planted 2099 leaks here).
+    why_it_matters: Future events distort utilisation denominators.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM silver_timetable
+    sql_failed: SELECT event_id, space_id, date FROM silver_timetable WHERE CAST(date AS DATE) > DATE '{window_end}'
+
+  - id: tt_hours_sane
+    dataset: timetable
+    dimension: consistency
+    severity: warn
+    threshold: 100.0
+    owner: estates-analytics
+    description: Event durations are over 0 and at most 12 hours.
+    why_it_matters: Impossible durations indicate source time errors.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM silver_timetable
+    sql_failed: SELECT event_id, space_id, date, t_start, t_end FROM silver_timetable WHERE (EXTRACT('hour' FROM CAST(t_end AS TIME)) * 60 + EXTRACT('minute' FROM CAST(t_end AS TIME)) - EXTRACT('hour' FROM CAST(t_start AS TIME)) * 60 - EXTRACT('minute' FROM CAST(t_start AS TIME))) <= 0 OR (EXTRACT('hour' FROM CAST(t_end AS TIME)) * 60 + EXTRACT('minute' FROM CAST(t_end AS TIME)) - EXTRACT('hour' FROM CAST(t_start AS TIME)) * 60 - EXTRACT('minute' FROM CAST(t_start AS TIME))) > 720
+
+  - id: tt_reconciled
+    dataset: timetable
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Silver plus quarantine row counts reconcile to bronze input.
+    why_it_matters: Unexplained row loss between layers hides data.
+    engine: sql
+    failed_is_scalar: true
+    sql_checked: SELECT COUNT(*) FROM read_parquet('{lake}/bronze/timetable/*/*.parquet')
+    sql_failed: SELECT ABS((SELECT COUNT(*) FROM read_parquet('{lake}/bronze/timetable/*/*.parquet')) - (SELECT COUNT(*) FROM silver_timetable) - (SELECT COUNT(*) FROM quarantine_timetable))
+
+  - id: tt_recall_nulls
+    dataset: timetable
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted nulls_in_mandatory timetable defect is quarantined.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: timetable, defect_type: nulls_in_mandatory}
+
+  - id: tt_recall_duplicates
+    dataset: timetable
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted duplicate event is quarantined.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: timetable, defect_type: duplicate_rows}
+
+  - id: tt_recall_out_of_range
+    dataset: timetable
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted out-of-range group size is detected (quarantine or silver non-negative check).
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: timetable, defect_type: out_of_range}
+
+  - id: tt_recall_misspelt_category
+    dataset: timetable
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted misspelt event id (EV-...xx) is detected in silver or quarantine.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: timetable, defect_type: misspelt_category}
+
+  - id: tt_recall_future_dates
+    dataset: timetable
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted future-date event is detected via the no-future-date check.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: timetable, defect_type: future_dates}
+
+  - id: tt_recall_orphan_fk
+    dataset: timetable
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted orphan-FK event (B999 space) is quarantined.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: timetable, defect_type: orphan_fk}

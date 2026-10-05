@@ -1,0 +1,115 @@
+# P03 checks: statutory inspections (silver) + recall + reconciliation.
+# Silver columns: inspection_id, building_id, inspection_type_id, due_date,
+# completed_date, result. Frequencies are illustrative config, not legal duties.
+checks:
+  - id: insp_id_not_null
+    dataset: inspections
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every inspection row carries an id.
+    why_it_matters: The id is the grain for compliance tracking (P09).
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: inspection_id}
+
+  - id: insp_id_unique
+    dataset: inspections
+    dimension: uniqueness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: inspection_id is unique in silver.
+    why_it_matters: Duplicate inspections distort compliance status.
+    engine: gx
+    expectation: ExpectColumnValuesToBeUnique
+    kwargs: {column: inspection_id}
+
+  - id: insp_due_not_null
+    dataset: inspections
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: due_date is present for every inspection.
+    why_it_matters: Overdue maths needs a due date.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: due_date}
+
+  - id: insp_result_valid
+    dataset: inspections
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: result is one of Pass, Fail, Advisory.
+    why_it_matters: Unknown results hide failed inspections.
+    engine: gx
+    expectation: ExpectColumnValuesToBeInSet
+    kwargs: {column: result, value_set: [Pass, Fail, Advisory]}
+
+  - id: insp_building_known
+    dataset: inspections
+    dimension: referential_integrity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: building_id exists in the building master.
+    why_it_matters: Orphan buildings break compliance reporting by building.
+    engine: gx
+    expectation: ExpectColumnValuesToBeInSet
+    kwargs:
+      column: building_id
+      value_set_from: {truth_table: buildings, column: building_id}
+
+  - id: insp_type_known
+    dataset: inspections
+    dimension: referential_integrity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: inspection_type_id exists in the inspection-type master.
+    why_it_matters: Unknown types have no illustrative frequency for due maths.
+    engine: gx
+    expectation: ExpectColumnValuesToBeInSet
+    kwargs:
+      column: inspection_type_id
+      value_set_from: {truth_table: inspection_types, column: inspection_type_id}
+
+  - id: insp_completed_sane
+    dataset: inspections
+    dimension: consistency
+    severity: warn
+    threshold: 100.0
+    owner: estates-analytics
+    description: completed_date is null (open) or within a year after due_date and not beyond window end.
+    why_it_matters: Wild completion dates indicate source errors.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM silver_inspections
+    sql_failed: SELECT inspection_id, building_id, due_date, completed_date FROM silver_inspections WHERE completed_date IS NOT NULL AND (CAST(completed_date AS DATE) < CAST(due_date AS DATE) - INTERVAL 30 DAY OR CAST(completed_date AS DATE) > DATE '{window_end}')
+
+  - id: insp_reconciled
+    dataset: inspections
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Silver plus quarantine row counts reconcile to bronze input.
+    why_it_matters: Unexplained row loss between layers hides data.
+    engine: sql
+    failed_is_scalar: true
+    sql_checked: SELECT COUNT(*) FROM read_parquet('{lake}/bronze/statutory_inspections/*/*.parquet')
+    sql_failed: SELECT ABS((SELECT COUNT(*) FROM read_parquet('{lake}/bronze/statutory_inspections/*/*.parquet')) - (SELECT COUNT(*) FROM silver_inspections) - (SELECT COUNT(*) FROM quarantine_inspections))
+
+  - id: insp_recall_duplicates
+    dataset: inspections
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: The planted duplicate inspection is quarantined.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: statutory_inspections, defect_type: duplicate_rows}

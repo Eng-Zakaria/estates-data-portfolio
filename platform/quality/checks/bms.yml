@@ -1,0 +1,88 @@
+# P03 checks: BMS trend readings (silver, long format) + recall + reconciliation.
+# Silver columns: point_id, ts_utc, value. N/A cells are quarantined per cell
+# (quarantine holds per-cell rows with point/ts columns plus unparseable rows).
+checks:
+  - id: bms_ts_not_null
+    dataset: bms
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every BMS reading carries a UTC timestamp.
+    why_it_matters: Timestamp-less readings cannot join weather or meters.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: ts_utc}
+
+  - id: bms_value_numeric_present
+    dataset: bms
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every BMS reading carries a numeric value (N/A cells are quarantined upstream).
+    why_it_matters: Non-numeric trend values break control analytics (P15).
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: value}
+
+  - id: bms_no_future_ts
+    dataset: bms
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: BMS timestamps do not exceed the synthetic window end.
+    why_it_matters: Future timestamps are defects or clock errors.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM silver_bms
+    sql_failed: SELECT point_id, ts_utc, value FROM silver_bms WHERE CAST(ts_utc AS DATE) > DATE '{window_end}'
+
+  - id: bms_grain_dup_rate
+    dataset: bms
+    dimension: uniqueness
+    severity: warn
+    threshold: 99.0
+    owner: estates-analytics
+    description: At least 99 percent of point and timestamp pairs are unique (silver does not dedupe BMS).
+    why_it_matters: Duplicate trend points double-count in control loops.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM silver_bms
+    sql_failed: SELECT point_id, ts_utc, COUNT(*) AS copies FROM silver_bms GROUP BY 1, 2 HAVING COUNT(*) > 1
+
+  - id: bms_timeliness
+    dataset: bms
+    dimension: timeliness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: The latest BMS reading is within 36 h of window end.
+    why_it_matters: A stale BMS feed blinds operations (P15).
+    engine: sql
+    failed_is_scalar: true
+    sql_checked: SELECT 1
+    sql_failed: SELECT CASE WHEN MAX(ts_utc) < CAST(DATE '{window_end}' AS TIMESTAMPTZ) - INTERVAL 36 HOUR THEN 1 ELSE 0 END FROM silver_bms
+
+  - id: bms_reconciled
+    dataset: bms
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Silver plus quarantine cells reconcile to bronze cells (wide rows times live points).
+    why_it_matters: Unexplained cell loss between layers hides data.
+    engine: sql
+    failed_is_scalar: true
+    sql_checked: SELECT COUNT(*) * (SELECT COUNT(DISTINCT point_id) FROM silver_bms) FROM read_parquet('{lake}/bronze/bms_trends/*/*.parquet')
+    sql_failed: SELECT ABS((SELECT COUNT(*) FROM read_parquet('{lake}/bronze/bms_trends/*/*.parquet')) * (SELECT COUNT(DISTINCT point_id) FROM silver_bms) - (SELECT COUNT(*) FROM silver_bms) - (SELECT COUNT(*) FROM quarantine_bms))
+
+  - id: bms_recall_nulls
+    dataset: bms
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Planted N/A cells are quarantined per cell.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: bms_trends, defect_type: nulls_in_mandatory}

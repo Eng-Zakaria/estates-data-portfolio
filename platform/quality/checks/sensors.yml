@@ -1,0 +1,168 @@
+# P03 checks: 15-minute sensor readings (silver) + recall + reconciliation.
+# Silver columns: sensor_id, ts_utc, value (no type column; type comes from the
+# truth sensor register). Recall granularity is sensor-id level (the defect log
+# keys readings by sensor id); leak volumes come from the silver checks.
+checks:
+  - id: sensors_id_not_null
+    dataset: sensors
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every silver reading carries a sensor id.
+    why_it_matters: Readings without sensors cannot join the register.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: sensor_id}
+
+  - id: sensors_ts_not_null
+    dataset: sensors
+    dimension: completeness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every silver reading carries a UTC timestamp.
+    why_it_matters: Timestamp-less readings cannot build occupancy profiles.
+    engine: gx
+    expectation: ExpectColumnValuesToNotBeNull
+    kwargs: {column: ts_utc}
+
+  - id: sensors_grain_unique
+    dataset: sensors
+    dimension: uniqueness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Pair sensor_id plus ts_utc is unique in silver.
+    why_it_matters: Duplicate readings inflate occupancy and CO2 aggregates.
+    engine: gx
+    expectation: ExpectCompoundColumnsToBeUnique
+    kwargs: {column_list: [sensor_id, ts_utc]}
+
+  - id: sensors_value_non_negative
+    dataset: sensors
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Sensor values are zero or positive (planted negatives leak here).
+    why_it_matters: Negative counts and concentrations are physically impossible.
+    engine: gx
+    expectation: ExpectColumnValuesToBeBetween
+    kwargs: {column: value, min_value: 0}
+
+  - id: sensors_id_known
+    dataset: sensors
+    dimension: referential_integrity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: sensor_id exists in the sensor register (planted SN-00xx leak here).
+    why_it_matters: Unknown sensors have no space or type context.
+    engine: sql
+    sql_checked: SELECT COUNT(DISTINCT sensor_id) FROM silver_sensors
+    sql_failed: SELECT DISTINCT s.sensor_id FROM silver_sensors AS s ANTI JOIN truth_sensors AS r USING (sensor_id)
+
+  - id: sensors_no_future_ts
+    dataset: sensors
+    dimension: validity
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Sensor timestamps do not exceed the synthetic window end.
+    why_it_matters: Future timestamps are planted defects or clock errors.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM silver_sensors
+    sql_failed: SELECT sensor_id, ts_utc, value FROM silver_sensors WHERE CAST(ts_utc AS DATE) > DATE '{window_end}'
+
+  - id: sensors_timeliness_per_sensor
+    dataset: sensors
+    dimension: timeliness
+    severity: error
+    threshold: 100.0
+    owner: estates-analytics
+    description: Every sensor has readings within 36 h of window end and none beyond it.
+    why_it_matters: Stale or future-dated sensors indicate a feed failure.
+    engine: sql
+    sql_checked: SELECT COUNT(DISTINCT sensor_id) FROM silver_sensors
+    sql_failed: SELECT sensor_id, MAX(ts_utc) AS latest FROM silver_sensors GROUP BY 1 HAVING MAX(ts_utc) < CAST(DATE '{window_end}' AS TIMESTAMPTZ) - INTERVAL 36 HOUR OR MAX(ts_utc) > CAST(DATE '{window_end}' AS TIMESTAMPTZ) + INTERVAL 1 DAY
+
+  - id: sensors_volume_3sigma
+    dataset: sensors
+    dimension: consistency
+    severity: warn
+    threshold: 100.0
+    owner: estates-analytics
+    description: Daily reading counts per sensor stay within 3 sigma of the trailing 28-day mean.
+    why_it_matters: Sudden volume changes reveal missing uploads or double loads.
+    engine: sql
+    sql_checked: SELECT COUNT(*) FROM (SELECT DISTINCT sensor_id, CAST(ts_utc AS DATE) AS d FROM silver_sensors)
+    sql_failed: SELECT sensor_id, d, n, mean_28, sd_28 FROM (SELECT sensor_id, d, n, AVG(n) OVER (PARTITION BY sensor_id ORDER BY d ROWS BETWEEN 28 PRECEDING AND 1 PRECEDING) AS mean_28, STDDEV(n) OVER (PARTITION BY sensor_id ORDER BY d ROWS BETWEEN 28 PRECEDING AND 1 PRECEDING) AS sd_28 FROM (SELECT sensor_id, CAST(ts_utc AS DATE) AS d, COUNT(*) AS n FROM silver_sensors GROUP BY 1, 2)) WHERE mean_28 IS NOT NULL AND sd_28 IS NOT NULL AND sd_28 > 0 AND ABS(n - mean_28) > 3 * sd_28
+
+  - id: sensors_reconciled
+    dataset: sensors
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Silver plus quarantine row counts reconcile to bronze input.
+    why_it_matters: Unexplained row loss between layers hides data.
+    engine: sql
+    failed_is_scalar: true
+    sql_checked: SELECT COUNT(*) FROM read_parquet('{lake}/bronze/sensors/*/*.parquet')
+    sql_failed: SELECT ABS((SELECT COUNT(*) FROM read_parquet('{lake}/bronze/sensors/*/*.parquet')) - (SELECT COUNT(*) FROM silver_sensors) - (SELECT COUNT(*) FROM quarantine_sensors))
+
+  - id: sensors_recall_nulls
+    dataset: sensors
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted nulls_in_mandatory sensor defect is quarantined (sensor-id granularity).
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: sensors, defect_type: nulls_in_mandatory}
+
+  - id: sensors_recall_duplicates
+    dataset: sensors
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted duplicate sensor reading is quarantined (sensor-id granularity).
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: sensors, defect_type: duplicate_rows}
+
+  - id: sensors_recall_out_of_range
+    dataset: sensors
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted out-of-range sensor value is detected (sensor-id granularity, leak volume via value check).
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: sensors, defect_type: out_of_range}
+
+  - id: sensors_recall_misspelt_category
+    dataset: sensors
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted misspelt sensor id (SN-00xx) is detected in silver or quarantine.
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: sensors, defect_type: misspelt_category}
+
+  - id: sensors_recall_future_dates
+    dataset: sensors
+    dimension: reconciliation
+    severity: error
+    threshold: 100.0
+    owner: data-platform
+    description: Every planted future-date sensor reading is quarantined (sensor-id granularity).
+    why_it_matters: Recall evidence for the defect log.
+    engine: recall
+    kwargs: {table: sensors, defect_type: future_dates}
