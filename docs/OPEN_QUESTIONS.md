@@ -14,3 +14,26 @@
 8. **BDG2 licence** (P16): verify + record licence; download by script.
 9. **CO₂ guideline sources** (P17: 1000/1500 ppm thresholds): verify + cite.
 10. **IfcOpenShell / Airflow / GX / dbt / sentence-transformers APIs**: verify against pinned versions' docs before coding those projects.
+    - GX resolved for P03: `great-expectations==1.23.2` API verified empirically
+      2026-10-05 (pandas runtime batches, suites, ValidationDefinition.run,
+      Data Docs); evidence in `docs/PLAN_P03.md`.
+
+## P01 rework candidate (found while building P03, 2026-10-05 — human decision needed)
+11. **CAFM ISO datetimes systematically quarantined (P01 `dates.py`)**: the
+    foundation generator intentionally emits three `Raised`/`Completed` formats
+    (`exports.py:89-101`: `%d/%m/%Y %H:%M` 40%, ISO `t.isoformat()` 30%,
+    `%d-%b-%y %H:%M` 30%), but `platform/src/ingest/dates.py CANDIDATES` has no
+    timezone-aware ISO candidate (`%Y-%m-%dT%H:%M:%S%z`). Measured on the small
+    profile (seed 42): 1,798/6,039 raw CAFM rows (29.8%) carry ISO `+00:00`
+    stamps; 1,785 valid rows sit in quarantine as
+    `future_dates:unparseable_raised`. Silver CAFM is therefore missing ~30% of
+    legitimate work orders, which flows into P04 `fct_work_order` and P07.
+    One-line fix + `make ingest` re-run + P01/P04 acceptance refresh would
+    resolve it, but that churns silver while P04 is in flight — left for the
+    human to schedule. P03 check `cafm_quarantine_explained_rate` (warn)
+    tracks it.
+
+## P04 follow-ups (done 2026-10-05; first jobs for P02/P05)
+- Default (full-volume) profile `dbt build` runtime/memory not yet measured (small profile: ~19 s, green).
+- DESNZ factors are single-year (2025); add a factor-year coverage test + fallback rule when multi-year reporting lands (P08).
+- Upstream caveat: per §11 above, silver CAFM is missing ~30% of legitimate work orders; P04 `fct_work_order` faithfully reproduces silver (4,171 → 4,171, §4 of `docs/ACCEPTANCE_P04.md`) but inherits the gap until the P01 fix lands.
