@@ -71,10 +71,13 @@ jobs:
       - name: Docker compose config check
         run: docker compose config --quiet
 
-      - name: Airflow DagBag import test (P02 hook)
+      - name: Airflow DagBag import test (P02)
         run: |
           if [ -d platform/orchestration/dags ]; then
-            python -m pytest platform/orchestration/tests/test_dagbag.py -q
+            PY_MINOR=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+            pip install "apache-airflow==3.3.1" "apache-airflow-providers-standard==1.18.0" \
+              --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-3.3.1/constraints-${PY_MINOR}.txt"
+            python -m pytest platform/orchestration/tests/test_dagbag.py platform/orchestration/tests/test_dag_contract.py -q
           else
             echo "SKIP: platform/orchestration not built yet (P02). Remove this guard when P02 lands."
           fi
