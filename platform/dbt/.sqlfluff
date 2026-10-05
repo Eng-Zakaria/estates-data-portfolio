@@ -1,0 +1,17 @@
+[sqlfluff]
+dialect = duckdb
+templater = dbt
+rules = LT01,CP01,CP02,AL01,AM04
+max_line_length = 120
+
+[sqlfluff:templater:dbt]
+apply_dbt_builtins = True
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = upper
+
+[sqlfluff:rules:capitalisation.functions]
+capitalisation_policy = upper
+
+[sqlfluff:rules:aliasing.table]
+aliasing = explicit

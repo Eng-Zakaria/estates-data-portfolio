@@ -1,0 +1,3 @@
+fuel,scope,unit,factor_kgco2e_per_kwh,year,source_url
+natural_gas,Scope 1,kWh,0.2027,2025,https://assets.publishing.service.gov.uk/media/6846b6ea57f3515d9611f0dd/ghg-conversion-factors-2025-flat-format.xlsx
+electricity,Scope 2,kWh,0.177,2025,https://assets.publishing.service.gov.uk/media/6846b6ea57f3515d9611f0dd/ghg-conversion-factors-2025-flat-format.xlsx

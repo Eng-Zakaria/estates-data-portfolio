@@ -1,0 +1,14 @@
+# Run dbt from the repo root, e.g.:
+#   dbt build --profiles-dir platform/dbt --project-dir platform/dbt
+# DuckDB resolves `path` and source locations against the process working
+# directory, so always run from the repo root. Override with
+# DBT_DUCKDB_PATH when running from elsewhere (e.g. sqlfluff's dbt
+# templater with cwd platform/dbt).
+estates:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH', 'data/warehouse.duckdb') }}"
+      schema: main
+      threads: 4

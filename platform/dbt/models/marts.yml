@@ -1,0 +1,280 @@
+version: 2
+
+models:
+  - name: dim_building
+    description: Building dimension from synthetic truth.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: building_id, data_type: varchar, description: Building id, tests: [not_null, unique]}
+      - {name: building_name, data_type: varchar, description: Anonymised name}
+      - {name: campus, data_type: varchar, description: Campus}
+      - {name: gia_m2, data_type: double, description: GIA m2}
+      - {name: nia_m2, data_type: double, description: NIA m2}
+      - {name: n_floors, data_type: bigint, description: Floors}
+      - {name: year_built, data_type: bigint, description: Year built}
+      - {name: primary_use, data_type: varchar, description: Primary use}
+      - {name: heating_fuel, data_type: varchar, description: Heating fuel}
+      - {name: epc_band, data_type: varchar, description: EPC band}
+
+  - name: dim_space
+    description: Space dimension (current register view, canonical S-... grain).
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: space_id, data_type: varchar, description: Canonical space id S-..., tests: [not_null, unique]}
+      - {name: room_code, data_type: varchar, description: Room code B-... as recorded}
+      - {name: building_id, data_type: varchar, description: Building id, tests: [{relationships: {arguments: {to: ref('dim_building'), field: building_id}}}]}
+      - {name: space_category, data_type: varchar, description: Category, tests: [{accepted_values: {arguments: {values: [Teaching, Office, Laboratory, Library, Residential, Catering, Sports, Support]}}}]}
+      - {name: nia_m2, data_type: double, description: NIA m2}
+      - {name: capacity_seats, data_type: bigint, description: Capacity}
+      - {name: building_name, data_type: varchar, description: Building name}
+      - {name: campus, data_type: varchar, description: Campus}
+      - {name: gia_m2, data_type: double, description: Building GIA}
+
+  - name: dim_asset
+    description: Asset dimension from synthetic truth register.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: asset_id, data_type: varchar, description: Asset id, tests: [not_null, unique]}
+      - {name: building_id, data_type: varchar, description: Building id, tests: [{relationships: {arguments: {to: ref('dim_building'), field: building_id}}}]}
+      - {name: space_id, data_type: varchar, description: Space id}
+      - {name: asset_type, data_type: varchar, description: Asset type}
+      - {name: install_date, data_type: date, description: Install date}
+      - {name: expected_life_years, data_type: bigint, description: Expected life}
+      - {name: condition_grade, data_type: varchar, description: Condition, tests: [{accepted_values: {arguments: {values: [A, B, C, D]}}}]}
+      - {name: criticality, data_type: bigint, description: Criticality 1-5}
+      - {name: replacement_cost_gbp, data_type: double, description: Replacement cost}
+
+  - name: dim_department
+    description: Department dimension (synthetic FTE).
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: department_id, data_type: varchar, description: Department id, tests: [not_null, unique]}
+      - {name: department_name, data_type: varchar, description: Name}
+      - {name: faculty, data_type: varchar, description: Faculty}
+      - {name: staff_fte, data_type: double, description: Staff FTE}
+      - {name: student_fte, data_type: double, description: Student FTE}
+
+  - name: dim_meter
+    description: Meter register dimension (synthetic MPAN/MPRN).
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: meter_id, data_type: varchar, description: Meter id, tests: [not_null, unique]}
+      - {name: building_id, data_type: varchar, description: Building id, tests: [{relationships: {arguments: {to: ref('dim_building'), field: building_id}}}]}
+      - {name: utility, data_type: varchar, description: Utility, tests: [{accepted_values: {arguments: {values: [electricity, gas, water, heat]}}}]}
+      - {name: meter_role, data_type: varchar, description: Main/sub}
+      - {name: parent_meter_id, data_type: varchar, description: Parent meter}
+      - {name: unit, data_type: varchar, description: Unit}
+
+  - name: dim_date
+    description: Date dimension from academic calendar seed.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: date_day, data_type: date, description: Date, tests: [not_null, unique]}
+      - {name: full_date, data_type: date, description: Date copy}
+      - {name: year, data_type: bigint, description: Year}
+      - {name: month, data_type: bigint, description: Month}
+      - {name: day_of_week, data_type: bigint, description: ISO day of week}
+      - {name: term, data_type: varchar, description: Term}
+      - {name: teaching_week, data_type: integer, description: Teaching week}
+      - {name: is_holiday, data_type: boolean, description: Holiday}
+      - {name: is_weekend, data_type: boolean, description: Weekend}
+
+  - name: dim_inspection_type
+    description: Inspection types (frequencies illustrative, not legal duties).
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: inspection_type_id, data_type: varchar, description: Type id, tests: [not_null, unique]}
+      - {name: inspection_name, data_type: varchar, description: Name}
+      - {name: frequency_months, data_type: bigint, description: Illustrative months}
+      - {name: applies_to_asset_type, data_type: varchar, description: Applies to}
+
+  - name: dim_trade
+    description: Trade dimension derived from work-order trade names (synthetic).
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: trade_id, data_type: varchar, description: Trade slug, tests: [not_null, unique]}
+      - {name: trade, data_type: varchar, description: Trade name}
+
+  - name: dim_emission_factor
+    description: DESNZ 2025 GHG factors (fetched, OGL v3.0).
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: fuel, data_type: varchar, description: Fuel key, tests: [not_null]}
+      - {name: scope, data_type: varchar, description: Scope, tests: [not_null]}
+      - {name: unit, data_type: varchar, description: kWh}
+      - {name: factor_kgco2e_per_kwh, data_type: double, description: Factor, tests: [not_null]}
+      - {name: factor_year, data_type: integer, description: Year}
+      - {name: source_url, data_type: varchar, description: Source URL}
+
+  - name: fct_meter_hh
+    description: Half-hourly meter facts, incremental on (meter_id, ts_utc) with 7-day lookback. Synthetic.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: meter_id, data_type: varchar, description: Meter id, tests: [not_null, {relationships: {arguments: {to: ref('dim_meter'), field: meter_id}}}]}
+      - {name: ts_utc, data_type: timestamp with time zone, description: Timestamp UTC, tests: [not_null]}
+      - {name: value_kwh, data_type: double, description: kWh}
+      - {name: utility, data_type: varchar, description: Utility}
+      - {name: building_id, data_type: varchar, description: Building id, tests: [{relationships: {arguments: {to: ref('dim_building'), field: building_id}}}]}
+
+  - name: fct_energy_daily
+    description: Daily energy by meter with degree days. Synthetic.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: meter_id, data_type: varchar, description: Meter id, tests: [not_null]}
+      - {name: building_id, data_type: varchar, description: Building id}
+      - {name: utility, data_type: varchar, description: Utility}
+      - {name: energy_date, data_type: date, description: Date, tests: [{relationships: {arguments: {to: ref('dim_date'), field: date_day}}}]}
+      - {name: kwh, data_type: double, description: Daily kWh}
+      - {name: peak_half_hour_kwh, data_type: double, description: Peak HH kWh}
+      - {name: n_periods, data_type: bigint, description: Period count}
+      - {name: hdd, data_type: double, description: Heating degree days}
+
+  - name: fct_work_order
+    description: Work order facts (enriched chronology and cost). Synthetic.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: wo_id, data_type: varchar, description: Work order id, tests: [not_null, unique]}
+      - {name: asset_id, data_type: varchar, description: Asset id, tests: [{relationships: {arguments: {to: ref('dim_asset'), field: asset_id}}}]}
+      - {name: space_id, data_type: varchar, description: Space id}
+      - {name: building_id, data_type: varchar, description: Building id}
+      - {name: wo_type, data_type: varchar, description: Type, tests: [{accepted_values: {arguments: {values: [PPM, Reactive, Statutory, Project]}}}]}
+      - {name: priority, data_type: varchar, description: Priority, tests: [{accepted_values: {arguments: {values: [P1, P2, P3, P4]}}}]}
+      - {name: raised_ts, data_type: timestamp with time zone, description: Raised UTC}
+      - {name: completed_ts, data_type: timestamp with time zone, description: Completed UTC}
+      - {name: status, data_type: varchar, description: Status}
+      - {name: trade, data_type: varchar, description: Trade}
+      - {name: contractor, data_type: varchar, description: Contractor}
+      - {name: labour_hours, data_type: double, description: Hours}
+      - {name: cost_gbp, data_type: double, description: Cost}
+      - {name: days_to_complete, data_type: bigint, description: Days to complete}
+      - {name: is_open, data_type: boolean, description: Open flag}
+      - {name: plan_category, data_type: varchar, description: Planned/unplanned}
+
+  - name: fct_inspection
+    description: Inspection facts with type frequency. Synthetic.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: inspection_id, data_type: varchar, description: Inspection id, tests: [not_null, unique]}
+      - {name: building_id, data_type: varchar, description: Building id, tests: [{relationships: {arguments: {to: ref('dim_building'), field: building_id}}}]}
+      - {name: inspection_type_id, data_type: varchar, description: Type, tests: [{relationships: {arguments: {to: ref('dim_inspection_type'), field: inspection_type_id}}}]}
+      - {name: frequency_months, data_type: bigint, description: Illustrative frequency}
+      - {name: due_date, data_type: date, description: Due date}
+      - {name: completed_date, data_type: date, description: Completed date}
+      - {name: result, data_type: varchar, description: Result, tests: [{accepted_values: {arguments: {values: [Pass, Fail, Advisory]}}}]}
+
+  - name: fct_timetable_event
+    description: Timetable event facts with durations. Synthetic.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: event_id, data_type: varchar, description: Event id, tests: [not_null, unique]}
+      - {name: space_id, data_type: varchar, description: Space id, tests: [{relationships: {arguments: {to: ref('dim_space'), field: space_id}}}]}
+      - {name: event_date, data_type: date, description: Date, tests: [{relationships: {arguments: {to: ref('dim_date'), field: date_day}}}]}
+      - {name: start_time, data_type: varchar, description: Start HH:MM}
+      - {name: end_time, data_type: varchar, description: End HH:MM}
+      - {name: module_code, data_type: varchar, description: Module}
+      - {name: group_size, data_type: integer, description: Group size}
+      - {name: duration_hours, data_type: double, description: Duration hours}
+
+  - name: fct_sensor_15min
+    description: Sensor 15-min facts with space context. Synthetic counts only.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: sensor_id, data_type: varchar, description: Sensor id, tests: [not_null]}
+      - {name: space_id, data_type: varchar, description: Space id}
+      - {name: sensor_type, data_type: varchar, description: Type, tests: [{accepted_values: {arguments: {values: [co2, temp, rh, occupancy_count]}}}]}
+      - {name: ts_utc, data_type: timestamp with time zone, description: Timestamp UTC, tests: [not_null]}
+      - {name: value, data_type: double, description: Value}
+
+  - name: fct_space_observed_occupancy
+    description: Observed occupancy counts per space from occupancy_count sensors (P06 no-show analysis). Synthetic counts only, no personal data.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: sensor_id, data_type: varchar, description: Sensor id, tests: [not_null]}
+      - {name: space_id, data_type: varchar, description: Space id, tests: [not_null, {relationships: {arguments: {to: ref('dim_space'), field: space_id}}}]}
+      - {name: ts_utc, data_type: timestamp with time zone, description: Timestamp UTC, tests: [not_null]}
+      - {name: observed_count, data_type: double, description: Observed headcount}
+
+  - name: mart_space_utilisation
+    description: Space utilisation analysis mart (frequency and occupancy proxies). Synthetic.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: space_id, data_type: varchar, description: Space id, tests: [not_null, unique, {relationships: {arguments: {to: ref('dim_space'), field: space_id}}}]}
+      - {name: building_id, data_type: varchar, description: Building id}
+      - {name: space_category, data_type: varchar, description: Category}
+      - {name: nia_m2, data_type: double, description: NIA}
+      - {name: capacity_seats, data_type: bigint, description: Capacity}
+      - {name: n_events, data_type: bigint, description: Event count}
+      - {name: booked_hours, data_type: double, description: Booked hours}
+      - {name: available_hours, data_type: double, description: Available hours}
+      - {name: frequency_rate, data_type: double, description: Booked/available}
+      - {name: occupancy_rate, data_type: double, description: Avg group/capacity}
+      - {name: avg_group_size, data_type: double, description: Avg group}
+
+  - name: mart_asset_health
+    description: Asset health mart (age, repeats, risk). Synthetic.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: asset_id, data_type: varchar, description: Asset id, tests: [not_null, unique, {relationships: {arguments: {to: ref('dim_asset'), field: asset_id}}}]}
+      - {name: building_id, data_type: varchar, description: Building id}
+      - {name: asset_type, data_type: varchar, description: Type}
+      - {name: condition_grade, data_type: varchar, description: Condition}
+      - {name: criticality, data_type: bigint, description: Criticality}
+      - {name: age_years, data_type: bigint, description: Age}
+      - {name: remaining_life_pct, data_type: double, description: Remaining share}
+      - {name: replacement_cost_gbp, data_type: double, description: Replacement cost}
+      - {name: reactive_12m, data_type: bigint, description: Reactive count}
+      - {name: is_repeat_failure, data_type: boolean, description: Repeat flag}
+      - {name: risk_score, data_type: bigint, description: Criticality x condition weight}
+
+  - name: mart_carbon_monthly
+    description: Monthly carbon by fuel with baseline variance (baseline null when base year absent). Synthetic energy, DESNZ 2025 factors.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: month, data_type: date, description: Month}
+      - {name: fuel, data_type: varchar, description: Fuel key}
+      - {name: kwh, data_type: double, description: Monthly kWh}
+      - {name: kgco2e, data_type: double, description: kgCO2e}
+      - {name: baseline_kwh, data_type: double, description: Base-year same-fuel average (null if absent)}
+      - {name: variance_to_baseline, data_type: double, description: (kwh-baseline)/baseline}
+
+  - name: mart_compliance_status
+    description: Compliance status mart (single status logic). Synthetic, illustrative frequencies.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: inspection_id, data_type: varchar, description: Inspection id, tests: [not_null, unique]}
+      - {name: building_id, data_type: varchar, description: Building id}
+      - {name: inspection_type_id, data_type: varchar, description: Type}
+      - {name: due_date, data_type: date, description: Due}
+      - {name: completed_date, data_type: date, description: Completed}
+      - {name: result, data_type: varchar, description: Result}
+      - {name: status, data_type: varchar, description: Status, tests: [{accepted_values: {arguments: {values: [Compliant, Due within 30 days, Overdue, Failed - remedial open, No record]}}}]}
+      - {name: days_overdue, data_type: bigint, description: Days overdue}
+      - {name: risk_score, data_type: integer, description: Risk 0-4}
+
+  - name: mart_dq_scorecard
+    description: DQ scorecard snapshot from P01 reconciliation rates. Synthetic.
+    config: {contract: {enforced: true}}
+    columns:
+      - {name: dataset, data_type: varchar, description: Dataset, tests: [not_null, unique]}
+      - {name: grain, data_type: varchar, description: Grain}
+      - {name: rows_checked, data_type: integer, description: Rows checked}
+      - {name: rows_quarantined, data_type: integer, description: Rows quarantined}
+      - {name: pass_rate, data_type: double, description: Pass rate}
+
+unit_tests:
+  - name: test_kwh_to_kgco2e_math
+    description: "Carbon math fixture (hand-checked): 100 kWh at 0.5 + 200 kWh at 0.25 = 50 + 50 kgCO2e."
+    model: mart_carbon_monthly
+    given:
+      - input: ref('fct_energy_daily')
+        rows:
+          - {meter_id: M1, building_id: B001, utility: electricity, energy_date: 2026-01-05, kwh: 100.0, peak_half_hour_kwh: 5.0, n_periods: 48, hdd: 2.0}
+          - {meter_id: M2, building_id: B001, utility: gas, energy_date: 2026-01-05, kwh: 200.0, peak_half_hour_kwh: 8.0, n_periods: 48, hdd: 2.0}
+      - input: ref('dim_emission_factor')
+        rows:
+          - {fuel: electricity, scope: Scope 2, unit: kWh, factor_kgco2e_per_kwh: 0.5, factor_year: 2025, source_url: http://example.com}
+          - {fuel: natural_gas, scope: Scope 1, unit: kWh, factor_kgco2e_per_kwh: 0.25, factor_year: 2025, source_url: http://example.com}
+    expect:
+      rows:
+        - {fuel: electricity, kwh: 100.0, kgco2e: 50.0}
+        - {fuel: natural_gas, kwh: 200.0, kgco2e: 50.0}

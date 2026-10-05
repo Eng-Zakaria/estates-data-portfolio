@@ -1,0 +1,9 @@
+dataset,grain,rows_checked,rows_quarantined,pass_rate
+space_register,row,501,6,0.988
+cafm_workorders,row,6039,1868,0.6907
+meter_hh_supplierA,row,34419,553,0.9839
+meter_hh_supplierB,cell (wide→long),35136,787,0.9776
+bms_trends,cell (wide→long),172800,20,0.9999
+statutory_inspections,row,41,1,0.9756
+timetable,row,12566,219,0.9826
+sensors,row,779933,5959,0.9924

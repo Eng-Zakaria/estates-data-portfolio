@@ -1,0 +1,163 @@
+version: 2
+
+models:
+  - name: stg_space__register
+    description: Space register staging (1:1 rename of silver). Synthetic.
+    columns:
+      - {name: room_code, description: Room code, business key, tests: [not_null, unique]}
+      - {name: building_id, description: Canonical building id, tests: [not_null]}
+      - {name: building_name, description: Building name as recorded}
+      - {name: space_category, description: Conformed category, tests: [{accepted_values: {arguments: {values: [Teaching, Office, Laboratory, Library, Residential, Catering, Sports, Support]}}}]}
+      - {name: nia_m2, description: Net internal area m2}
+      - {name: capacity_seats, description: Seat capacity}
+
+  - name: stg_cafm__work_order
+    description: CAFM work orders staging. Synthetic.
+    columns:
+      - {name: wo_id, description: Work order id, business key, tests: [not_null, unique]}
+      - {name: asset_id, description: Asset reference, tests: [not_null]}
+      - {name: space_id, description: Space id}
+      - {name: building_id, description: Building id}
+      - {name: wo_type, description: Order type, tests: [{accepted_values: {arguments: {values: [PPM, Reactive, Statutory, Project]}}}]}
+      - {name: priority, description: Priority, tests: [{accepted_values: {arguments: {values: [P1, P2, P3, P4]}}}]}
+      - {name: raised_ts, description: Raised timestamp UTC, tests: [not_null]}
+      - {name: completed_ts, description: Completed timestamp UTC}
+      - {name: status, description: Normalised status}
+      - {name: trade, description: Trade}
+      - {name: contractor, description: Contractor}
+      - {name: labour_hours, description: Labour hours}
+      - {name: cost_gbp, description: Cost GBP}
+
+  - name: stg_meter__hh_a
+    description: Supplier A half-hourly readings staging. Synthetic.
+    columns:
+      - {name: meter_id, description: Meter id, tests: [not_null]}
+      - {name: ts_utc, description: Timestamp UTC, tests: [not_null]}
+      - {name: value_kwh, description: Interval kWh}
+      - {name: unit, description: Unit}
+      - {name: quality_flag, description: Quality flag}
+
+  - name: stg_meter__hh_b
+    description: Supplier B half-hourly readings staging (reshaped long in silver). Synthetic.
+    columns:
+      - {name: meter_id, description: Meter id, tests: [not_null]}
+      - {name: ts_utc, description: Timestamp UTC, tests: [not_null]}
+      - {name: value_kwh, description: Interval kWh}
+      - {name: unit, description: Unit}
+      - {name: quality_flag, description: Quality flag}
+
+  - name: stg_bms__trend
+    description: BMS trend readings staging (long). Synthetic.
+    columns:
+      - {name: point_id, description: Point id with unit in name, tests: [not_null]}
+      - {name: ts_utc, description: Timestamp UTC, tests: [not_null]}
+      - {name: value, description: Reading value}
+
+  - name: stg_insp__inspection
+    description: Statutory inspections staging. Synthetic; frequencies illustrative.
+    columns:
+      - {name: inspection_id, description: Inspection id, business key, tests: [not_null, unique]}
+      - {name: building_id, description: Building id, tests: [not_null]}
+      - {name: inspection_type_id, description: Inspection type, tests: [not_null]}
+      - {name: due_date, description: Due date, tests: [not_null]}
+      - {name: completed_date, description: Completed date}
+      - {name: result, description: Pass/Fail/Advisory}
+
+  - name: stg_tt__event
+    description: Timetable events staging. Synthetic.
+    columns:
+      - {name: event_id, description: Event id, business key, tests: [not_null, unique]}
+      - {name: space_id, description: Space id, tests: [not_null]}
+      - {name: event_date, description: Local date}
+      - {name: start_time, description: Start HH:MM}
+      - {name: end_time, description: End HH:MM}
+      - {name: module_code, description: Module code}
+      - {name: group_size, description: Group size}
+
+  - name: stg_sensor__reading
+    description: Sensor 15-min readings staging. Synthetic counts only, no personal data.
+    columns:
+      - {name: sensor_id, description: Sensor id, tests: [not_null]}
+      - {name: ts_utc, description: Timestamp UTC, tests: [not_null]}
+      - {name: value, description: Reading value}
+
+  - name: stg_truth__asset
+    description: Asset register from synthetic truth (no asset source in silver). Synthetic.
+    columns:
+      - {name: asset_id, description: Asset id, business key, tests: [not_null, unique]}
+      - {name: building_id, description: Building id, tests: [not_null]}
+      - {name: space_id, description: Space id, tests: [not_null]}
+      - {name: asset_type, description: Asset type}
+      - {name: install_date, description: Install date}
+      - {name: expected_life_years, description: Expected life years}
+      - {name: condition_grade, description: Condition A-D, tests: [{accepted_values: {arguments: {values: [A, B, C, D]}}}]}
+      - {name: criticality, description: Criticality 1-5}
+      - {name: replacement_cost_gbp, description: Replacement cost GBP}
+
+  - name: stg_truth__building
+    description: Buildings from synthetic truth. Synthetic.
+    columns:
+      - {name: building_id, description: Building id, business key, tests: [not_null, unique]}
+      - {name: building_name, description: Anonymised name}
+      - {name: campus, description: Campus}
+      - {name: gia_m2, description: Gross internal area m2}
+      - {name: nia_m2, description: Net internal area m2}
+      - {name: n_floors, description: Floor count}
+      - {name: year_built, description: Year built}
+      - {name: primary_use, description: Primary use}
+      - {name: heating_fuel, description: Heating fuel}
+      - {name: epc_band, description: EPC band}
+
+  - name: stg_truth__department
+    description: Departments from synthetic truth. Synthetic FTE.
+    columns:
+      - {name: department_id, description: Department id, tests: [not_null, unique]}
+      - {name: department_name, description: Department name}
+      - {name: faculty, description: Faculty}
+      - {name: staff_fte, description: Staff FTE (synthetic)}
+      - {name: student_fte, description: Student FTE (synthetic)}
+
+  - name: stg_truth__meter
+    description: Meter register from synthetic truth. Synthetic MPAN/MPRN.
+    columns:
+      - {name: meter_id, description: Meter id, tests: [not_null, unique]}
+      - {name: building_id, description: Building id, tests: [not_null]}
+      - {name: utility, description: Utility, tests: [{accepted_values: {arguments: {values: [electricity, gas, water, heat]}}}]}
+      - {name: meter_role, description: Main/sub}
+      - {name: parent_meter_id, description: Parent meter}
+      - {name: unit, description: Unit}
+
+  - name: stg_truth__inspection_type
+    description: Inspection types from synthetic truth. Frequencies are illustrative config, not legal duties.
+    columns:
+      - {name: inspection_type_id, description: Type id, tests: [not_null, unique]}
+      - {name: inspection_name, description: Type name}
+      - {name: frequency_months, description: Illustrative frequency months}
+      - {name: applies_to_asset_type, description: Applies to}
+
+  - name: stg_truth__weather
+    description: Hourly weather from synthetic truth (temp + degree-day contributions). Synthetic.
+    columns:
+      - {name: ts_utc, description: Timestamp UTC, tests: [not_null]}
+      - {name: temp_c, description: Temperature C}
+      - {name: hdd_base15_5, description: HDD contribution base 15.5}
+      - {name: cdd, description: CDD contribution}
+
+  - name: stg_truth__sensor
+    description: Sensor register from synthetic truth. Aggregate counts only, no personal data.
+    columns:
+      - {name: sensor_id, description: Sensor id, tests: [not_null, unique]}
+      - {name: space_id, description: Space id, tests: [not_null]}
+      - {name: sensor_type, description: co2/temp/rh/occupancy_count}
+      - {name: install_date, description: Install date}
+
+  - name: stg_truth__space
+    description: Space master from synthetic truth (canonical space_id S-... plus room_code B-...). Used to conform silver room codes to timetable/asset grain. Synthetic.
+    columns:
+      - {name: space_id, description: Canonical space id S-..., tests: [not_null, unique]}
+      - {name: room_code, description: Room code B-..., tests: [not_null, unique]}
+      - {name: building_id, description: Building id, tests: [not_null]}
+      - {name: space_category, description: Truth category}
+      - {name: capacity_seats, description: Seat capacity}
+      - {name: nia_m2, description: Net internal area m2}
+

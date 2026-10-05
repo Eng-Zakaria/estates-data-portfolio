@@ -1,0 +1,37 @@
+version: 2
+
+seeds:
+  - name: seed_space_category_map
+    description: Space category raw-to-canonical map (v1, from platform/refs). Synthetic mapping.
+    columns:
+      - {name: raw_category, description: Raw recorded spelling, tests: [not_null]}
+      - {name: return_category, description: Canonical category, tests: [not_null]}
+      - {name: map_version, description: Map version}
+
+  - name: seed_academic_calendar
+    description: Academic calendar from synthetic truth (terms, teaching weeks, holidays).
+    columns:
+      - {name: date, description: Date, tests: [not_null, unique]}
+      - {name: term, description: Term}
+      - {name: teaching_week, description: Teaching week number}
+      - {name: is_holiday, description: Holiday flag}
+      - {name: is_weekend, description: Weekend flag}
+
+  - name: seed_emission_factors
+    description: DESNZ 2025 GHG conversion factors (fetched by scripts/fetch_desnz.py, OGL v3.0). Never hard-coded.
+    columns:
+      - {name: fuel, description: natural_gas or electricity, tests: [not_null]}
+      - {name: scope, description: GHG Protocol scope, tests: [not_null]}
+      - {name: unit, description: kWh}
+      - {name: factor_kgco2e_per_kwh, description: kgCO2e per kWh, tests: [not_null]}
+      - {name: year, description: Factor year, tests: [not_null]}
+      - {name: source_url, description: Source workbook URL}
+
+  - name: seed_dq_snapshot
+    description: DQ scorecard snapshot from P01 reconciliation (scripts/build_dq_seed.py). Synthetic.
+    columns:
+      - {name: dataset, description: Source dataset, tests: [not_null, unique]}
+      - {name: grain, description: row or cell grain}
+      - {name: rows_checked, description: Rows checked}
+      - {name: rows_quarantined, description: Rows quarantined}
+      - {name: pass_rate, description: 1 - quarantined/checked}

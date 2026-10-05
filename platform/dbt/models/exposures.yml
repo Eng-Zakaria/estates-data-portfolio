@@ -1,0 +1,32 @@
+version: 2
+
+exposures:
+  - name: p06_space_dashboard
+    description: P06 Space utilisation Power BI dashboard (synthetic). Depends on space marts.
+    type: dashboard
+    owner: {name: estates-analytics}
+    depends_on: [ref('mart_space_utilisation'), ref('dim_space'), ref('dim_building'), ref('fct_space_observed_occupancy')]
+
+  - name: p07_maintenance_dashboard
+    description: P07 Asset and maintenance Power BI dashboard (synthetic).
+    type: dashboard
+    owner: {name: estates-analytics}
+    depends_on: [ref('mart_asset_health'), ref('fct_work_order'), ref('dim_asset'), ref('dim_trade')]
+
+  - name: p08_carbon_dashboard
+    description: P08 Net zero and carbon Power BI dashboard (synthetic, DESNZ 2025 factors).
+    type: dashboard
+    owner: {name: estates-analytics}
+    depends_on: [ref('mart_carbon_monthly'), ref('fct_energy_daily'), ref('dim_emission_factor')]
+
+  - name: p09_compliance_dashboard
+    description: P09 Statutory compliance tracker (synthetic, illustrative frequencies).
+    type: dashboard
+    owner: {name: estates-analytics}
+    depends_on: [ref('mart_compliance_status'), ref('fct_inspection')]
+
+  - name: p10_institutional_return
+    description: P10 Mock institutional return pack (illustrative, not official).
+    type: ml
+    owner: {name: estates-analytics}
+    depends_on: [ref('dim_space'), ref('dim_building'), ref('fct_energy_daily')]

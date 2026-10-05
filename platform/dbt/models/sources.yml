@@ -1,0 +1,52 @@
+version: 2
+
+sources:
+  - name: silver
+    description: P01 silver layer (typed, deduped, UTC). Synthetic source-system extracts.
+    meta:
+      external_location: "data/lakehouse/silver/{name}/silver.parquet"
+    tables:
+      - name: space_register
+      - name: cafm_workorders
+        freshness:
+          warn_after: {count: 180, period: day}
+          error_after: {count: 365, period: day}
+        loaded_at_field: raised_ts
+      - name: meter_hh_supplierA
+        freshness:
+          warn_after: {count: 180, period: day}
+          error_after: {count: 365, period: day}
+        loaded_at_field: ts_utc
+      - name: meter_hh_supplierB
+        freshness:
+          warn_after: {count: 180, period: day}
+          error_after: {count: 365, period: day}
+        loaded_at_field: ts_utc
+      - name: bms_trends
+      - name: statutory_inspections
+      - name: timetable
+      - name: sensors
+        freshness:
+          warn_after: {count: 180, period: day}
+          error_after: {count: 365, period: day}
+        loaded_at_field: ts_utc
+
+  - name: truth
+    description: campus_synth clean truth (synthetic). Used where silver has no register (assets, meters, calendar, weather).
+    meta:
+      external_location: "data/truth/{name}.parquet"
+    tables:
+      - name: assets
+      - name: buildings
+      - name: departments
+      - name: meters
+      - name: inspection_types
+      - name: spaces
+      - name: weather
+      - name: sensors
+
+# Freshness notes: only event-time sources carry freshness checks (thresholds are
+# illustrative for the synthetic window ending 2026-03-31; tighten to ~36h for
+# real near-real-time feeds). Register-style sources (space, inspections,
+# timetable, bms, truth) have no event-time column; P02 will add ingest
+# timestamps and P03 enforces timeliness checks.

@@ -1,0 +1,73 @@
+version: 2
+
+models:
+  - name: int_current_space
+    description: Current space view (silver register conformed to canonical S-... space_id via truth master + building attributes). Rows whose room_code was quarantined in P01 are excluded here and counted in reconciliation. Synthetic.
+    columns:
+      - {name: space_id, description: Canonical space id S-..., tests: [not_null, unique]}
+      - {name: room_code, description: Room code B-... as recorded, tests: [not_null, unique]}
+      - {name: building_id, description: Building id, tests: [not_null, {relationships: {arguments: {to: ref('dim_building'), field: building_id}}}]}
+      - {name: space_category, description: Category}
+      - {name: nia_m2, description: NIA m2}
+      - {name: capacity_seats, description: Capacity}
+      - {name: building_name, description: Building name}
+      - {name: campus, description: Campus}
+      - {name: gia_m2, description: Building GIA m2}
+
+  - name: int_meter_hh_cleaned
+    description: Cleaned half-hourly meter readings (union of suppliers) with local time + working-hours flag. Synthetic.
+    columns:
+      - {name: meter_id, description: Meter id, tests: [not_null]}
+      - {name: ts_utc, description: Timestamp UTC, tests: [not_null]}
+      - {name: value_kwh, description: Interval kWh}
+      - {name: ts_local, description: London local timestamp}
+      - {name: is_working_hours, description: Mon-Fri 09-18 London flag}
+
+  - name: int_work_order_enriched
+    description: Enriched work orders (chronology, cost bands, plan category). Synthetic.
+    columns:
+      - {name: wo_id, description: Work order id, tests: [not_null, unique]}
+      - {name: asset_id, description: Asset id, tests: [not_null]}
+      - {name: space_id, description: Space id}
+      - {name: building_id, description: Building id}
+      - {name: wo_type, description: Order type}
+      - {name: priority, description: Priority}
+      - {name: raised_ts, description: Raised UTC}
+      - {name: completed_ts, description: Completed UTC}
+      - {name: status, description: Status}
+      - {name: trade, description: Trade}
+      - {name: contractor, description: Contractor}
+      - {name: labour_hours, description: Labour hours}
+      - {name: cost_gbp, description: Cost GBP}
+      - {name: days_to_complete, description: Days raised to completed}
+      - {name: is_open, description: Still open flag}
+      - {name: plan_category, description: Planned/unplanned/other}
+
+  - name: int_asset_age
+    description: Asset age and remaining-life share (safe division). Synthetic.
+    columns:
+      - {name: asset_id, description: Asset id, tests: [not_null, unique]}
+      - {name: building_id, description: Building id}
+      - {name: space_id, description: Space id}
+      - {name: asset_type, description: Asset type}
+      - {name: install_date, description: Install date}
+      - {name: expected_life_years, description: Expected life}
+      - {name: age_years, description: Age years}
+      - {name: condition_grade, description: Condition}
+      - {name: criticality, description: Criticality}
+      - {name: replacement_cost_gbp, description: Replacement cost}
+      - {name: remaining_life_pct, description: Remaining life share (null when life is zero)}
+
+unit_tests:
+  - name: test_work_order_enrichment
+    description: Enrichment logic fixture (hand-checked) - days_to_complete, open flag, planned/unplanned mapping.
+    model: int_work_order_enriched
+    given:
+      - input: ref('stg_cafm__work_order')
+        rows:
+          - {wo_id: W1, asset_id: A1, space_id: S1, building_id: B001, wo_type: PPM, priority: P2, raised_ts: "2026-01-05 09:00:00+00", completed_ts: "2026-01-07 10:00:00+00", status: Complete, trade: Mechanical, contractor: Alpha, labour_hours: 2.0, cost_gbp: 100.0}
+          - {wo_id: W2, asset_id: A2, space_id: S2, building_id: B001, wo_type: Reactive, priority: P1, raised_ts: "2026-02-01 09:00:00+00", completed_ts: null, status: Open, trade: Electrical, contractor: Beta, labour_hours: 1.5, cost_gbp: 250.0}
+    expect:
+      rows:
+        - {wo_id: W1, days_to_complete: 2, is_open: false, plan_category: planned}
+        - {wo_id: W2, days_to_complete: null, is_open: true, plan_category: unplanned}
