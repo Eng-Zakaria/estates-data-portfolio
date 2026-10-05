@@ -1,0 +1,20 @@
+{
+  "name": "Estates space (accessible)",
+  "dataColors": ["#1B4F72", "#117A65", "#7D6608", "#784212", "#4D5656", "#2E86C1", "#229954", "#CA6F1E"],
+  "background": "#FFFFFF",
+  "foreground": "#1A1A1A",
+  "tableAccent": "#1B4F72",
+  "visualStyles": {
+    "card": {
+      "*": {
+        "title": [{ "fontSize": 10, "color": "#4D5656" }],
+        "dataLabel": [{ "fontSize": 20, "color": "#1A1A1A" }]
+      }
+    },
+    "*": {
+      "*": {
+        "title": [{ "fontSize": 11, "color": "#1A1A1A" }]
+      }
+    }
+  }
+}

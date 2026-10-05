@@ -8,7 +8,7 @@
 | P03 | Data quality framework | ☐ | | |
 | P04 | dbt project | ✅ done | 2026-10-05 | dbt build green 196 pass/0 err, 147 tests+2 unit, 100% models tested, 100% cols documented, 21 contracts; see docs/ACCEPTANCE_P04.md |
 | P05 | CI/CD for data | ✅ done | 2026-10-05 | ci/nightly/docs/release/security + reusable workflows, pre-commit, gates verified locally (ruff+mypy clean, pytest 27 pass 84%, dbt 196 pass, sqlfluff+mkdocs+compose clean); human must enable Pages/protection (placeholders); see docs/ACCEPTANCE_P05.md |
-| P06 | Space utilisation | ☐ | | |
+| P06 | Space utilisation | ✅ done | 2026-10-05 | freq x occ on gold + observed occupancy, 7 calc tests, 5 validation SQL, full PBI handoff; B003 pattern weaker-form, D-ENG +285% reported as measured; see projects/p06-space-utilisation/README.md |
 | P07 | Asset & maintenance | ☐ | | |
 | P08 | Net zero & carbon | ✅ done | 2026-10-05 | scopes/intensity/pathway/baseload on gold marts, 7 calc tests, 4 validation SQL, full PBI handoff; B007 confirmed top (48.8% baseload), B019 default-only; see projects/p08-net-zero-carbon/README.md |
 | P09 | Compliance tracker | ☐ | | |

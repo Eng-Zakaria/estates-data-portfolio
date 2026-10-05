@@ -1,0 +1,76 @@
+-- P06 measures.dax — Space utilisation (synthetic). Format strings included.
+
+-- Available hours: teaching days x 9. Format: 0,0
+Available Hours =
+COUNTROWS (
+    FILTER (
+        dim_date,
+        dim_date[teaching_week] > 0
+            && dim_date[is_weekend] = FALSE ()
+            && dim_date[is_holiday] = FALSE ()
+    )
+) * 9
+
+-- Timetabled (booked) hours. Format: 0,0
+Timetabled Hours =
+SUM ( mart_space_utilisation[booked_hours] )
+
+-- Frequency %: booked / available. Format: 0.0%
+[Frequency %] =
+DIVIDE (
+    [Timetabled Hours],
+    COUNTROWS ( dim_space ) * [Available Hours]
+)
+
+-- Average occupancy % while in use. Format: 0.0%
+[Avg Occupancy %] =
+AVERAGE ( mart_space_utilisation[occupancy_rate] )
+
+-- Utilisation % = frequency x occupancy. Format: 0.0%
+[Utilisation %] =
+[Frequency %] * [Avg Occupancy %]
+
+-- No-show % of covered events (coverage-aware; unknown excluded). Format: 0.0%
+-- Requires calculated column fct_timetable_event[no_show_flag]: 1 = no-show,
+-- 0 = attended, BLANK = no sensor coverage. Build it in Power Query by
+-- translating validation/v02_rooms_to_review.sql (event-window join, max
+-- valid observed < 1.0, negatives excluded).
+[No-show %] =
+DIVIDE (
+    CALCULATE (
+        COUNTROWS ( fct_timetable_event ),
+        fct_timetable_event[no_show_flag] = 1
+    ),
+    CALCULATE (
+        COUNTROWS ( fct_timetable_event ),
+        NOT ISBLANK ( fct_timetable_event[no_show_flag] )
+    )
+)
+
+-- NIA m2. Format: 0,0
+[NIA m2] =
+SUM ( dim_space[nia_m2] )
+
+-- m2 per staff FTE. Format: 0.0
+[m2 per Staff FTE] =
+DIVIDE ( [NIA m2], SUM ( dim_department[staff_fte] ) )
+
+-- m2 per student FTE. Format: 0.0
+[m2 per Student FTE] =
+DIVIDE ( [NIA m2], SUM ( dim_department[student_fte] ) )
+
+-- Variance to median m2/FTE. Format: +0.0%;-0.0%
+[Variance to Median] =
+VAR Med =
+    MEDIANX ( VALUES ( dim_department[department_id] ), [m2 per Staff FTE] )
+RETURN
+    DIVIDE ( [m2 per Staff FTE] - Med, Med )
+
+-- Releasable m2 at target utilisation (what-if param). Format: 0,0
+[Releasable m2 (what-if)] =
+( [NIA m2] )
+    * ( 1 - DIVIDE ( [Utilisation %], [Target Utilisation Param] ) )
+
+-- Utilisation vs target (pp difference). Format: +0.0;-0.0
+[Utilisation vs Target] =
+[Utilisation %] - [Target Utilisation Param]

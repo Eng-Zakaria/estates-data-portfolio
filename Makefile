@@ -1,4 +1,4 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up iot-demo p19 p08-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up iot-demo p19 p08-run p06-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
 
 PROFILE ?= small
 SEED ?= 42
@@ -79,3 +79,6 @@ snapshots:
 p08-run:
 	$(PY) -m pytest projects/p08-net-zero-carbon/tests/ -q -p no:cacheprovider --no-cov
 	$(PY) projects/p08-net-zero-carbon/scripts/export_gold.py
+
+p06-run:
+	$(PY) -m pytest projects/p06-space-utilisation/tests/ -q -p no:cacheprovider --no-cov
