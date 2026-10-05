@@ -76,7 +76,7 @@ class RecallResult:
 
 
 def _planted(con: duckdb.DuckDBPyConnection, table: str, dtype: str) -> list[str]:
-    rows = con.execute("SELECT row_key FROM defects WHERE table = ? AND type = ?", [table, dtype]).fetchall()
+    rows = con.execute('SELECT row_key FROM defects WHERE "table" = ? AND type = ?', [table, dtype]).fetchall()
     return [str(r[0]) for r in rows]
 
 
