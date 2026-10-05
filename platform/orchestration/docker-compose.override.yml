@@ -1,0 +1,77 @@
+# P02 override on top of the vendored official compose (3.3.1, ASF header kept).
+# Adds: custom image build, repo mount, Mailpit SMTP/UI sink, fs_landing
+# connection. Run from the REPO ROOT (see Makefile airflow-* targets).
+
+x-estates-common: &estates-common
+  build:
+    context: ./platform/orchestration
+    dockerfile: Dockerfile
+  volumes:
+    # Whole repo at /opt/repo: code, dbt project, contracts, seeds.
+    - ../..:/opt/repo
+    # DAGs + task modules live (also under /opt/repo, mounted explicitly
+    # so edits are picked up without rebuilds).
+    - ./dags:/opt/airflow/dags:ro
+    - ./tasks:/opt/airflow/tasks:ro
+    - ./logs:/opt/airflow/logs
+    - ./plugins:/opt/airflow/plugins:ro
+  environment:
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    PYTHONPATH: /opt/repo/platform/orchestration:/opt/repo/platform/src:/opt/repo/packages/campus_synth/src
+    ESTATES_REPO: /opt/repo
+    ESTATES_LANDING: /opt/repo/data/landing
+    ESTATES_LAKE: /opt/repo/data/lakehouse
+    ESTATES_TRUTH: /opt/repo/data/truth
+    ESTATES_OPS_DB: /opt/repo/data/pipeline_ops.duckdb
+    ESTATES_GOLD: /opt/repo/data/gold
+    ESTATES_WAREHOUSE: /opt/repo/data/warehouse.duckdb
+    ESTATES_MAIL_HOST: mailpit
+    ESTATES_MAIL_PORT: "1025"
+    AIRFLOW_CONN_FS_LANDING: file:///opt/repo/data/landing
+  networks:
+    - estates-airflow
+
+services:
+  mailpit:
+    image: axllent/mailpit:v1.31.4
+    ports:
+      - "8025:8025" # web UI (evidence screenshots)
+      - "1025:1025" # SMTP sink for failure/digest mail
+    networks:
+      - estates-airflow
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8025/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  airflow-apiserver:
+    <<: *estates-common
+    depends_on:
+      mailpit:
+        condition: service_started
+
+  airflow-scheduler:
+    <<: *estates-common
+    depends_on:
+      mailpit:
+        condition: service_started
+
+  airflow-dag-processor:
+    <<: *estates-common
+
+  airflow-worker:
+    <<: *estates-common
+    depends_on:
+      mailpit:
+        condition: service_started
+
+  airflow-triggerer:
+    <<: *estates-common
+
+  airflow-cli:
+    <<: *estates-common
+
+networks:
+  estates-airflow:
+    driver: bridge
