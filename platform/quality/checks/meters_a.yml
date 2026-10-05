@@ -73,6 +73,7 @@ checks:
     engine: sql
     sql_checked: SELECT COUNT(DISTINCT meter_id) FROM silver_meters_a
     sql_failed: SELECT DISTINCT s.meter_id FROM silver_meters_a AS s ANTI JOIN truth_meters AS r USING (meter_id)
+    key_col: meter_id
 
   - id: ma_no_future_ts
     dataset: meters_a

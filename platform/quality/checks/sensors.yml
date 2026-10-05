@@ -50,6 +50,7 @@ checks:
     engine: gx
     expectation: ExpectColumnValuesToBeBetween
     kwargs: {column: value, min_value: 0}
+    key_col: sensor_id
 
   - id: sensors_id_known
     dataset: sensors
@@ -62,6 +63,7 @@ checks:
     engine: sql
     sql_checked: SELECT COUNT(DISTINCT sensor_id) FROM silver_sensors
     sql_failed: SELECT DISTINCT s.sensor_id FROM silver_sensors AS s ANTI JOIN truth_sensors AS r USING (sensor_id)
+    key_col: sensor_id
 
   - id: sensors_no_future_ts
     dataset: sensors

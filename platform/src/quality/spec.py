@@ -66,6 +66,7 @@ class CheckSpec(BaseModel):
     building_col: str | None = None
     by_building: bool = False
     sql_checked_by_building: str | None = None
+    key_col: str | None = None
 
     @field_validator("expectation")
     @classmethod

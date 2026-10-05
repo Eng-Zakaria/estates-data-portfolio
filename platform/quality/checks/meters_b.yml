@@ -73,6 +73,7 @@ checks:
     engine: sql
     sql_checked: SELECT COUNT(DISTINCT meter_id) FROM silver_meters_b
     sql_failed: SELECT DISTINCT s.meter_id FROM silver_meters_b AS s ANTI JOIN truth_meters AS r USING (meter_id)
+    key_col: meter_id
 
   - id: mb_no_future_ts
     dataset: meters_b
@@ -85,6 +86,7 @@ checks:
     engine: sql
     sql_checked: SELECT COUNT(*) FROM silver_meters_b
     sql_failed: SELECT meter_id, ts_utc, value FROM silver_meters_b WHERE CAST(ts_utc AS DATE) > DATE '{window_end}'
+    key_col: meter_id
 
   - id: mb_timeliness_per_meter
     dataset: meters_b

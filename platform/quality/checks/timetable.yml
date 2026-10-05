@@ -87,6 +87,7 @@ checks:
     engine: sql
     sql_checked: SELECT COUNT(*) FROM silver_timetable
     sql_failed: SELECT event_id, space_id, date FROM silver_timetable WHERE CAST(date AS DATE) > DATE '{window_end}'
+    key_col: event_id
 
   - id: tt_hours_sane
     dataset: timetable

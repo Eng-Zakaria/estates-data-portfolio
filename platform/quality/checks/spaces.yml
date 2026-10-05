@@ -89,6 +89,7 @@ checks:
     engine: gx
     expectation: ExpectColumnValuesToBeBetween
     kwargs: {column: capacity_seats, min_value: 0}
+    key_col: room_code
 
   - id: spaces_teaching_capacity
     dataset: spaces
@@ -141,6 +142,7 @@ checks:
     engine: sql
     sql_checked: SELECT COUNT(*) FROM truth_spaces
     sql_failed: SELECT t.room_code AS room_code, t.building_id AS building_id FROM truth_spaces AS t ANTI JOIN (SELECT DISTINCT Room FROM read_parquet('{lake}/bronze/space_register/*/*.parquet')) AS b ON t.room_code = b.Room
+    key_col: room_code
 
   - id: spaces_recall_nulls
     dataset: spaces

@@ -109,6 +109,7 @@ checks:
     engine: gx
     expectation: ExpectColumnValuesToBeBetween
     kwargs: {column: labour_hours, min_value: 0}
+    key_col: WO_Number
 
   - id: wo_building_known
     dataset: work_orders
