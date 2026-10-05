@@ -10,7 +10,7 @@
 | P05 | CI/CD for data | ✅ done | 2026-10-05 | ci/nightly/docs/release/security + reusable workflows, pre-commit, gates verified locally (ruff+mypy clean, pytest 27 pass 84%, dbt 196 pass, sqlfluff+mkdocs+compose clean); human must enable Pages/protection (placeholders); see docs/ACCEPTANCE_P05.md |
 | P06 | Space utilisation | ☐ | | |
 | P07 | Asset & maintenance | ☐ | | |
-| P08 | Net zero & carbon | ☐ | | |
+| P08 | Net zero & carbon | ✅ done | 2026-10-05 | scopes/intensity/pathway/baseload on gold marts, 7 calc tests, 4 validation SQL, full PBI handoff; B007 confirmed top (48.8% baseload), B019 default-only; see projects/p08-net-zero-carbon/README.md |
 | P09 | Compliance tracker | ☐ | | |
 | P10 | Mock institutional return | ☐ | | |
 | P11 | IFC → analytics | ☐ | | |

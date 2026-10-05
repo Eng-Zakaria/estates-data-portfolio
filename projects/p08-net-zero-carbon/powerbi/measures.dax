@@ -1,0 +1,85 @@
+-- P08 measures.dax — Net zero & carbon (synthetic). Format strings included.
+// Factor table (dim_emission_factor) is disconnected; TREATAS applies fuels.
+
+-- Total delivered energy. Format: 0,0 kWh
+Total Energy kWh =
+SUM ( fct_energy_daily[kwh] )
+
+-- Total location-based emissions via mart (preferred) — checks to v01.
+-- Format: 0,0 kgCO2e
+Total Emissions kgCO2e =
+SUM ( mart_carbon_monthly[kgco2e] )
+
+-- Scope 1 (gas combustion). Format: 0,0 kgCO2e
+Scope 1 kgCO2e =
+CALCULATE (
+    SUM ( mart_carbon_monthly[kgco2e] ),
+    TREATAS ( { "natural_gas" }, mart_carbon_monthly[fuel] )
+)
+
+-- Scope 2 location-based (purchased electricity). Format: 0,0 kgCO2e
+Scope 2 kgCO2e =
+CALCULATE (
+    SUM ( mart_carbon_monthly[kgco2e] ),
+    TREATAS ( { "electricity" }, mart_carbon_monthly[fuel] )
+)
+
+-- Energy intensity vs building GIA. Format: 0.000 kWh/m2
+Energy Intensity kWh per m2 =
+DIVIDE ( [Total Energy kWh], SUM ( dim_building[gia_m2] ) )
+
+-- Emissions intensity vs building GIA. Format: 0.0000 kgCO2e/m2
+Emissions Intensity kgCO2e per m2 =
+DIVIDE ( [Total Emissions kgCO2e], SUM ( dim_building[gia_m2] ) )
+
+-- Overnight baseload % (needs HH-level calc table or PBI-computed column;
+-- definition: AVG overnight-min kW / AVG daily-peak kW * 100). Format: 0.0%
+Baseload Pct =
+VAR OvernightMin =
+    AVERAGEX (
+        SUMMARIZE (
+            fct_meter_hh,
+            dim_building[building_id],
+            "ONMin", CALCULATE (
+                MINX (
+                    ADDCOLUMNS (
+                        SUMMARIZE ( fct_meter_hh, fct_meter_hh[ts_utc] ),
+                        "kW", CALCULATE ( SUM ( fct_meter_hh[value_kwh] ) ) * 2
+                    ),
+                    [kW]
+                ),
+                HOUR ( fct_meter_hh[ts_utc] ) >= 0
+                    && HOUR ( fct_meter_hh[ts_utc] ) < 5
+            )
+        ),
+        [ONMin]
+    )
+VAR DailyPeak =
+    AVERAGEX (
+        SUMMARIZE (
+            fct_meter_hh,
+            dim_building[building_id],
+            "Peak", CALCULATE ( MAX ( fct_meter_hh[value_kwh] ) ) * 2
+        ),
+        [Peak]
+    )
+RETURN
+    DIVIDE ( OvernightMin, DailyPeak ) * 100
+
+-- Variance to pathway: (actual - pathway) / pathway. BaselineAnnual and
+-- TargetYear are what-if parameters (defaults: base 2024, net zero 2040).
+-- Format: +0.0%; -0.0%
+Variance to Pathway Pct =
+VAR BaselineAnnual = [Baseline Annual kgCO2e Param]
+VAR PathwayAnnual =
+    BaselineAnnual
+        * ( 1 - DIVIDE ( YEAR ( TODAY () ) - 2024, 2040 - 2024 ) )
+RETURN
+    DIVIDE ( [Total Emissions kgCO2e] - PathwayAnnual, PathwayAnnual ) * 100
+
+-- Rolling 12-month emissions. Format: 0,0 kgCO2e
+Rolling 12M kgCO2e =
+CALCULATE (
+    [Total Emissions kgCO2e],
+    DATESINPERIOD ( dim_date[date_day], MAX ( dim_date[date_day] ), -12, MONTH )
+)

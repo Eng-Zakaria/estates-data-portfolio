@@ -5,7 +5,7 @@
 ```
 dbt build --profiles-dir platform/dbt --project-dir platform/dbt --full-refresh
 Finished running 5 exposures, 1 incremental model, 4 seeds, 2 snapshots,
-  20 table models, 147 data tests, 2 unit tests, 20 view models in ~19s.
+  20 table models, 147 data tests, 2 unit tests, 20 view models in ~15-19s.
 Done. PASS=196 WARN=0 ERROR=0 SKIP=0 NO-OP=5 TOTAL=201
 ```
 
@@ -45,8 +45,8 @@ draft and added during this build (see §5 for the orphan handling).
 | Flow | Silver / input | Mart | Δ | Explanation (all rows accounted) |
 |---|---|---|---|---|
 | space_register → `dim_space` | 495 | 495 | 0 | all room codes map to truth master |
-| meter HH → `fct_meter_hh` | 68,119 | 67,758 | −361 | 297 defect-meter rows (`M-*-*xx`, never in register) + 64 out-of-window rows (2099-01-01/02, 2026-04-01); overlap 0 |
-| `fct_meter_hh` → `fct_energy_daily` | 67,758 readings | 1,440 daily rows | n/a | aggregation grain change; `assert_no_negative_energy_daily` + date-relationship tests green |
+| meter HH → `fct_meter_hh` | 68,119 | 67,822 | −297 | 297 defect-meter rows (`M-*-*xx`, never in register) dropped by inner join; date window uses a TZ-correct UTC cast (`AT TIME ZONE 'UTC'`) so late-evening 31-Mar readings are attributed correctly — zero date drops |
+| `fct_meter_hh` → `fct_energy_daily` | 67,822 readings | 1,431 daily rows over 90 dates | n/a | aggregation grain change; `assert_no_negative_energy_daily` + date-relationship tests green |
 | timetable → `fct_timetable_event` | 12,347 | 12,026 | −321 | 286 rows in P01-quarantined spaces + 36 future-date rows (2099-01-01); overlap 1 |
 | sensors → `fct_sensor_15min` | 773,974 | 773,974 | 0 | LEFT JOIN register (no filter) |
 | occupancy → `fct_space_observed_occupancy` | 257,452 | 248,877 | −8,575 | readings in P01-quarantined spaces conformed out |
@@ -77,6 +77,11 @@ fact rows (every `fct_meter_hh` row exists in the cleaned input).
 5. **sqlfluff AM04**: expanded 9 `SELECT *` passthroughs to explicit columns;
    fixed `.sqlfluff` dbt-templater config; `profiles.yml` honours
    `DBT_DUCKDB_PATH` for out-of-root runs.
+6. **Timezone-correct date casts (follow-up refinement)**: meter/energy date
+   casts use `AT TIME ZONE 'UTC'` so late-evening 31-Mar UTC readings are not
+   misattributed to 01-Apr in positive-offset session timezones. This keeps
+   64 legitimate boundary rows that a naive cast would drop; reconciliation
+   above reflects the corrected counts (67,822 / 1,431).
 
 ## 6. Checks run
 
