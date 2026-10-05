@@ -1,4 +1,4 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up iot-demo p19 p08-run p06-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p08-run p06-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
 
 PROFILE ?= small
 SEED ?= 42
@@ -82,3 +82,34 @@ p08-run:
 
 p06-run:
 	$(PY) -m pytest projects/p06-space-utilisation/tests/ -q -p no:cacheprovider --no-cov
+
+AF_COMPOSE = ENV_FILE_PATH=.env docker compose --env-file platform/orchestration/.env --project-directory platform/orchestration -f platform/orchestration/docker-compose.yml -f platform/orchestration/docker-compose.override.yml
+
+airflow-build:
+	test -f platform/orchestration/.env || cp platform/orchestration/.env.example platform/orchestration/.env
+	grep -q '^FERNET_KEY=' platform/orchestration/.env || ($(PY) -c "from cryptography.fernet import Fernet; print('FERNET_KEY='+Fernet.generate_key().decode())" >> platform/orchestration/.env)
+	$(AF_COMPOSE) build
+
+airflow-up: airflow-build
+	$(AF_COMPOSE) up airflow-init
+	$(AF_COMPOSE) up -d
+	$(AF_COMPOSE) exec -T airflow-scheduler airflow pools set ingest_pool 4 "P02 ingest concurrency" || true
+	$(AF_COMPOSE) exec -T airflow-scheduler airflow pools set dbt_pool 1 "P02 dbt serial" || true
+	@echo "Airflow UI: http://localhost:8080  Mailpit: http://localhost:8025"
+
+airflow-ps:
+	$(AF_COMPOSE) ps
+
+airflow-logs:
+	$(AF_COMPOSE) logs -f airflow-scheduler
+
+airflow-down:
+	$(AF_COMPOSE) down
+
+airflow-pools:
+	$(AF_COMPOSE) exec -T airflow-scheduler airflow pools set ingest_pool 4 "P02 ingest concurrency"
+	$(AF_COMPOSE) exec -T airflow-scheduler airflow pools set dbt_pool 1 "P02 dbt serial"
+
+airflow-backfill:
+	$(AF_COMPOSE) exec -T airflow-scheduler airflow dags backfill ingest_meter_hh -s 2026-02-01 -e 2026-03-02 --rerun-failed-tasks
+	$(PY) platform/orchestration/scripts/export_runs.py
