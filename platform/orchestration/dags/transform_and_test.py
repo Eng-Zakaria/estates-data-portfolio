@@ -44,7 +44,6 @@ with DAG(
     max_active_runs=MAX_ACTIVE_RUNS,
     default_args={**DEFAULT_ARGS, "pool": "dbt_pool", "execution_timeout": timedelta(hours=1)},
     tags=COMMON_TAGS + ["dbt", "gold"],
-    owner=OWNER,
     doc_md=__doc__,
 ) as dag:
     dbt = PythonOperator(task_id="dbt_build", python_callable=_dbt)

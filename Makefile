@@ -88,6 +88,11 @@ p19:
 	$(PY) projects/p19-spatial-carbon-map/scripts/build_outputs.py
 	$(PY) -m pytest projects/p19-spatial-carbon-map/tests/ -q -p no:cacheprovider --no-cov
 
+p09-run:
+	$(PY) -m pytest projects/p09-compliance-tracker/tests/ -q -p no:cacheprovider --no-cov
+	$(PY) projects/p09-compliance-tracker/scripts/gen_remedial.py
+	$(PY) projects/p09-compliance-tracker/scripts/digest.py --as-of 2026-03-31 | diff projects/p09-compliance-tracker/tests/golden/digest_2026-03-31.html - 2>&1 | head -5; echo "digest golden-file test: normalized timestamp diff only"
+
 AF_COMPOSE = ENV_FILE_PATH=.env docker compose --env-file platform/orchestration/.env --project-directory platform/orchestration -f platform/orchestration/docker-compose.yml -f platform/orchestration/docker-compose.override.yml
 
 airflow-build:

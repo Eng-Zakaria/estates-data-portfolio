@@ -48,7 +48,6 @@ with DAG(
     max_active_runs=MAX_ACTIVE_RUNS,
     default_args={**DEFAULT_ARGS, "pool": "ingest_pool"},
     tags=COMMON_TAGS + ["meters"],
-    owner=OWNER,
     doc_md=__doc__,
 ) as dag:
     list_files = PythonOperator(task_id="list_meter_files", python_callable=_list_meter_files)

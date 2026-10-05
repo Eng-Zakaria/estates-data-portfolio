@@ -43,7 +43,6 @@ with DAG(
     max_active_runs=MAX_ACTIVE_RUNS,
     default_args=DEFAULT_ARGS,
     tags=COMMON_TAGS + ["dq"],
-    owner=OWNER,
     doc_md=__doc__,
 ) as dag:
     digest = PythonOperator(task_id="dq_digest_email", python_callable=_digest)

@@ -28,8 +28,6 @@ x-estates-common: &estates-common
     ESTATES_MAIL_HOST: mailpit
     ESTATES_MAIL_PORT: "1025"
     AIRFLOW_CONN_FS_LANDING: file:///opt/repo/data/landing
-  networks:
-    - estates-airflow
 
 services:
   mailpit:
@@ -37,8 +35,6 @@ services:
     ports:
       - "8025:8025" # web UI (evidence screenshots)
       - "1025:1025" # SMTP sink for failure/digest mail
-    networks:
-      - estates-airflow
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8025/"]
       interval: 10s
@@ -50,28 +46,54 @@ services:
     depends_on:
       mailpit:
         condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   airflow-scheduler:
     <<: *estates-common
     depends_on:
       mailpit:
         condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   airflow-dag-processor:
     <<: *estates-common
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   airflow-worker:
     <<: *estates-common
     depends_on:
       mailpit:
         condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   airflow-triggerer:
     <<: *estates-common
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   airflow-cli:
     <<: *estates-common
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
-networks:
-  estates-airflow:
-    driver: bridge
+# Use the default project network (orchestration_default) so all services
+# can resolve each other by service name. Do NOT define a custom network.

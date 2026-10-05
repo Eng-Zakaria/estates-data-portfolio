@@ -24,7 +24,6 @@ with DAG(
     max_active_runs=MAX_ACTIVE_RUNS,
     default_args=DEFAULT_ARGS,
     tags=COMMON_TAGS + ["ops"],
-    owner=OWNER,
     doc_md=__doc__,
 ) as dag:
     clean = PythonOperator(task_id="archive_and_prune", python_callable=_housekeep)

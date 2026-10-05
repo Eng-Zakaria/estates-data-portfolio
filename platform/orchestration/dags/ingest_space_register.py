@@ -56,7 +56,6 @@ with DAG(
     max_active_runs=MAX_ACTIVE_RUNS,
     default_args=DEFAULT_ARGS,
     tags=COMMON_TAGS + ["space"],
-    owner=OWNER,
     doc_md=__doc__,
 ) as dag:
     wait_for_file = FileSensor(
