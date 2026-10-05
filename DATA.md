@@ -9,6 +9,7 @@
 
 | GHG Protocol Corporate Standard (scope definitions) | https://ghgprotocol.org/corporate-standard | Publicly available guidance; referenced here, not reproduced — check terms before redistributing excerpts | Current (cited 2026-10-05) | 2026-10-05 | P08 `methodology.md`: Scope 1/2 definitions. |
 | GHG Protocol Scope 2 Guidance | https://ghgprotocol.org/scope-2-guidance | Publicly available guidance; referenced here, not reproduced — check terms before redistributing excerpts | Current (cited 2026-10-05) | 2026-10-05 | P08 location-based vs market-based reporting rule. |
+| OpenStreetMap building footprints (Exeter Streatham area extract) | https://www.openstreetmap.org/copyright | ODbL (© OpenStreetMap contributors) | Live extract 2026-10-05 | 2026-10-05 | P19 footprint geometry only (names anonymised); fetched by `scripts/fetch_osm.py`, cached in `data/` (not committed). |
 
 ## Planned external sources (later projects, not yet fetched)
 

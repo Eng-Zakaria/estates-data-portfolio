@@ -21,5 +21,5 @@
 | P16 | Energy anomaly detection | ☐ | | |
 | P17 | Air quality & occupancy | ☐ | | |
 | P18 | Digital twin data layer | ☐ | | |
-| P19 | Spatial analysis | ☐ | | |
+| P19 | Spatial analysis | ✅ done | 2026-10-05 | OSM footprints + synthetic metrics, area-rank match, 8 buildings, 4 heat clusters, 5/10-min isochrones, outputs: gpkg/geojson/topojson/png/folium/qml/csv + PBI map handoff; see projects/p19-spatial-carbon-map/README.md |
 | P20 | Governance & literacy pack | ☐ | | |

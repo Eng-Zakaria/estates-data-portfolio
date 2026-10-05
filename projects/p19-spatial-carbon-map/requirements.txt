@@ -1,0 +1,9 @@
+geopandas==1.2.0
+shapely==2.1.1
+pyproj==3.7.2
+osmnx==2.1.1
+folium==0.20.0
+matplotlib==3.10.6
+topojson==1.8
+# Pinned to the verified environment (2026-10-05). Install with:
+#   pip install -r projects/p19-spatial-carbon-map/requirements.txt
