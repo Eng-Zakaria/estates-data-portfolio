@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import duckdb
 import pytest
-
 from quality import gxcompile
 from quality.spec import CheckSpec, load_checks
 

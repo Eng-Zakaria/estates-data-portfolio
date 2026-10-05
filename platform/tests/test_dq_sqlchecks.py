@@ -9,7 +9,6 @@ from __future__ import annotations
 import duckdb
 import pandas as pd
 import pytest
-
 from quality import sqlchecks
 from quality.spec import CheckSpec, load_checks
 
