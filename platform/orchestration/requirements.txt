@@ -1,6 +1,7 @@
 # P02 image requirements (Linux pins matching the dev host, 2026-10-06).
-# airflow + providers-standard come from the base image; constraints file
-# (see Dockerfile) keeps the rest coherent.
+# airflow + providers-standard come from the base image; apache-airflow is
+# pinned here only to prevent pip from up/downgrading it (documented pattern).
+apache-airflow==3.3.1
 numpy==2.3.1
 pandas==2.3.1
 pyarrow==21.0.0

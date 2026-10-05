@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 USER airflow
 COPY requirements.txt /tmp/requirements.txt
-# --constraint keeps provider pins coherent with the base image.
-RUN pip install --no-cache-dir --constraint \
-    "https://raw.githubusercontent.com/apache/airflow/constraints-3.3.1/constraints-3.12.txt" \
-    -r /tmp/requirements.txt
+# NOTE: constraints files are only for the apache-airflow install step itself
+# (see the constraints header). Our layer installs without constraints but pins
+# apache-airflow==3.3.1 in requirements to prevent accidental up/downgrade.
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
