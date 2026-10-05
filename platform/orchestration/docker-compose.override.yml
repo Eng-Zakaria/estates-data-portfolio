@@ -4,7 +4,7 @@
 
 x-estates-common: &estates-common
   build:
-    context: ./platform/orchestration
+    context: .
     dockerfile: Dockerfile
   volumes:
     # Whole repo at /opt/repo: code, dbt project, contracts, seeds.
