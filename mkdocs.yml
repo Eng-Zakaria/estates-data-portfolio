@@ -1,0 +1,24 @@
+site_name: Estates Data Portfolio (synthetic)
+site_description: Synthetic University Estates data portfolio — pipelines, dbt marts, data quality, CI.
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Acceptance:
+      - Foundation: ACCEPTANCE_F.md
+      - P01 lakehouse: ACCEPTANCE_P01.md
+      - P05 CI/CD: ACCEPTANCE_P05.md
+  - CI demo: ci-demo.md
+  - Branch protection: branch-protection.md
+  - Open questions: OPEN_QUESTIONS.md
+  - Plans:
+      - P01 plan: PLAN_P01.md
+      - P04 plan: PLAN_P04.md
+      - P05 plan: PLAN_P05.md
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format

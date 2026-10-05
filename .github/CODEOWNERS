@@ -1,0 +1,6 @@
+# P05 code ownership. Replace @YOUR-ORG/estates-owners with the real team
+# once the repo is pushed (see docs/branch-protection.md).
+* @YOUR-ORG/estates-owners
+platform/ @YOUR-ORG/estates-owners
+infra/terraform/ @YOUR-ORG/estates-owners
+.github/workflows/ @YOUR-ORG/estates-owners

@@ -1,22 +1,83 @@
 name: ci
+
+# P05 data-platform gate: lint + type + test + small-profile data -> ingest ->
+# dbt build -> DQ gate, plus terraform/docker/airflow/docs checks.
+# P02 (Airflow) and P03 (DQ framework) steps skip with a notice until those
+# projects land; the skip is explicit, never silent.
+
 on:
   push:
     branches: [main]
   pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
       - uses: astral-sh/setup-uv@v3
-      - run: uv sync --group dev || pip install -e ".[dev]"
-      - run: ruff check . && ruff format --check .
-      - run: mypy packages/campus_synth/src/campus_synth
-      - run: pytest -q
-      - run: python -m campus_synth.cli generate --profile small --seed 42 --out data/raw --defects 0.03
+
+      - name: Install package (dev extras, pinned)
+        run: |
+          uv pip install --system -e ".[dev]" || pip install -e ".[dev]"
+
+      - name: Ruff lint + format check
+        run: ruff check . && ruff format --check .
+
+      - name: Mypy (shared packages)
+        run: mypy packages/campus_synth/src/campus_synth platform/src/ingest
+
+      - name: Pytest with coverage gate (>= 80% core)
+        run: pytest -q --cov-fail-under=80
+
+      - name: Generate small-profile synthetic data
+        run: python -m campus_synth.cli generate --profile small --seed 42 --out data/raw --defects 0.03
+
+      - name: Ingest bronze -> silver + reconcile
+        run: |
+          python -m ingest.cli run-all --raw data/raw --out data/lakehouse --truth data/truth
+          python -m ingest.cli reconcile --raw data/raw --out data/lakehouse
+
+      - name: dbt build (seeds, snapshots, marts, 130+ tests)
+        run: dbt build --profiles-dir platform/dbt --project-dir platform/dbt --target dev
+
+      - name: DQ gate (fail on error severity)
+        run: python .github/scripts/dq_gate.py
+
+      - name: sqlfluff (dbt models + macros)
+        run: sqlfluff lint platform/dbt/models platform/dbt/macros
+
+      - name: Terraform fmt + validate
+        uses: hashicorp/setup-terraform@v3
+      - run: terraform -chdir=infra/terraform fmt -check && terraform -chdir=infra/terraform init -backend=false && terraform -chdir=infra/terraform validate
+
+      - name: TFLint
+        uses: terraform-linters/setup-tflint@v4
+      - run: tflint --chdir=infra/terraform --init && tflint --chdir=infra/terraform
+
+      - name: Docker compose config check
+        run: docker compose config --quiet
+
+      - name: Airflow DagBag import test (P02 hook)
+        run: |
+          if [ -d platform/orchestration/dags ]; then
+            python -m pytest platform/orchestration/tests/test_dagbag.py -q
+          else
+            echo "SKIP: platform/orchestration not built yet (P02). Remove this guard when P02 lands."
+          fi
+
+      - name: MkDocs strict build
+        run: mkdocs build --strict

@@ -1,0 +1,30 @@
+name: reusable lint+test
+
+# P05 reusable workflow shared by projects that need lint + test.
+# Usage:
+#   jobs:
+#     call:
+#       uses: ./.github/workflows/_reusable.yml
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
+        default: "3.12"
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - uses: astral-sh/setup-uv@v3
+      - run: uv pip install --system -e ".[dev]" || pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy packages/campus_synth/src/campus_synth platform/src/ingest
+      - run: pytest -q --cov-fail-under=80

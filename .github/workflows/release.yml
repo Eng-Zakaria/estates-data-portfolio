@@ -1,0 +1,42 @@
+name: release
+
+# P05 release flow: on tag v*, build packages, draft a changelog from
+# conventional commits since the previous tag, attach artefacts.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build distributions
+        run: |
+          pip install build
+          python -m build
+      - name: Changelog from conventional commits
+        run: |
+          PREV="$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo '')"
+          if [ -z "$PREV" ]; then RANGE="HEAD"; else RANGE="$PREV..HEAD"; fi
+          {
+            echo "## Changes ($RANGE)"
+            echo ""
+            git log "$RANGE" --pretty=format:'- %s (%h)' --reverse
+            echo ""
+          } > CHANGELOG_RELEASE.md
+          cat CHANGELOG_RELEASE.md
+      - name: Create GitHub release with artefacts
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: CHANGELOG_RELEASE.md
+          files: dist/*

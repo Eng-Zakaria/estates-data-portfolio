@@ -19,7 +19,17 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "pytest-cov>=5", "ruff>=0.4", "mypy>=1.10"]
+dev = [
+  "pytest>=8",
+  "pytest-cov>=5",
+  "ruff>=0.4",
+  "mypy>=1.10",
+  # P04/P05 pins (verified 2026-10-04; keep in sync with docs/PLAN_P05.md)
+  "dbt-duckdb==1.10.1",
+  "sqlfluff==4.4.0",
+  "mkdocs-material>=9.5",
+  "pip-audit>=2.7",
+]
 
 [project.scripts]
 campus-synth = "campus_synth.cli:app"

@@ -1,5 +1,11 @@
 # Estates Data Portfolio (synthetic)
 
+<!-- P05 badges: replace YOUR-ORG/estates-data-portfolio with the real remote. -->
+[![ci](https://github.com/YOUR-ORG/estates-data-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR-ORG/estates-data-portfolio/actions/workflows/ci.yml)
+[![nightly](https://github.com/YOUR-ORG/estates-data-portfolio/actions/workflows/nightly.yml/badge.svg)](https://github.com/YOUR-ORG/estates-data-portfolio/actions/workflows/nightly.yml)
+[![security](https://github.com/YOUR-ORG/estates-data-portfolio/actions/workflows/security.yml/badge.svg)](https://github.com/YOUR-ORG/estates-data-portfolio/actions/workflows/security.yml)
+[![docs](https://github.com/YOUR-ORG/estates-data-portfolio/actions/workflows/docs.yml/badge.svg)](https://github.com/YOUR-ORG/estates-data-portfolio/actions/workflows/docs.yml)
+
 > **All data in this portfolio is synthetic or from public open sources. No real university, building performance, or compliance status is implied. Every chart carries a "Synthetic data for portfolio demonstration" footer.**
 
 A portfolio of 20 data projects demonstrating University Estates Data Analyst skills: pipelines, space/asset/meter/BIM integration, Power BI reporting, data quality, standards, sustainability.
@@ -41,7 +47,13 @@ python -m campus_synth.cli snapshots --weeks 12 --out data/raw_snapshots
 
 ## Status
 
-See `STATUS.md`. Foundation is the only project in progress.
+See `STATUS.md`. Done: Foundation (`campus_synth`), P01 (lakehouse),
+P05 (CI/CD). P04 dbt models build green; its docs/acceptance are still to land.
+
+CI (`ci.yml`) runs on every PR and `main` push: lint + type + tests +
+small-profile data → ingest → `dbt build` → DQ gate, plus terraform, Docker,
+Airflow-hook and docs checks. Nightly full-profile runs, security scans and
+Pages docs are separate workflows (see `docs/ACCEPTANCE_P05.md`).
 
 ## Provenance
 

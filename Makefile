@@ -1,4 +1,4 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up iot-demo p19 aws-plan aws-apply aws-destroy
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up iot-demo p19 aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
 
 PROFILE ?= small
 SEED ?= 42
@@ -27,6 +27,27 @@ typecheck:
 
 ci: lint typecheck test
 	$(PY) -m campus_synth.cli generate --profile small --seed 42 --out data/raw --defects 0.03
+	$(PY) -m ingest.cli run-all --raw $(OUT) --out $(LAKE) --truth data/truth
+	$(PY) -m ingest.cli reconcile --raw $(OUT) --out $(LAKE)
+	dbt build --profiles-dir platform/dbt --project-dir platform/dbt --target dev
+	$(PY) .github/scripts/dq_gate.py
+	cd platform/dbt && DBT_DUCKDB_PATH=../../data/warehouse.duckdb sqlfluff lint models macros tests snapshots
+	docker compose config --quiet
+
+dbt-build:
+	dbt build --profiles-dir platform/dbt --project-dir platform/dbt --target dev
+
+dbt-test:
+	dbt test --profiles-dir platform/dbt --project-dir platform/dbt --target dev
+
+dbt-docs:
+	dbt docs generate --profiles-dir platform/dbt --project-dir platform/dbt --target dev
+
+dq-check:
+	$(PY) .github/scripts/dq_gate.py
+
+security:
+	$(PY) -m pip_audit --desc on --aliases on 2>/dev/null || pip-audit --desc on --aliases on
 
 docs:
 	mkdocs build --strict 2>&1 || echo "mkdocs not configured yet (P20)"
