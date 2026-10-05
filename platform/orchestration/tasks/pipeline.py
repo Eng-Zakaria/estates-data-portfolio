@@ -14,7 +14,7 @@ import shutil
 import smtplib
 import subprocess
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.message import EmailMessage
 from pathlib import Path
 
@@ -43,7 +43,7 @@ SOURCE_FILE_PATTERNS = {
 
 
 def utcnow_iso() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
 def list_landing_files(source: str, landing: Path = LANDING) -> list[str]:
@@ -82,12 +82,10 @@ def check_schema_drift(source: str, path: str) -> dict:
     try:
         actual = [str(c) for c in read_header_columns(path)]
     except Exception as exc:
-        return {"source": source, "file": path, "drift": True, "error": str(exc),
-                "added": [], "missing": expected}
+        return {"source": source, "file": path, "drift": True, "error": str(exc), "added": [], "missing": expected}
     added = [c for c in actual if c not in expected]
     missing = [c for c in expected if c not in actual]
-    return {"source": source, "file": path, "drift": bool(added or missing),
-            "added": added, "missing": missing}
+    return {"source": source, "file": path, "drift": bool(added or missing), "added": added, "missing": missing}
 
 
 def quarantine_landing_file(source: str, path: str, reason: str) -> str:
@@ -95,9 +93,7 @@ def quarantine_landing_file(source: str, path: str, reason: str) -> str:
     dest_dir.mkdir(parents=True, exist_ok=True)
     dest = dest_dir / f"{Path(path).stem}__quarantined{Path(path).suffix}"
     shutil.move(path, dest)
-    (dest_dir / f"{dest.stem}.reason.txt").write_text(
-        f"{utcnow_iso()} {reason}\n", encoding="utf-8"
-    )
+    (dest_dir / f"{dest.stem}.reason.txt").write_text(f"{utcnow_iso()} {reason}\n", encoding="utf-8")
     return str(dest)
 
 
@@ -112,10 +108,16 @@ def ingest_file(source: str, path: str, lake: Path = LAKE, truth: Path = TRUTH) 
     silver_n, quar_n = (0, 0)
     if entry.get("status") != "skipped":
         silver_n, quar_n = _run_silver_one(source, root, truth / "buildings.parquet")
-    return {"source": source, "file": path, "bronze_dest": str(dest),
-            "bronze_status": entry.get("status"), "bronze_rows": entry.get("rows"),
-            "silver_rows": silver_n, "quarantine_rows": quar_n,
-            "duration_s": round(time.monotonic() - t0, 2)}
+    return {
+        "source": source,
+        "file": path,
+        "bronze_dest": str(dest),
+        "bronze_status": entry.get("status"),
+        "bronze_rows": entry.get("rows"),
+        "silver_rows": silver_n,
+        "quarantine_rows": quar_n,
+        "duration_s": round(time.monotonic() - t0, 2),
+    }
 
 
 def load_watermark(source: str) -> dict:
@@ -156,10 +158,18 @@ def record_run(row: dict, db_path: Path = OPS_DB) -> None:
     try:
         con.execute(
             "INSERT INTO ops.pipeline_runs VALUES (?,?,?,?,?,?,?,?,?,?)",
-            [row.get("dag_id"), row.get("task_id"), row.get("run_id"),
-             row.get("data_interval_start"), row.get("status"),
-             row.get("duration_s"), row.get("rows_in"), row.get("rows_out"),
-             row.get("error"), utcnow_iso()],
+            [
+                row.get("dag_id"),
+                row.get("task_id"),
+                row.get("run_id"),
+                row.get("data_interval_start"),
+                row.get("status"),
+                row.get("duration_s"),
+                row.get("rows_in"),
+                row.get("rows_out"),
+                row.get("error"),
+                utcnow_iso(),
+            ],
         )
     finally:
         con.close()
@@ -183,37 +193,56 @@ def send_alert(subject: str, body: str) -> bool:
 def run_dbt_build(repo: Path = REPO) -> dict:
     t0 = time.monotonic()
     proc = subprocess.run(
-        ["dbt", "build", "--profiles-dir", "platform/dbt",
-         "--project-dir", "platform/dbt", "--target", "dev"],
-        cwd=str(repo), capture_output=True, text=True,
+        ["dbt", "build", "--profiles-dir", "platform/dbt", "--project-dir", "platform/dbt", "--target", "dev"],
+        cwd=str(repo),
+        capture_output=True,
+        text=True,
     )
-    return {"returncode": proc.returncode, "duration_s": round(time.monotonic() - t0, 1),
-            "tail": (proc.stdout + proc.stderr)[-2000:]}
+    return {
+        "returncode": proc.returncode,
+        "duration_s": round(time.monotonic() - t0, 1),
+        "tail": (proc.stdout + proc.stderr)[-2000:],
+    }
 
 
 def dq_checkpoint(repo: Path = REPO) -> dict:
     """P03 hook: run the quality gate when platform/quality lands, else skip loudly."""
     runner = repo / "platform" / "quality" / "run.py"
     if not runner.exists():
-        return {"status": "skipped",
-                "notice": "platform/quality not built yet (P03); gate enforced by P05 dq_gate."}
-    proc = subprocess.run(["python", str(runner), "--fail-on", "error"],
-                          cwd=str(repo), capture_output=True, text=True)
-    return {"status": "pass" if proc.returncode == 0 else "fail",
-            "returncode": proc.returncode, "tail": (proc.stdout + proc.stderr)[-2000:]}
+        return {"status": "skipped", "notice": "platform/quality not built yet (P03); gate enforced by P05 dq_gate."}
+    proc = subprocess.run(["python", str(runner), "--fail-on", "error"], cwd=str(repo), capture_output=True, text=True)
+    return {
+        "status": "pass" if proc.returncode == 0 else "fail",
+        "returncode": proc.returncode,
+        "tail": (proc.stdout + proc.stderr)[-2000:],
+    }
 
 
 def publish_gold(
-    warehouse: Path = WAREHOUSE_DB, gold_dir: Path = GOLD_DIR,
+    warehouse: Path = WAREHOUSE_DB,
+    gold_dir: Path = GOLD_DIR,
 ) -> dict:
     """Export contracted mart tables to data/gold for the P06-P10 handoffs."""
     import duckdb
 
-    tables = ["dim_building", "dim_space", "dim_asset", "dim_meter", "dim_date",
-              "fct_meter_hh", "fct_energy_daily", "fct_work_order", "fct_inspection",
-              "fct_timetable_event", "fct_sensor_15min", "mart_space_utilisation",
-              "mart_asset_health", "mart_carbon_monthly", "mart_compliance_status",
-              "mart_dq_scorecard"]
+    tables = [
+        "dim_building",
+        "dim_space",
+        "dim_asset",
+        "dim_meter",
+        "dim_date",
+        "fct_meter_hh",
+        "fct_energy_daily",
+        "fct_work_order",
+        "fct_inspection",
+        "fct_timetable_event",
+        "fct_sensor_15min",
+        "mart_space_utilisation",
+        "mart_asset_health",
+        "mart_carbon_monthly",
+        "mart_compliance_status",
+        "mart_dq_scorecard",
+    ]
     gold_dir.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect(str(warehouse), read_only=True)
     exported = {}
@@ -231,8 +260,10 @@ def publish_gold(
 
 
 def housekeeping(
-    landing: Path = LANDING, lake: Path = LAKE,
-    landing_retention_days: int = 30, ops_retention_days: int = 90,
+    landing: Path = LANDING,
+    lake: Path = LAKE,
+    landing_retention_days: int = 30,
+    ops_retention_days: int = 90,
     db_path: Path = OPS_DB,
 ) -> dict:
     """Archive old landing files; prune ops history. Returns counts."""
@@ -247,7 +278,7 @@ def housekeeping(
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(str(path), str(dest))
             archived += 1
-    cutoff = (dt.datetime.now(timezone.utc) - dt.timedelta(days=ops_retention_days)).isoformat()
+    cutoff = (dt.datetime.now(dt.UTC) - dt.timedelta(days=ops_retention_days)).isoformat()
     con = ops_connect(db_path)
     try:
         con.execute("DELETE FROM ops.pipeline_runs WHERE ts < ?", [cutoff])

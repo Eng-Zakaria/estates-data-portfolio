@@ -9,8 +9,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 from airflow.providers.standard.operators.python import PythonOperator
-from airflow.sdk import Asset, DAG
-
+from airflow.sdk import DAG, Asset
 from common import COMMON_TAGS, DEFAULT_ARGS, MAX_ACTIVE_RUNS, OWNER
 from tasks.pipeline import dq_checkpoint, publish_gold, run_dbt_build
 

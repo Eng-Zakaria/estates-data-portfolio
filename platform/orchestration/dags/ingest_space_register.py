@@ -8,8 +8,7 @@ from __future__ import annotations
 
 from airflow.providers.standard.operators.python import PythonOperator
 from airflow.providers.standard.sensors.filesystem import FileSensor
-from airflow.sdk import Asset, DAG
-
+from airflow.sdk import DAG, Asset
 from common import COMMON_TAGS, DEFAULT_ARGS, MAX_ACTIVE_RUNS, OWNER
 from tasks.pipeline import (
     LANDING,
@@ -35,8 +34,7 @@ def _drift_check(**context) -> dict:
     report = check_schema_drift(SOURCE, files[0])
     if report.get("drift") or report.get("error"):
         dest = quarantine_landing_file(SOURCE, files[0], f"schema drift: {report}")
-        send_alert(f"{SOURCE} schema drift quarantined",
-                   f"file={files[0]}\nquarantined_to={dest}\ndrift={report}")
+        send_alert(f"{SOURCE} schema drift quarantined", f"file={files[0]}\nquarantined_to={dest}\ndrift={report}")
         return {"status": "quarantined", "dest": dest, "drift": report}
     return {"status": "ok", "file": files[0], "drift": report}
 

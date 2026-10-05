@@ -10,7 +10,6 @@ import json
 
 from airflow.providers.standard.operators.python import PythonOperator
 from airflow.sdk import DAG
-
 from common import COMMON_TAGS, DEFAULT_ARGS, MAX_ACTIVE_RUNS, OWNER
 from tasks.pipeline import LAKE, REPO, send_alert
 
@@ -30,9 +29,7 @@ def _digest(**context) -> dict:
         if recon_file.exists():
             report = json.loads(recon_file.read_text(encoding="utf-8"))
             for row in report:
-                lines.append(
-                    f"  - {row.get('source')}: silver+quarantine reconciled={row.get('pass')}"
-                )
+                lines.append(f"  - {row.get('source')}: silver+quarantine reconciled={row.get('pass')}")
         lines.append("NOTE: platform/quality not built yet (P03); full scorecard pending.")
     body = "\n".join(lines)
     mailed = send_alert("DQ daily digest", body)

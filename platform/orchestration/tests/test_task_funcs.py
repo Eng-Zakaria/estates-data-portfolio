@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import duckdb
 import pandas as pd
-
 from tasks.pipeline import (
     check_schema_drift,
+    contract_columns,
     housekeeping,
     load_watermark,
     new_files_since,
@@ -16,7 +16,6 @@ from tasks.pipeline import (
     save_watermark,
     send_alert,
 )
-from tasks.pipeline import contract_columns
 
 
 def _write_csv(path, columns, rows=2):
@@ -71,8 +70,9 @@ def test_watermark_roundtrip_and_new_files(tmp_path, monkeypatch):
     (landing / "cafm_workorders_001.csv").write_text("a\n1\n", encoding="utf-8")
     wm = load_watermark("cafm_workorders")
     assert new_files_since("cafm_workorders", wm, landing) != []
-    save_watermark("cafm_workorders", {"source": "cafm_workorders",
-                                       "files": [str(landing / "cafm_workorders_001.csv")]})
+    save_watermark(
+        "cafm_workorders", {"source": "cafm_workorders", "files": [str(landing / "cafm_workorders_001.csv")]}
+    )
     wm2 = load_watermark("cafm_workorders")
     assert new_files_since("cafm_workorders", wm2, landing) == []
 
@@ -81,9 +81,20 @@ def test_ops_store_records_runs(tmp_path):
     # NOTE: db filename must not stem to `ops` (DuckDB catalog/schema clash
     # with the ops.pipeline_runs schema name).
     db = tmp_path / "pipeline_ops.duckdb"
-    record_run({"dag_id": "d", "task_id": "t", "run_id": "r1",
-                "data_interval_start": "2026-01-01", "status": "success",
-                "duration_s": 1.5, "rows_in": 10, "rows_out": 9, "error": None}, db)
+    record_run(
+        {
+            "dag_id": "d",
+            "task_id": "t",
+            "run_id": "r1",
+            "data_interval_start": "2026-01-01",
+            "status": "success",
+            "duration_s": 1.5,
+            "rows_in": 10,
+            "rows_out": 9,
+            "error": None,
+        },
+        db,
+    )
     con = duckdb.connect(str(db), read_only=True)
     try:
         rows = con.execute("SELECT dag_id, status, rows_in FROM ops.pipeline_runs").fetchall()
@@ -108,6 +119,7 @@ def test_send_alert_never_raises_on_bad_host(monkeypatch):
 def test_housekeeping_archives_old_files(tmp_path, monkeypatch):
     import os
     import time
+
     import tasks.pipeline as pipe
 
     landing = tmp_path / "landing"

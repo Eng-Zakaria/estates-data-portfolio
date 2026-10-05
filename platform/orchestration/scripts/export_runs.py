@@ -23,10 +23,7 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect(str(db), read_only=True)
     try:
-        con.execute(
-            "COPY (SELECT * FROM ops.pipeline_runs ORDER BY ts) "
-            f"TO '{out}' (HEADER, DELIMITER ',')"
-        )
+        con.execute(f"COPY (SELECT * FROM ops.pipeline_runs ORDER BY ts) TO '{out}' (HEADER, DELIMITER ',')")
         n = con.execute("SELECT COUNT(*) FROM ops.pipeline_runs").fetchone()[0]
     finally:
         con.close()

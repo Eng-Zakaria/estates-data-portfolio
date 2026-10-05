@@ -7,8 +7,7 @@ reruns safe even if the watermark lags.
 from __future__ import annotations
 
 from airflow.providers.standard.operators.python import PythonOperator
-from airflow.sdk import Asset, DAG
-
+from airflow.sdk import DAG, Asset
 from common import COMMON_TAGS, DEFAULT_ARGS, MAX_ACTIVE_RUNS, OWNER
 from tasks.pipeline import (
     check_schema_drift,
@@ -33,8 +32,7 @@ def _ingest_one(path: str) -> dict:
     drift = check_schema_drift(SOURCE, path)
     if drift.get("drift") or drift.get("error"):
         dest = quarantine_landing_file(SOURCE, path, f"schema drift: {drift}")
-        send_alert(f"{SOURCE} schema drift quarantined",
-                   f"file={path}\nquarantined_to={dest}\ndrift={drift}")
+        send_alert(f"{SOURCE} schema drift quarantined", f"file={path}\nquarantined_to={dest}\ndrift={drift}")
         return {"status": "quarantined", "file": path}
     return ingest_file(SOURCE, path)
 

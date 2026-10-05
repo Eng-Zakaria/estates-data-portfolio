@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from airflow.providers.standard.operators.python import PythonOperator
 from airflow.sdk import DAG
-
 from common import COMMON_TAGS, DEFAULT_ARGS, MAX_ACTIVE_RUNS, OWNER
 from tasks.pipeline import housekeeping
 

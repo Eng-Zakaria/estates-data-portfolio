@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 from airflow.providers.standard.operators.python import PythonOperator
-from airflow.sdk import Asset, DAG
-
+from airflow.sdk import DAG, Asset
 from common import COMMON_TAGS, DEFAULT_ARGS, MAX_ACTIVE_RUNS, OWNER
 from tasks.pipeline import (
     LANDING,
@@ -29,8 +28,7 @@ def _ingest_mapped(op_kwargs: dict | None = None, **context) -> dict:
     drift = check_schema_drift(source, path)
     if drift.get("drift") or drift.get("error"):
         dest = quarantine_landing_file(source, path, f"schema drift: {drift}")
-        send_alert(f"{source} schema drift quarantined",
-                   f"file={path}\nquarantined_to={dest}\ndrift={drift}")
+        send_alert(f"{source} schema drift quarantined", f"file={path}\nquarantined_to={dest}\ndrift={drift}")
         return {"status": "quarantined", "file": path}
     return ingest_file(source, path)
 
