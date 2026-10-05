@@ -1,0 +1,101 @@
+-- P09 measures.dax — Compliance tracker (synthetic).
+
+-- Total inspections. Format: 0
+Total Inspections =
+COUNTROWS ( fct_inspection )
+
+-- Overdue count. Format: 0
+Overdue Count =
+CALCULATE (
+    COUNTROWS ( fct_inspection ),
+    fct_inspection[due_date] <= TODAY (),
+    OR (
+        ISBLANK ( fct_inspection[completed_date] ),
+        fct_inspection[completed_date] > fct_inspection[due_date]
+    )
+)
+
+-- Due within 30 days. Format: 0
+Due Within 30 Days =
+CALCULATE (
+    COUNTROWS ( fct_inspection ),
+    fct_inspection[due_date] >= TODAY (),
+    fct_inspection[due_date] <= TODAY () + 30
+)
+
+-- Failed with open remedial. Format: 0
+Failed Remedial Open =
+CALCULATE (
+    COUNTROWS ( fct_inspection ),
+    fct_inspection[result] = "Fail",
+    NOT ISBLANK ( RELATED ( remedial_actions[opened_date] ) ),
+    ISBLANK ( RELATED ( remedial_actions[closed_date] ) )
+)
+
+-- RAG status (calculated column on fct_inspection)
+-- 1 = Green, 2 = Amber, 3 = Red
+RAG Status =
+VAR Due = fct_inspection[due_date]
+VAR Comp = fct_inspection[completed_date]
+VAR Res = fct_inspection[result]
+VAR HasOpenRemedial = NOT ISBLANK ( RELATED ( remedial_actions[opened_date] ) ) && ISBLANK ( RELATED ( remedial_actions[closed_date] ) )
+VAR Today = TODAY ()
+RETURN
+    SWITCH (
+        TRUE (),
+        Res = "Fail" && HasOpenRemedial, 3,  -- Red
+        ISBLANK ( Due ) && ISBLANK ( Comp ), 3,  -- Red (No record)
+        Comp <= Due, 1,  -- Green
+        Comp > Due, 3,  -- Red
+        Due <= Today, 3,  -- Red
+        Due <= Today + 30, 2,  -- Amber
+        1  -- Green
+    )
+
+-- Days overdue. Format: 0
+Days Overdue =
+IF (
+    ISBLANK ( fct_inspection[due_date] ),
+    BLANK (),
+    IF ( fct_inspection[due_date] <= TODAY (),
+        TODAY () - fct_inspection[due_date],
+        0
+    )
+)
+
+-- Risk score. Format: 0
+Risk Score =
+VAR Crit = 5  -- placeholder; real would join dim_asset criticality
+VAR Band =
+    SWITCH (
+        TRUE (),
+        [Days Overdue] <= 0, 0,
+        [Days Overdue] <= 30, 1,
+        [Days Overdue] <= 90, 2,
+        [Days Overdue] <= 180, 3,
+        4
+    )
+VAR FailFlag = IF ( fct_inspection[result] = "Fail", 2, 1 )
+RETURN
+    Crit * Band * FailFlag
+
+-- Remedial ageing (days). Format: 0
+Remedial Ageing Days =
+VAR Opened = RELATED ( remedial_actions[opened_date] )
+VAR Closed = RELATED ( remedial_actions[closed_date] )
+RETURN
+    IF (
+        ISBLANK ( Opened ),
+        BLANK (),
+        IF ( ISBLANK ( Closed ),
+            TODAY () - Opened,
+            Closed - Opened
+        )
+    )
+
+-- Compliance trend (monthly snapshot count). Requires a date table.
+Compliance Trend Overdue =
+CALCULATE (
+    [Overdue Count],
+    DATEADD ( dim_date[date_day], -1, MONTH )
+)
