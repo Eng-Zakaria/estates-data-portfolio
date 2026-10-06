@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | F | Foundation campus_synth | ✅ done | 2026-10-03 | 20 tests pass, 96% cov, ruff+mypy clean, small generate 17–20s; see docs/ACCEPTANCE_F.md |
 | P01 | Campus data warehouse | ✅ done | 2026-10-04 | 7 platform tests pass, ingest 35s, 8/8 reconciled zero-loss; see docs/ACCEPTANCE_P01.md |
-| P02 | Orchestrated ETL (Airflow) | ✅ done | 2026-10-05 | DAGs + Docker, DagBag import green, 4 ingest + transform + dq + housekeeping; see docs/ACCEPTANCE_P02.md |
+| P02 | Orchestrated ETL (Airflow) | ✅ done | 2026-10-06 | 7 DAGs import clean, good file runs green, corrupt file quarantined + Mailpit alert, other DAGs unaffected; 30-day backfill demo works; ops.pipeline_runs CSV (30 runs) exported; UI verified at http://localhost:8080 / Mailpit at :8025; branch p02-orchestration ready for merge; see docs/ACCEPTANCE_P02.md |
 | P03 | Data quality framework | ✅ done | 2026-10-06 | 133 YAML checks (GX 58 + SQL 41 + recall 34), recall 100% on planted types, 51 tests pass, ruff+mypy clean, DQ scores 83–100; see docs/ACCEPTANCE_P03.md |
 | P04 | dbt project | ✅ done | 2026-10-05 | dbt build green 196 pass/0 err, 147 tests+2 unit, 100% models tested, 100% cols documented, 21 contracts; see docs/ACCEPTANCE_P04.md |
 | P05 | CI/CD for data | ✅ done | 2026-10-05 | ci/nightly/docs/release/security + reusable workflows, pre-commit, gates verified locally (ruff+mypy clean, pytest 27 pass 84%, dbt 196 pass, sqlfluff+mkdocs+compose clean); human must enable Pages/protection (placeholders); see docs/ACCEPTANCE_P05.md |
