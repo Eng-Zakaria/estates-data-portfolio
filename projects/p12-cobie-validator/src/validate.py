@@ -5,15 +5,11 @@ Each issue: sheet, row, column, rule_id, severity (blocking/warning), message, s
 
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import pandas as pd
-import yaml
-
-from spec import load_rules
 
 
 @dataclass
@@ -76,7 +72,7 @@ def validate_workbook(path: Path, cobie_rules: list[dict], air_rules: list[dict]
             if sheet in dfs and col in dfs[sheet].columns:
                 empty = dfs[sheet][col].isna() | (dfs[sheet][col] == "")
                 for idx in dfs[sheet][empty].index:
-                    result.issues.append(Issue(sheet, idx + 2, col, rule["id"], "blocking", f"Empty mandatory cell"))
+                    result.issues.append(Issue(sheet, idx + 2, col, rule["id"], "blocking", "Empty mandatory cell"))
 
     # Duplicate keys
     for rule in cobie_rules:
