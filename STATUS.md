@@ -19,7 +19,7 @@
 | P14 | ISO 19650 checker | ☐ | | |
 | P15 | BMS/sensor ingestion | ☐ | | |
 | P16 | Energy anomaly detection | ☐ | | |
-| P17 | Air quality & occupancy | ☐ | | |
+| P17 | Air quality & occupancy | ✅ done | 2026-10-06 | ventilation/comfort/occupancy/sensor health/archetypes/observed fact; 38 unit tests pass, CLI verified, outputs in data/p17_output/; see docs/ACCEPTANCE_P17.md |
 | P18 | Digital twin data layer | ✅ done | 2026-10-06 | canonical IDs, crosswalk (20k), relationships (22k, 6 Brick predicates), Brick TTL + SHACL valid, 5 SPARQL queries, FastAPI + OpenAPI, Streamlit explorer, coverage 60/6/78/100; see projects/p18-digital-twin-layer/README.md |
 | P19 | Spatial analysis | ✅ done | 2026-10-05 | OSM footprints + synthetic metrics, area-rank match, 8 buildings, 4 heat clusters, 5/10-min isochrones, outputs: gpkg/geojson/topojson/png/folium/qml/csv + PBI map handoff; see projects/p19-spatial-carbon-map/README.md |
 | P20 | Governance & literacy pack | ☐ | | |
