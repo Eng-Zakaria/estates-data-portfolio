@@ -10,7 +10,7 @@ import pandas as pd
 import pytest
 
 SRC = Path("projects/p11-ifc-analytics/src")
-FIXTURE = Path("data/ifc/sample_b003.ifc")
+FIXTURE = Path("projects/p11-ifc-analytics/tests/fixtures/sample_b003.ifc")
 
 
 sys.path.insert(0, str(SRC))

@@ -1,0 +1,37 @@
+// P11 measures.dax — business meaning in comments; format strings noted.
+
+// Number of spaces extracted from the model. Format: #,##0
+Space Count = COUNTROWS(ifc_spaces)
+
+// Number of elements (AHUs, boilers, pumps, FCUs). Format: #,##0
+Element Count = COUNTROWS(ifc_elements)
+
+// Zero-area spaces found by QA (planted defect = 1). Format: #,##0
+Zero Area Spaces = COUNTROWS(FILTER(ifc_spaces, ifc_spaces[area_m2] <= 0))
+
+// Elements with no type assignment (planted defect = 5). Format: #,##0
+Elements Without Type =
+    COUNTROWS(FILTER(ifc_elements, ISBLANK(RELATED(ifc_types[global_id]))))
+
+// Elements with no classification reference (planted defect = 3). Format: #,##0
+Elements Without Classification =
+    CALCULATE(COUNTROWS(ifc_elements), NOT EXISTS(ifc_classifications))
+
+// Completeness %: spaces with a known area source. Format: 0.0%
+Area Source Completeness =
+    DIVIDE(COUNTROWS(FILTER(ifc_spaces, NOT ISBLANK(ifc_spaces[area_source]))),
+           COUNTROWS(ifc_spaces))
+
+// Reconciliation: rooms matched between model and register. Format: #,##0
+Rooms Matched =
+    COUNTROWS(FILTER(recon_model_vs_register, recon_model_vs_register[status] = "matched"))
+
+// Rooms missing from the model. Format: #,##0
+Rooms Missing From Model =
+    COUNTROWS(FILTER(recon_model_vs_register, recon_model_vs_register[status] = "missing_from_model"))
+
+// Rooms where model area differs from register by >10% (use |delta| > 0.10). Format: #,##0
+Rooms Over 10pct Area Mismatch =
+    COUNTROWS(FILTER(recon_model_vs_register,
+              recon_model_vs_register[status] = "matched" &&
+              ABS(recon_model_vs_register[area_delta_pct]) > 0.10))

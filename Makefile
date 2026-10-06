@@ -1,4 +1,4 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p11-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
 
 PROFILE ?= small
 SEED ?= 42
@@ -79,6 +79,13 @@ snapshots:
 p08-run:
 	$(PY) -m pytest projects/p08-net-zero-carbon/tests/ -q -p no:cacheprovider --no-cov
 	$(PY) projects/p08-net-zero-carbon/scripts/export_gold.py
+
+p11-run:
+	$(PY) -m pytest projects/p11-ifc-analytics/tests/ -q -p no:cacheprovider --no-cov
+	$(PY) projects/p11-ifc-analytics/src/ifc2tables/make_sample_ifc.py --out data/ifc/sample_b003.ifc
+	$(PY) projects/p11-ifc-analytics/src/ifc2tables/extract.py data/ifc/sample_b003.ifc --out data/gold/ifc
+	$(PY) projects/p11-ifc-analytics/src/ifc2tables/qa_report.py --tables data/gold/ifc --out data/gold/ifc
+	$(PY) projects/p11-ifc-analytics/src/ifc2tables/reconcile.py --tables data/gold/ifc --out data/gold/ifc
 
 p06-run:
 	$(PY) -m pytest projects/p06-space-utilisation/tests/ -q -p no:cacheprovider --no-cov
