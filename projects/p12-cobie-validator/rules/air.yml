@@ -1,25 +1,9 @@
 rules:
-  - id: air_manufacturer_required
-    type: required_attribute
-    sheet: Type
-    column: Manufacturer
-  - id: air_model_required
-    type: required_attribute
-    sheet: Type
-    column: ModelNumber
-  - id: air_expected_life_required
-    type: required_attribute
-    sheet: Type
-    column: ExpectedLife
-  - id: air_warranty_required
-    type: required_attribute
-    sheet: Type
-    column: WarrantyDurationParts
-  - id: air_serial_required
-    type: required_attribute
-    sheet: Component
-    column: SerialNumber
-  - id: air_install_date_required
-    type: required_attribute
-    sheet: Component
-    column: InstallationDate
+  - {id: air_manufacturer_required, type: required_attribute, sheet: Type, column: Manufacturer}
+  - {id: air_model_required, type: required_attribute, sheet: Type, column: ModelNumber}
+  - {id: air_expected_life_required, type: required_attribute, sheet: Type, column: ExpectedLife}
+  - {id: air_warranty_required, type: required_attribute, sheet: Type, column: WarrantyDurationParts}
+  - {id: air_serial_required, type: required_attribute, sheet: Component, column: SerialNumber}
+  - {id: air_install_date_required, type: required_attribute, sheet: Component, column: InstallationDate}
+  - {id: air_spacename_required, type: required_attribute, sheet: Component, column: Space}
+  - {id: air_typename_required, type: required_attribute, sheet: Component, column: TypeName}

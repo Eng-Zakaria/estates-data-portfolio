@@ -1,78 +1,81 @@
 rules:
-  - id: sheet_contact_present
-    type: sheet_present
-    sheet: Contact
-  - id: sheet_facility_present
-    type: sheet_present
-    sheet: Facility
-  - id: sheet_floor_present
-    type: sheet_present
-    sheet: Floor
-  - id: sheet_space_present
-    type: sheet_present
-    sheet: Space
-  - id: sheet_zone_present
-    type: sheet_present
-    sheet: Zone
-  - id: sheet_type_present
-    type: sheet_present
-    sheet: Type
-  - id: sheet_component_present
-    type: sheet_present
+  # --- structural: sheets present (all 19 COBie sheets) ---
+  - {id: sheet_contact_present, type: sheet_present, sheet: Contact}
+  - {id: sheet_facility_present, type: sheet_present, sheet: Facility}
+  - {id: sheet_floor_present, type: sheet_present, sheet: Floor}
+  - {id: sheet_space_present, type: sheet_present, sheet: Space}
+  - {id: sheet_zone_present, type: sheet_present, sheet: Zone}
+  - {id: sheet_type_present, type: sheet_present, sheet: Type}
+  - {id: sheet_component_present, type: sheet_present, sheet: Component}
+  - {id: sheet_system_present, type: sheet_present, sheet: System}
+  - {id: sheet_assembly_present, type: sheet_present, sheet: Assembly}
+  - {id: sheet_connection_present, type: sheet_present, sheet: Connection}
+  - {id: sheet_spare_present, type: sheet_present, sheet: Spare}
+  - {id: sheet_resource_present, type: sheet_present, sheet: Resource}
+  - {id: sheet_job_present, type: sheet_present, sheet: Job}
+  - {id: sheet_impact_present, type: sheet_present, sheet: Impact}
+  - {id: sheet_document_present, type: sheet_present, sheet: Document}
+  - {id: sheet_attribute_present, type: sheet_present, sheet: Attribute}
+  - {id: sheet_coordinate_present, type: sheet_present, sheet: Coordinate}
+  - {id: sheet_issue_present, type: sheet_present, sheet: Issue}
+  - {id: sheet_picture_present, type: sheet_present, sheet: Picture}
+
+  # --- structural: columns present ---
+  - {id: col_contact_email, type: column_present, sheet: Contact, column: Email}
+  - {id: col_contact_phone, type: column_present, sheet: Contact, column: Phone}
+  - {id: col_facility_createdon, type: column_present, sheet: Facility, column: CreatedOn}
+  - {id: col_type_manufacturer, type: column_present, sheet: Type, column: Manufacturer}
+  - {id: col_type_model, type: column_present, sheet: Type, column: ModelNumber}
+  - {id: col_component_serial, type: column_present, sheet: Component, column: SerialNumber}
+  - {id: col_component_installdate, type: column_present, sheet: Component, column: InstallationDate}
+  - {id: col_job_typename, type: column_present, sheet: Job, column: TypeName}
+
+  # --- structural: column order (first N columns must match spec order) ---
+  - id: order_component_cols
+    type: column_order
     sheet: Component
-  - id: col_contact_email
-    type: column_present
-    sheet: Contact
-    column: Email
-  - id: col_facility_createdon
-    type: column_present
-    sheet: Facility
-    column: CreatedOn
-  - id: mandatory_contact_email
-    type: mandatory_not_empty
-    sheet: Contact
-    column: Email
-  - id: mandatory_facility_createdon
-    type: mandatory_not_empty
-    sheet: Facility
-    column: CreatedOn
-  - id: unique_component_name
-    type: unique_key
-    sheet: Component
-    column: Name
-  - id: fk_component_type
-    type: fk
-    src_sheet: Component
-    src_column: TypeName
-    dst_sheet: Type
-    dst_column: Name
-  - id: fk_component_space
-    type: fk
-    src_sheet: Component
-    src_column: Space
-    dst_sheet: Space
-    dst_column: Name
-  - id: fk_space_floor
-    type: fk
-    src_sheet: Space
-    src_column: FloorName
-    dst_sheet: Floor
-    dst_column: Name
-  - id: fk_system_component
-    type: fk
-    src_sheet: System
-    src_column: ComponentNames
-    dst_sheet: Component
-    dst_column: Name
-  - id: format_contact_email
-    type: format
-    sheet: Contact
-    column: Email
-    pattern: "^[^@]+@[^@]+\\.[^@]+$"
-    severity: warning
-  - id: format_component_installdate
-    type: format
-    sheet: Component
-    column: InstallationDate
-    pattern: "^\\d{4}-\\d{2}-\\d{2}$"
-    severity: warning
+    columns: [Name, CreatedOn, CreatedBy, Category, TypeName, Space, Description, SerialNumber, InstallationDate]
+
+  # --- mandatory cells ---
+  - {id: mandatory_contact_email, type: mandatory_not_empty, sheet: Contact, column: Email}
+  - {id: mandatory_facility_createdon, type: mandatory_not_empty, sheet: Facility, column: CreatedOn}
+  - {id: mandatory_floor_name, type: mandatory_not_empty, sheet: Floor, column: Name}
+  - {id: mandatory_space_floorname, type: mandatory_not_empty, sheet: Space, column: FloorName}
+  - {id: mandatory_type_name, type: mandatory_not_empty, sheet: Type, column: Name}
+  - {id: mandatory_component_typename, type: mandatory_not_empty, sheet: Component, column: TypeName}
+
+  # --- keys ---
+  - {id: unique_contact_email, type: unique_key, sheet: Contact, column: Email}
+  - {id: unique_type_name, type: unique_key, sheet: Type, column: Name}
+  - {id: unique_component_name, type: unique_key, sheet: Component, column: Name}
+  - {id: unique_space_name, type: unique_key, sheet: Space, column: Name}
+  - {id: unique_component_serial, type: unique_key, sheet: Component, column: SerialNumber}
+
+  # --- referential integrity (multi_value splits on comma/semicolon/pipe) ---
+  - {id: fk_component_type, type: fk, src_sheet: Component, src_column: TypeName, dst_sheet: Type, dst_column: Name}
+  - {id: fk_component_space, type: fk, multi_value: true, src_sheet: Component, src_column: Space, dst_sheet: Space, dst_column: Name}
+  - {id: fk_space_floor, type: fk, src_sheet: Space, src_column: FloorName, dst_sheet: Floor, dst_column: Name}
+  - {id: fk_system_component, type: fk, multi_value: true, src_sheet: System, src_column: ComponentNames, dst_sheet: Component, dst_column: Name}
+  - {id: fk_job_type, type: fk, src_sheet: Job, src_column: TypeName, dst_sheet: Type, dst_column: Name}
+  - {id: fk_zone_space, type: fk, multi_value: true, src_sheet: Zone, src_column: SpaceNames, dst_sheet: Space, dst_column: Name}
+  - {id: createdby_in_contact, type: created_by, contact_sheet: Contact, contact_column: Email}
+
+  # --- formats ---
+  - {id: format_contact_email, type: format, sheet: Contact, column: Email,
+     pattern: "^[^@]+@[^@]+\\.[^@]+$", severity: warning, fix: "Use a valid email address"}
+  - {id: format_createdon_iso, type: format, sheet: Type, column: CreatedOn,
+     pattern: "^\\d{4}-\\d{2}-\\d{2}$", severity: warning, fix: "Use ISO date YYYY-MM-DD"}
+  - {id: format_component_installdate, type: format, sheet: Component, column: InstallationDate,
+     pattern: "^\\d{4}-\\d{2}-\\d{2}$", severity: warning, fix: "Use ISO date YYYY-MM-DD"}
+
+  # --- numeric ranges ---
+  - {id: range_space_grossarea, type: numeric_range, sheet: Space, column: GrossArea, min: 0.1, max: 100000}
+  - {id: range_floor_height, type: numeric_range, sheet: Floor, column: Height, min: 2.0, max: 30.0}
+  - {id: range_type_expectedlife, type: numeric_range, sheet: Type, column: ExpectedLife, min: 1, max: 100}
+  - {id: range_type_warranty, type: numeric_range, sheet: Type, column: WarrantyDurationParts, min: 0, max: 120}
+
+  # --- category pattern (letters, numbers, spaces, hyphens only) ---
+  - {id: category_type, type: category_pattern, sheet: Type, column: Category,
+     pattern: "^[A-Za-z0-9][A-Za-z0-9 \\-()]{1,60}$", severity: warning}
+  - {id: category_component, type: category_pattern, sheet: Component, column: Category,
+     pattern: "^[A-Za-z0-9][A-Za-z0-9 \\-()]{1,60}$", severity: warning}
