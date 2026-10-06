@@ -1,4 +1,4 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p11-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p11-run p12-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
 
 PROFILE ?= small
 SEED ?= 42
@@ -106,6 +106,11 @@ p09-run:
 	$(PY) -m pytest projects/p09-compliance-tracker/tests/ -q -p no:cacheprovider --no-cov
 	$(PY) projects/p09-compliance-tracker/scripts/gen_remedial.py
 	$(PY) projects/p09-compliance-tracker/scripts/digest.py --as-of 2026-03-31 | diff projects/p09-compliance-tracker/tests/golden/digest_2026-03-31.html - 2>&1 | head -5; echo "digest golden-file test: normalized timestamp diff only"
+
+p12-run:
+	$(PY) -m pytest projects/p12-cobie-validator/tests/ -q -p no:cacheprovider --no-cov
+	$(PY) projects/p12-cobie-validator/src/make_sample_cobie.py
+	$(PY) projects/p12-cobie-validator/src/cli.py validate data/cobie/valid.xlsx --out data/cobie/report_valid
 
 AF_COMPOSE = ENV_FILE_PATH=.env docker compose --env-file platform/orchestration/.env --project-directory platform/orchestration -f platform/orchestration/docker-compose.yml -f platform/orchestration/docker-compose.override.yml
 

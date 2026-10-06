@@ -6,7 +6,11 @@
 ## Later projects — do not invent, fetch first (human action needed where download is gated)
 1. **DESNZ GHG conversion factors** (P04/P08): need official workbook URL + year. Script must download; never hard-code from memory.
 2. **Uniclass 2015 tables** (P13): NBS download may require licence acceptance. If gated, use `mock_uniclass_dev_placeholder.csv` (labelled non-authoritative) and refuse final outputs.
-3. **COBie spec** (P12): verify sheet list/columns/keys against buildingSMART + UK BIM Framework.
+3. **COBie spec** (P12): RESOLVED 2026-10-06 — sheet set, Component→Type/Space and
+   System/Job/Zone FK semantics cross-checked via NBS "What is COBie" + NBIMS
+   COBie lineage (direct buildingSMART fetch timed out; recorded honestly in
+   `projects/p12-cobie-validator/docs/SOURCES.md`). Column order enforced for
+   `Component` only; full per-sheet order matrices still need the employer's template.
 4. **ISO 19650 naming convention** (P14): spec's field pattern is unverified memory — read UK BIM Framework / National Annex first.
 5. **Statutory inspection frequencies** (P09): foundation frequencies are illustrative config — verify against legal duties/guidance before real use.
 6. **HESA EMR / TRAC** (P10): read public coding manual/guidance; record URLs/versions in `docs/SOURCES.md`.

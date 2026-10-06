@@ -10,6 +10,7 @@
 | GHG Protocol Corporate Standard (scope definitions) | https://ghgprotocol.org/corporate-standard | Publicly available guidance; referenced here, not reproduced — check terms before redistributing excerpts | Current (cited 2026-10-05) | 2026-10-05 | P08 `methodology.md`: Scope 1/2 definitions. |
 | GHG Protocol Scope 2 Guidance | https://ghgprotocol.org/scope-2-guidance | Publicly available guidance; referenced here, not reproduced — check terms before redistributing excerpts | Current (cited 2026-10-05) | 2026-10-05 | P08 location-based vs market-based reporting rule. |
 | OpenStreetMap building footprints (Exeter Streatham area extract) | https://www.openstreetmap.org/copyright | ODbL (© OpenStreetMap contributors) | Live extract 2026-10-05 | 2026-10-05 | P19 footprint geometry only (names anonymised); fetched by `scripts/fetch_osm.py`, cached in `data/` (not committed). |
+| COBie v2.4 sheet/column/key layout (no data copied; structure only) | https://www.buildingsmart.org/standards/cobie/ and https://ukbimframework.org/ | Publicly available guidance; referenced here, not reproduced | COBie v2.4 (cited 2026-10-06) | 2026-10-06 | P12 sheet set, column order, FK pairs in `rules/cobie.yml`; full provenance in `projects/p12-cobie-validator/docs/SOURCES.md`. Workbooks are 100% synthetic. |
 
 ## Planned external sources (later projects, not yet fetched)
 
