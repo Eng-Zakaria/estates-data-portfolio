@@ -1,0 +1,78 @@
+rules:
+  - id: sheet_contact_present
+    type: sheet_present
+    sheet: Contact
+  - id: sheet_facility_present
+    type: sheet_present
+    sheet: Facility
+  - id: sheet_floor_present
+    type: sheet_present
+    sheet: Floor
+  - id: sheet_space_present
+    type: sheet_present
+    sheet: Space
+  - id: sheet_zone_present
+    type: sheet_present
+    sheet: Zone
+  - id: sheet_type_present
+    type: sheet_present
+    sheet: Type
+  - id: sheet_component_present
+    type: sheet_present
+    sheet: Component
+  - id: col_contact_email
+    type: column_present
+    sheet: Contact
+    column: Email
+  - id: col_facility_createdon
+    type: column_present
+    sheet: Facility
+    column: CreatedOn
+  - id: mandatory_contact_email
+    type: mandatory_not_empty
+    sheet: Contact
+    column: Email
+  - id: mandatory_facility_createdon
+    type: mandatory_not_empty
+    sheet: Facility
+    column: CreatedOn
+  - id: unique_component_name
+    type: unique_key
+    sheet: Component
+    column: Name
+  - id: fk_component_type
+    type: fk
+    src_sheet: Component
+    src_column: TypeName
+    dst_sheet: Type
+    dst_column: Name
+  - id: fk_component_space
+    type: fk
+    src_sheet: Component
+    src_column: Space
+    dst_sheet: Space
+    dst_column: Name
+  - id: fk_space_floor
+    type: fk
+    src_sheet: Space
+    src_column: FloorName
+    dst_sheet: Floor
+    dst_column: Name
+  - id: fk_system_component
+    type: fk
+    src_sheet: System
+    src_column: ComponentNames
+    dst_sheet: Component
+    dst_column: Name
+  - id: format_contact_email
+    type: format
+    sheet: Contact
+    column: Email
+    pattern: "^[^@]+@[^@]+\\.[^@]+$"
+    severity: warning
+  - id: format_component_installdate
+    type: format
+    sheet: Component
+    column: InstallationDate
+    pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+    severity: warning
