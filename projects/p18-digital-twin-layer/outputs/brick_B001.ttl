@@ -1,0 +1,397 @@
+@prefix brick: <https://brickschema.org/schema/Brick#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000001> a brick:AHU ;
+    rdfs:label "A-B001-000001" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L00-029> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000003> a brick:AHU ;
+    rdfs:label "A-B001-000003" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000153>,
+        <http://example.org/digital-twin/B001#Terminal_A-B001-000171>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L04-010> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000011> a brick:AHU ;
+    rdfs:label "A-B001-000011" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000126>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L03-004> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000013> a brick:AHU ;
+    rdfs:label "A-B001-000013" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000181>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L02-013> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000015> a brick:AHU ;
+    rdfs:label "A-B001-000015" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L02-025> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000016> a brick:AHU ;
+    rdfs:label "A-B001-000016" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L01-053> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000019> a brick:AHU ;
+    rdfs:label "A-B001-000019" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000181>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L02-013> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000025> a brick:AHU ;
+    rdfs:label "A-B001-000025" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L00-034> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000027> a brick:AHU ;
+    rdfs:label "A-B001-000027" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000142>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L00-001> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000036> a brick:AHU ;
+    rdfs:label "A-B001-000036" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L01-046> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000055> a brick:AHU ;
+    rdfs:label "A-B001-000055" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L00-052> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000057> a brick:AHU ;
+    rdfs:label "A-B001-000057" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000154>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L03-035> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000073> a brick:AHU ;
+    rdfs:label "A-B001-000073" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000020>,
+        <http://example.org/digital-twin/B001#Terminal_A-B001-000093>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L04-037> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000092> a brick:AHU ;
+    rdfs:label "A-B001-000092" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L04-008> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000095> a brick:AHU ;
+    rdfs:label "A-B001-000095" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L04-003> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000098> a brick:AHU ;
+    rdfs:label "A-B001-000098" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L03-051> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000102> a brick:AHU ;
+    rdfs:label "A-B001-000102" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000114>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L00-054> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000103> a brick:AHU ;
+    rdfs:label "A-B001-000103" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000061>,
+        <http://example.org/digital-twin/B001#Terminal_A-B001-000149>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L03-039> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000111> a brick:AHU ;
+    rdfs:label "A-B001-000111" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L03-051> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000112> a brick:AHU ;
+    rdfs:label "A-B001-000112" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000029>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L01-011> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000125> a brick:AHU ;
+    rdfs:label "A-B001-000125" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L02-025> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000132> a brick:AHU ;
+    rdfs:label "A-B001-000132" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L02-019> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000136> a brick:AHU ;
+    rdfs:label "A-B001-000136" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L00-034> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000138> a brick:AHU ;
+    rdfs:label "A-B001-000138" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000061>,
+        <http://example.org/digital-twin/B001#Terminal_A-B001-000149>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L03-039> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000139> a brick:AHU ;
+    rdfs:label "A-B001-000139" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L02-036> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000144> a brick:AHU ;
+    rdfs:label "A-B001-000144" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L01-012> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000147> a brick:AHU ;
+    rdfs:label "A-B001-000147" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000181>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L02-013> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000148> a brick:AHU ;
+    rdfs:label "A-B001-000148" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L00-052> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000151> a brick:AHU ;
+    rdfs:label "A-B001-000151" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L00-024> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000152> a brick:AHU ;
+    rdfs:label "A-B001-000152" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L00-033> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000156> a brick:AHU ;
+    rdfs:label "A-B001-000156" ;
+    brick:feeds <http://example.org/digital-twin/B001#Zone_S-B001-L04-015> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000160> a brick:AHU ;
+    rdfs:label "A-B001-000160" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000029>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L01-011> .
+
+<http://example.org/digital-twin/B001#AHU_A-B001-000161> a brick:AHU ;
+    rdfs:label "A-B001-000161" ;
+    brick:feeds <http://example.org/digital-twin/B001#Terminal_A-B001-000033>,
+        <http://example.org/digital-twin/B001#Terminal_A-B001-000128>,
+        <http://example.org/digital-twin/B001#Zone_S-B001-L00-018> .
+
+<http://example.org/digital-twin/B001#Building> a brick:Building ;
+    rdfs:label "B001" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000006> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000006" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000012> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000012" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000048> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000048" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000054> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000054" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000059> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000059" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000062> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000062" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000078> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000078" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000094> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000094" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000104> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000104" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000177> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000177" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000178> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000178" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000184> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000184" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-007> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-007" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-014> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-014" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-017> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-017" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-031> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-031" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-042> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-042" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-049> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-049" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-050> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-050" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-016> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-016" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-023> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-023" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-026> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-026" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-032> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-032" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-038> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-038" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-041> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-041" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-043> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-043" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-047> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-047" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L02-006> a brick:HVAC_Zone ;
+    rdfs:label "B001-L02-006" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L02-009> a brick:HVAC_Zone ;
+    rdfs:label "B001-L02-009" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L02-020> a brick:HVAC_Zone ;
+    rdfs:label "B001-L02-020" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L02-021> a brick:HVAC_Zone ;
+    rdfs:label "B001-L02-021" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L02-040> a brick:HVAC_Zone ;
+    rdfs:label "B001-L02-040" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L02-048> a brick:HVAC_Zone ;
+    rdfs:label "B001-L02-048" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L03-005> a brick:HVAC_Zone ;
+    rdfs:label "B001-L03-005" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L03-027> a brick:HVAC_Zone ;
+    rdfs:label "B001-L03-027" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L03-028> a brick:HVAC_Zone ;
+    rdfs:label "B001-L03-028" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L04-002> a brick:HVAC_Zone ;
+    rdfs:label "B001-L04-002" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L04-022> a brick:HVAC_Zone ;
+    rdfs:label "B001-L04-022" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L04-030> a brick:HVAC_Zone ;
+    rdfs:label "B001-L04-030" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L04-044> a brick:HVAC_Zone ;
+    rdfs:label "B001-L04-044" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L04-045> a brick:HVAC_Zone ;
+    rdfs:label "B001-L04-045" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000020> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000020" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000033> a brick:VAV ;
+    rdfs:label "A-B001-000033" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000093> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000093" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000114> a brick:VAV ;
+    rdfs:label "A-B001-000114" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000126> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000126" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000128> a brick:VAV ;
+    rdfs:label "A-B001-000128" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000142> a brick:VAV ;
+    rdfs:label "A-B001-000142" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000153> a brick:VAV ;
+    rdfs:label "A-B001-000153" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000154> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000154" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000171> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000171" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-001> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-001" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-018> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-018" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-024> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-024" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-029> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-029" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-033> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-033" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-054> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-054" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-012> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-012" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-046> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-046" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-053> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-053" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L02-019> a brick:HVAC_Zone ;
+    rdfs:label "B001-L02-019" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L02-036> a brick:HVAC_Zone ;
+    rdfs:label "B001-L02-036" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L03-004> a brick:HVAC_Zone ;
+    rdfs:label "B001-L03-004" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L03-035> a brick:HVAC_Zone ;
+    rdfs:label "B001-L03-035" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L04-003> a brick:HVAC_Zone ;
+    rdfs:label "B001-L04-003" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L04-008> a brick:HVAC_Zone ;
+    rdfs:label "B001-L04-008" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L04-010> a brick:HVAC_Zone ;
+    rdfs:label "B001-L04-010" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L04-015> a brick:HVAC_Zone ;
+    rdfs:label "B001-L04-015" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L04-037> a brick:HVAC_Zone ;
+    rdfs:label "B001-L04-037" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000029> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000029" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000061> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000061" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000149> a brick:VAV ;
+    rdfs:label "A-B001-000149" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-034> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-034" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L00-052> a brick:HVAC_Zone ;
+    rdfs:label "B001-L00-052" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L01-011> a brick:HVAC_Zone ;
+    rdfs:label "B001-L01-011" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L02-025> a brick:HVAC_Zone ;
+    rdfs:label "B001-L02-025" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L03-039> a brick:HVAC_Zone ;
+    rdfs:label "B001-L03-039" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L03-051> a brick:HVAC_Zone ;
+    rdfs:label "B001-L03-051" .
+
+<http://example.org/digital-twin/B001#Terminal_A-B001-000181> a brick:FanCoilUnit ;
+    rdfs:label "A-B001-000181" .
+
+<http://example.org/digital-twin/B001#Zone_S-B001-L02-013> a brick:HVAC_Zone ;
+    rdfs:label "B001-L02-013" .
+

@@ -1,4 +1,4 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p08-run p06-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
 
 PROFILE ?= small
 SEED ?= 42
@@ -87,6 +87,13 @@ p19:
 	$(PY) projects/p19-spatial-carbon-map/scripts/fetch_osm.py
 	$(PY) projects/p19-spatial-carbon-map/scripts/build_outputs.py
 	$(PY) -m pytest projects/p19-spatial-carbon-map/tests/ -q -p no:cacheprovider --no-cov
+
+p18-run:
+	$(PY) -m pytest projects/p18-digital-twin-layer/tests/ -q -p no:cacheprovider --no-cov
+	$(PY) projects/p18-digital-twin-layer/src/crosswalk.py
+	$(PY) projects/p18-digital-twin-layer/src/relationships.py
+	$(PY) projects/p18-digital-twin-layer/src/brick.py
+	$(PY) projects/p18-digital-twin-layer/src/coverage.py
 
 p09-run:
 	$(PY) -m pytest projects/p09-compliance-tracker/tests/ -q -p no:cacheprovider --no-cov
