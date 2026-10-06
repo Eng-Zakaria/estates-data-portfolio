@@ -12,7 +12,6 @@ import pytest
 SRC = Path("projects/p11-ifc-analytics/src")
 FIXTURE = Path("data/ifc/sample_b003.ifc")
 
-import sys
 
 sys.path.insert(0, str(SRC))
 

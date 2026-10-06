@@ -29,8 +29,6 @@ def load_buildings() -> pd.DataFrame:
 
 def make_sample_ifc(out: Path, building_id: str = "B003") -> None:
     spaces = load_truth()
-    buildings = load_buildings()
-    bldg = buildings[buildings["building_id"] == building_id].iloc[0]
     bldg_spaces = spaces[spaces["building_id"] == building_id].copy()
 
     # Plant defects: pick 12 rooms for area mismatch, 5 rooms to omit
@@ -42,9 +40,9 @@ def make_sample_ifc(out: Path, building_id: str = "B003") -> None:
     )
 
     f = ifcopenshell.file(schema="IFC4")
-    project = f.create_entity("IfcProject", GlobalId=ifcopenshell.guid.new(), Name=f"Campus Estate {building_id}")
-    site = f.create_entity("IfcSite", GlobalId=ifcopenshell.guid.new(), Name="Campus")
-    building = f.create_entity("IfcBuilding", GlobalId=ifcopenshell.guid.new(), Name=building_id)
+    f.create_entity("IfcProject", GlobalId=ifcopenshell.guid.new(), Name=f"Campus Estate {building_id}")
+    f.create_entity("IfcSite", GlobalId=ifcopenshell.guid.new(), Name="Campus")
+    f.create_entity("IfcBuilding", GlobalId=ifcopenshell.guid.new(), Name=building_id)
 
     # Storeys from truth if available, else single storey
     storeys = {}
@@ -55,9 +53,6 @@ def make_sample_ifc(out: Path, building_id: str = "B003") -> None:
                 "IfcBuildingStorey", GlobalId=ifcopenshell.guid.new(), Name=storey_name
             )
 
-    for storey in storeys.values():
-        pass  # created above
-
     spaces_created = []
     for _, row in bldg_spaces.iterrows():
         room = row["room_code"]
@@ -65,8 +60,6 @@ def make_sample_ifc(out: Path, building_id: str = "B003") -> None:
             continue
 
         storey_name = row.get("storey", "L00") if "storey" in row else "L00"
-        storey = storeys.get(storey_name, list(storeys.values())[0])
-
         area = row["nia_m2"]
         if room in mismatch_rooms:
             area = area * 1.15  # >10% mismatch
@@ -136,7 +129,7 @@ def make_sample_ifc(out: Path, building_id: str = "B003") -> None:
         )
 
     # Duplicate names
-    for i in range(2):
+    for _i in range(2):
         f.create_entity("IfcBoiler", GlobalId=ifcopenshell.guid.new(), Name="DuplicateBoiler")
 
     # Zero-area space

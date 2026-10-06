@@ -10,7 +10,6 @@ Stable key = IFC GlobalId. Area from Qto where present, fallback documented.
 from __future__ import annotations
 
 import hashlib
-import json
 import time
 from pathlib import Path
 
@@ -185,9 +184,8 @@ def extract_tables(ifc_path: Path) -> dict[str, pd.DataFrame]:
     df_classifications = pd.DataFrame(class_rows)
 
     elapsed = time.time() - t0
-    print(
-        f"Extracted {len(df_spaces)} spaces, {len(df_elements)} elements, {len(df_types)} types, {len(df_systems)} systems in {elapsed:.2f}s"
-    )
+    print(f"Extracted {len(df_spaces)} spaces, {len(df_elements)} elements,")
+    print(f"  {len(df_types)} types, {len(df_systems)} systems in {elapsed:.2f}s")
 
     return {
         "ifc_project": df_project,
