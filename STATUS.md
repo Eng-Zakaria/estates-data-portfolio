@@ -11,8 +11,8 @@
 | P06 | Space utilisation | ✅ done | 2026-10-05 | freq x occ on gold + observed occupancy, 7 calc tests, 5 validation SQL, full PBI handoff; B003 pattern weaker-form, D-ENG +285% reported as measured; see projects/p06-space-utilisation/README.md |
 | P07 | Asset & maintenance | ☐ | | |
 | P08 | Net zero & carbon | ✅ done | 2026-10-05 | scopes/intensity/pathway/baseload on gold marts, 7 calc tests, 4 validation SQL, full PBI handoff; B007 confirmed top (48.8% baseload), B019 default-only; see projects/p08-net-zero-carbon/README.md |
-| P09 | Compliance tracker | ☐ | | |
-| P10 | Mock institutional return | ☐ | | |
+| P09 | Compliance tracker | ✅ done | 2026-10-05 | status logic/risk/digest on gold, 11 boundary tests, 5 validation SQL, full PBI handoff; legionella overdue 3 bldgs, 2 failed >90d; see projects/p09-compliance-tracker/README.md |
+| P10 | Mock institutional return | ✅ done | 2026-10-06 | mapping/return/validation/cost allocation/audit trail on gold; 10 tests pass, deterministic re-run PASSED, 0 blocking violations; see projects/p10-institutional-return/README.md |
 | P11 | IFC → analytics | ☐ | | |
 | P12 | COBie validator & loader | ☐ | | |
 | P13 | Uniclass mapper | ☐ | | |

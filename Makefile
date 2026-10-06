@@ -1,4 +1,4 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up iot-demo p19 p08-run p06-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up iot-demo p19 p10-run p08-run p06-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
 
 PROFILE ?= small
 SEED ?= 42
@@ -82,3 +82,7 @@ p08-run:
 
 p06-run:
 	$(PY) -m pytest projects/p06-space-utilisation/tests/ -q -p no:cacheprovider --no-cov
+
+p10-run:
+	$(PY) -m pytest projects/p10-institutional-return/tests/ -q -p no:cacheprovider --no-cov
+	$(PY) projects/p10-institutional-return/src/main.py --return-date 2026-03-31 --out data/p10_output --verify

@@ -9,13 +9,15 @@
 
 | GHG Protocol Corporate Standard (scope definitions) | https://ghgprotocol.org/corporate-standard | Publicly available guidance; referenced here, not reproduced — check terms before redistributing excerpts | Current (cited 2026-10-05) | 2026-10-05 | P08 `methodology.md`: Scope 1/2 definitions. |
 | GHG Protocol Scope 2 Guidance | https://ghgprotocol.org/scope-2-guidance | Publicly available guidance; referenced here, not reproduced — check terms before redistributing excerpts | Current (cited 2026-10-05) | 2026-10-05 | P08 location-based vs market-based reporting rule. |
+| OpenStreetMap building footprints (Exeter Streatham area extract) | https://www.openstreetmap.org/copyright | ODbL (© OpenStreetMap contributors) | Live extract 2026-10-05 | 2026-10-05 | P19 footprint geometry only (names anonymised); fetched by `scripts/fetch_osm.py`, cached in `data/` (not committed). |
+| HESA Estates Management Record (EMR) — coding manual/specification | https://www.hesa.ac.uk/collection/c21053 | Public spec; coding manual may require login for full detail — used generic categories where inaccessible | Current (cited 2026-10-06) | 2026-10-06 | P10 mapping layer (generic categories where inaccessible); see projects/p10-institutional-return/docs/SOURCES.md. |
+| TRAC (Transparent Approach to Costing) guidance | https://www.trac.ac.uk/guidance/ | Public guidance; cost driver methodology simplified for this mock | Current (cited 2026-10-06) | 2026-10-06 | P10 cost allocation (simplified NIA × weight × activity split); see projects/p10-institutional-return/docs/SOURCES.md. |
 
 ## Planned external sources (later projects, not yet fetched)
 
 - Uniclass 2015 tables, NBS (P13).
 - COBie spec, buildingSMART + UK BIM Framework (P12).
 - ISO 19650 UK National Annex / UK BIM Framework guidance (P14).
-- HESA EMR spec + TRAC guidance (P10).
 - Building Data Genome Project 2 (P16).
 - OpenStreetMap footprints, ODbL (P19).
 - GHG Protocol Corporate Standard scope definitions (P08 methodology).
