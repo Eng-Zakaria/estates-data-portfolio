@@ -11,6 +11,7 @@ import pytest
 SRC = Path("projects/p14-iso19650-checker/src")
 sys.path.insert(0, str(SRC))
 
+# ruff: noqa: E402
 from checker import check_folder, load_convention
 from make_sample import make_sample
 

@@ -62,7 +62,10 @@ def check_cmd(
             failure.text = issue.rule_id
         ET.ElementTree(root).write(out / "junit.xml", encoding="utf-8", xml_declaration=True)
     else:
-        html = f"<h1>ISO 19650 Compliance Report</h1><p>Compliance: {pct:.1f}%</p><p>Errors: {result.error_count}</p><table>"
+        html = (
+            f"<h1>ISO 19650 Compliance Report</h1>"
+            f"<p>Compliance: {pct:.1f}%</p><p>Errors: {result.error_count}</p><table>"
+        )
         for i in result.issues:
             html += f"<tr><td>{i.path}</td><td>{i.rule_id}</td><td>{i.severity}</td><td>{i.message}</td></tr>"
         html += "</table>"
