@@ -12,6 +12,7 @@ import pytest
 SRC = Path("projects/p12-cobie-validator/src")
 sys.path.insert(0, str(SRC))
 
+# ruff: noqa: E402
 from make_sample_cobie import make_corrupted_cobie, make_valid_cobie
 from spec import load_rules
 from validate import validate_workbook
