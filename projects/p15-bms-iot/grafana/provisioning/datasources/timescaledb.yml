@@ -1,0 +1,14 @@
+apiVersion: 1
+
+datasources:
+  - name: TimescaleDB
+    type: postgres
+    access: proxy
+    url: timescaledb:5432
+    database: bms_db
+    user: bms_user
+    secureJsonData:
+      password: bms_pass
+    jsonData:
+      sslmode: disable
+      timescaledb: true

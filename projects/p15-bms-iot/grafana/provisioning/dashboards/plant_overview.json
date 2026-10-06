@@ -1,0 +1,18 @@
+{
+  "dashboard": {
+    "title": "BMS Plant Overview",
+    "panels": [
+      {
+        "title": "Average Temperature by Point",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "rawSql": "SELECT bucket AS time, avg_value FROM bms.readings_15min WHERE point_id LIKE '%temp%' ORDER BY bucket",
+            "format": "time_series"
+          }
+        ]
+      }
+    ]
+  }
+}

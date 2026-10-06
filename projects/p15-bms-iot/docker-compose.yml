@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto_passwd:/mosquitto/config/mosquitto_passwd
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-h", "localhost", "-t", "test", "-C", "1", "-i", "healthcheck"]
+      interval: 10s
+      retries: 3
+
+  nodered:
+    image: nodered/node-red:3.1
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./flows:/data/flows
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+      timescaledb:
+        condition: service_healthy
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    environment:
+      POSTGRES_USER: bms_user
+      POSTGRES_PASSWORD: bms_pass
+      POSTGRES_DB: bms_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./src/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bms_user -d bms_db"]
+      interval: 10s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:10.4
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
