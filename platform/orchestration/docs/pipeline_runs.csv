@@ -1,0 +1,31 @@
+dag_id,task_id,run_id,data_interval_start,status,duration_s,rows_in,rows_out,error,ts
+ingest_cafm_workorders,list_new_files,scheduled__2026-10-05T22:00:00+00:00,2026-10-05 22:00:00+00:00,success,,,,,2026-10-05T22:00:02+00:00
+ingest_cafm_workorders,bronze_silver_watermarked,scheduled__2026-10-05T22:00:00+00:00,2026-10-05 22:00:00+00:00,success,,,,,2026-10-05T22:00:04+00:00
+ingest_meter_hh,list_meter_files,__airflow_temporary_run_2026-10-05T22:05:50.054657+00:00__,2026-10-05 00:00:00+00:00,success,,,,,2026-10-05T22:05:52+00:00
+ingest_meter_hh,bronze_silver_mapped,__airflow_temporary_run_2026-10-05T22:05:50.054657+00:00__,2026-10-05 00:00:00+00:00,success,,,,,2026-10-05T22:06:08+00:00
+ingest_meter_hh,list_meter_files,manual__2026-10-05T20:53:20.910291+00:00,None,success,,,,,2026-10-05T22:16:59+00:00
+ingest_meter_hh,bronze_silver_mapped,manual__2026-10-05T20:53:20.910291+00:00,None,success,,,,,2026-10-05T22:17:02+00:00
+ingest_meter_hh,list_meter_files,manual__2026-10-05T22:19:35.225490+00:00,None,success,,,,,2026-10-05T22:19:37+00:00
+ingest_meter_hh,bronze_silver_mapped,manual__2026-10-05T22:19:35.225490+00:00,None,success,,,,,2026-10-05T22:19:40+00:00
+ingest_meter_hh,list_meter_files,manual__2026-10-05T22:33:30.706488+00:00,None,success,,,,,2026-10-05T22:33:32+00:00
+ingest_meter_hh,bronze_silver_mapped,manual__2026-10-05T22:33:30.706488+00:00,None,success,,,,,2026-10-05T22:33:35+00:00
+ingest_cafm_workorders,list_new_files,scheduled__2026-10-05T23:00:00+00:00,2026-10-05 23:00:00+00:00,success,,,,,2026-10-05T23:00:01+00:00
+ingest_cafm_workorders,bronze_silver_watermarked,scheduled__2026-10-05T23:00:00+00:00,2026-10-05 23:00:00+00:00,success,,,,,2026-10-05T23:00:03+00:00
+ingest_meter_hh,list_meter_files,manual__2026-10-05T23:03:40.612510+00:00,None,success,,,,,2026-10-05T23:03:42+00:00
+ingest_meter_hh,bronze_silver_mapped,manual__2026-10-05T23:03:40.612510+00:00,None,success,,,,,2026-10-05T23:03:44+00:00
+ingest_cafm_workorders,list_new_files,scheduled__2026-10-06T00:00:00+00:00,2026-10-06 00:00:00+00:00,success,,,,,2026-10-06T00:00:01+00:00
+ingest_cafm_workorders,bronze_silver_watermarked,scheduled__2026-10-06T00:00:00+00:00,2026-10-06 00:00:00+00:00,success,,,,,2026-10-06T00:00:03+00:00
+ingest_cafm_workorders,list_new_files,scheduled__2026-10-06T01:00:00+00:00,2026-10-06 01:00:00+00:00,success,,,,,2026-10-06T01:00:01+00:00
+ingest_cafm_workorders,bronze_silver_watermarked,scheduled__2026-10-06T01:00:00+00:00,2026-10-06 01:00:00+00:00,success,,,,,2026-10-06T01:00:03+00:00
+ingest_cafm_workorders,list_new_files,scheduled__2026-10-06T02:00:00+00:00,2026-10-06 02:00:00+00:00,success,,,,,2026-10-06T02:00:01+00:00
+ingest_cafm_workorders,bronze_silver_watermarked,scheduled__2026-10-06T02:00:00+00:00,2026-10-06 02:00:00+00:00,success,,,,,2026-10-06T02:00:02+00:00
+ingest_space_register,wait_for_landing_file,manual__2026-10-05T20:50:57.402072+00:00,None,failed,,,,Sensor has timed out; run duration of 21655.679551 seconds exceeds the specified timeout of 21600.0.,2026-10-06T02:51:54+00:00
+ingest_cafm_workorders,list_new_files,scheduled__2026-10-06T03:00:00+00:00,2026-10-06 03:00:00+00:00,success,,,,,2026-10-06T03:00:01+00:00
+ingest_cafm_workorders,bronze_silver_watermarked,scheduled__2026-10-06T03:00:00+00:00,2026-10-06 03:00:00+00:00,success,,,,,2026-10-06T03:00:02+00:00
+ingest_cafm_workorders,list_new_files,scheduled__2026-10-06T04:00:00+00:00,2026-10-06 04:00:00+00:00,success,,,,,2026-10-06T04:00:01+00:00
+ingest_cafm_workorders,bronze_silver_watermarked,scheduled__2026-10-06T04:00:00+00:00,2026-10-06 04:00:00+00:00,success,,,,,2026-10-06T04:00:02+00:00
+ingest_cafm_workorders,list_new_files,scheduled__2026-10-06T05:00:00+00:00,2026-10-06 05:00:00+00:00,success,,,,,2026-10-06T05:00:01+00:00
+ingest_cafm_workorders,list_new_files,scheduled__2026-10-06T06:00:00+00:00,2026-10-06 06:00:00+00:00,success,,,,,2026-10-06T06:00:01+00:00
+ingest_cafm_workorders,bronze_silver_watermarked,scheduled__2026-10-06T06:00:00+00:00,2026-10-06 06:00:00+00:00,success,,,,,2026-10-06T06:00:02+00:00
+ingest_cafm_workorders,list_new_files,scheduled__2026-10-06T07:00:00+00:00,2026-10-06 07:00:00+00:00,success,,,,,2026-10-06T07:00:01+00:00
+ingest_cafm_workorders,bronze_silver_watermarked,scheduled__2026-10-06T07:00:00+00:00,2026-10-06 07:00:00+00:00,success,,,,,2026-10-06T07:00:03+00:00

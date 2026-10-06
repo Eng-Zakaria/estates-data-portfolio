@@ -1,7 +1,4 @@
-"""P02 ops export: ops.pipeline_runs -> CSV evidence.
-
-Usage: python platform/orchestration/scripts/export_runs.py [--out PATH]
-"""
+"""P02 ops export: ops.pipeline_runs -> CSV evidence."""
 
 from __future__ import annotations
 
@@ -23,7 +20,10 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect(str(db), read_only=True)
     try:
-        con.execute(f"COPY (SELECT * FROM ops.pipeline_runs ORDER BY ts) TO '{out}' (HEADER, DELIMITER ',')")
+        con.execute(
+            "COPY (SELECT * FROM ops.pipeline_runs ORDER BY ts) "
+            f"TO '{out}' (HEADER, DELIMITER ',')"
+        )
         n = con.execute("SELECT COUNT(*) FROM ops.pipeline_runs").fetchone()[0]
     finally:
         con.close()

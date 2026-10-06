@@ -40,8 +40,15 @@ def drop_corrupt(source: str) -> str:
     raw = candidates[0].read_bytes()
     dest = LANDING / f"{candidates[0].stem}_corrupt{candidates[0].suffix}"
     # Truncate mid-row + inject an unknown column header => drift + parse failure.
-    head, _, _rest = raw.partition(b"\n")
-    dest.write_bytes(head + b",Mystery_Column\n" + raw[len(head) + 1 : len(head) // 2])
+    head, sep, rest = raw.partition(b"\n")
+    if head.endswith(b"\r"):
+        head = head[:-1]
+        sep = b"\r\n"
+    else:
+        sep = b"\n"
+    # Truncate to half the file (after header)
+    body = rest[:len(raw) // 2]
+    dest.write_bytes(head + b",Mystery_Column" + sep + body)
     print(f"corrupt file -> {dest}")
     return str(dest)
 
