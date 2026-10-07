@@ -1,0 +1,259 @@
+# UK National Annex information container identification convention.
+#
+# PROVENANCE (read 2026-10-06, do not edit lengths or code lists without re-reading the source):
+#   CDBB, "BIM Toolkit | National Annex Guidance" (UK instantiation of the ISO 19650 series
+#   principles). https://www.cdbb.cam.ac.uk/files/national_annex_guidance.pdf
+#   Tables 1.1/1.2 (fields), 1.3 (level/location), 1.4 (type), 1.5 (discipline), 2.2 (status/revision).
+#   Supporting source for statuses in use and the CDE states:
+#   UK BIM Framework, Guidance Part C, Edition 1 (Sept 2020).
+#   https://ukbimframework.org/wp-content/uploads/2020/09/Guidance-Part-C_Facilitating-the-common-data-environment-workflow-and-technical-solutions_Edition-1.pdf
+#
+# The Annex says the field schedules "should be/could be expanded with project-specific codes" and
+# that fields "can be shortened or expanded as required". This file is the *as-published* example
+# codification, not a project information standard: a real project must record its own codification
+# (Annex §1.2 / UK BIM Framework Part C, information standard, ISO 19650-2 clause 5.1.4).
+#
+# Synthetic-data demonstration: `uk_example.yml` from the first pass was replaced by this file because
+# its lengths and field names were not supported by the source.
+
+name: uk_national_annex
+description: >-
+  Information container identification convention as published in the UK National Annex guidance:
+  Project-Originator-Volume/System-Level/Location-Type-Role-Number, with status (suitability) and
+  revision appended as metadata suffixes on export.
+source:
+  name: BIM Toolkit | National Annex Guidance (UK National Annex)
+  url: https://www.cdbb.cam.ac.uk/files/national_annex_guidance.pdf
+  edition: UK instantiation published in the BIM Toolkit national annex guidance
+  retrieved: 2026-10-06
+
+# Annex: "In {country name}, the following delimitation should be used: Hyphen-minus, U+002D"
+separator: "-"
+
+# Field values in the published examples are upper case; recorded as the project codification.
+case: upper
+
+# Fields 1-7 identify the container. Status and revision are metadata (Annex §2): they are appended to
+# the identifier when a container is exported from the CDE, so they are excluded from id_fields.
+id_fields:
+  - project
+  - originator
+  - volume_system
+  - level_location
+  - type
+  - role
+  - number
+
+# Container states are folder names in the CDE (ISO 19650-2 clause 5.6/5.7 states; UK BIM Framework
+# Guidance Part C). The statuses allowed in each state below are an EXAMPLE instantiation taken from
+# the Part C worked example (WIP S0 P01.01 -> Shared S3 P01 -> Shared S4 -> Published A3 C01) plus
+# Part C's statement that "information containers with S1 or S2 metadata are in the Shared state,
+# whereas information containers with A4, A5 or A6 metadata are in the Published state". Annex S7 is
+# listed for completeness but Part C records it as withdrawn. Values may be globs (A* matches A1..An).
+container_states:
+  WIP: ["S0"]
+  Shared: ["S1", "S2", "S3", "S4", "S5", "S6"]
+  Published: ["A*", "B*"]
+  Archive: ["CR"]
+
+# Not from the Annex: a local file-type policy. The Annex does not restrict container file formats.
+extension_allowlist:
+  - .ifc
+  - .ifczip
+  - .rvt
+  - .dwg
+  - .dxf
+  - .nwc
+  - .pdf
+  - .docx
+  - .xlsx
+  - .csv
+  - .txt
+  - .json
+
+# Not from the Annex: local portability/ hygiene limits, kept configurable.
+illegal_characters:
+  - " "
+  - "_"
+  - "!"
+  - "@"
+  - "#"
+  - "%"
+  - "&"
+  - "("
+  - ")"
+  - "+"
+  - "="
+path_max_length: 240
+max_stem_length: 96
+
+fields:
+  - name: project
+    position: 0
+    min_length: 2
+    max_length: 6
+    charset: "A-Z0-9"
+    description: A unique project reference number/code, used by the entire delivery team.
+    source: Annex Table 1.2 field 1 - "2-6" characters.
+
+  - name: originator
+    position: 1
+    min_length: 2
+    max_length: 6
+    charset: "A-Z0-9"
+    description: >-
+      Code for the organisation responsible for producing the information. Annex §1.2.2 recommends
+      three to six characters.
+    source: Annex Table 1.2 field 2 - "2-6" characters; §1.2.2 recommends 3-6.
+
+  - name: volume_system
+    position: 2
+    min_length: 2
+    max_length: 2
+    charset: "A-Z0-9"
+    allowed_values: ["ZZ", "XX"]
+    description: >-
+      Spatial subdivision. Annex §1.2.3 recommends two characters, with XX for "no volumes or systems"
+      and ZZ for "all volumes or systems"; project-specific breakdowns are added by the project, so a
+      closed code list is NOT enforced here (only the two published codes are seeded).
+    source: Annex §1.2.3 and Table 1.3 notes.
+
+  - name: level_location
+    position: 3
+    min_length: 2
+    max_length: 2
+    charset: "A-Z0-9"
+    allowed_values: ["ZZ", "XX", "00", "01", "02", "B1", "M1"]
+    description: >-
+      Level or location the container refers to. ZZ = multiple locations, XX = no applicable location,
+      00 = level 00, 01 = level 01, B1 = basement level, M1 = mezzanine above level 01. Project
+      schedules expand this list (Annex §1.2.4, Table 1.3).
+    source: Annex Table 1.3.
+
+  - name: type
+    position: 4
+    min_length: 2
+    max_length: 2
+    charset: "A-Z"
+    allowed_values:
+      - AF
+      - BQ
+      - CA
+      - CM
+      - CO
+      - CP
+      - CR
+      - DB
+      - DR
+      - FN
+      - HS
+      - IE
+      - M2
+      - M3
+      - MI
+      - MR
+      - MS
+      - PP
+      - PR
+      - RD
+      - RI
+      - RP
+      - SA
+      - SH
+      - SN
+      - SP
+      - SU
+      - VS
+    description: Type of information container (drawing rendition, model, report, ...).
+    source: Annex Table 1.4.
+
+  - name: role
+    position: 5
+    min_length: 1
+    max_length: 2
+    charset: "A-Z"
+    allowed_values:
+      - A
+      - B
+      - C
+      - D
+      - E
+      - F
+      - G
+      - H
+      - I
+      - K
+      - L
+      - M
+      - P
+      - Q
+      - S
+      - T
+      - W
+      - X
+      - Y
+      - Z
+    description: >-
+      Discipline of the information author. Annex Table 1.1 calls field 6 "Role" and §1.2.6
+      "Discipline"; one character in the published schedule, expandable to two for the project.
+    source: Annex Table 1.1 field 6 "Role"; §1.2.6 and Table 1.5.
+
+  - name: number
+    position: 6
+    min_length: 4
+    max_length: 6
+    charset: "0-9"
+    description: >-
+      Sequential number distinguishing containers in a series; four to six integer numeric digits.
+    source: Annex Table 1.2 field 7 - "4-6"; §1.2.7 "sequential ... not distinguished by any other field".
+
+  # --- Metadata, appended on export from the CDE (Annex §2) ---
+  - name: status
+    position: 7
+    min_length: 2
+    max_length: 2
+    charset: "A-Z0-9"
+    pattern: "S[0-6]|A[1-9][0-9]*|B[1-9][0-9]*|CR"
+    description: >-
+      Suitability/status code, two characters. S0 work in progress; S1 suitable for coordination; S2
+      suitable for information; S3 suitable for review and comment; S4 suitable for review and
+      authorisation; S5 suitable for review and acceptable; S6 suitable for PIM authorisation
+      (Part C; S7 withdrawn); A1..An authorised or accepted, n = project stage; B1..Bn partial sign-off
+      with comments; CR as-constructed record document. The A/B series is open-ended, so the field is
+      pattern-checked rather than matched against a closed list.
+    source: Annex Table 2.2 and UK BIM Framework Guidance Part C Edition 1, Tables 3 and 4.
+
+  - name: revision
+    position: 8
+    min_length: 3
+    max_length: 7
+    charset: "A-Z0-9."
+    pattern: "[PC][0-9]{2}(\\.[0-9]{2})?"
+    description: >-
+      Revision: two integers prefixed P (preliminary) or C (contractual), e.g. P01, C01. Containers
+      still in work in progress carry a further two-integer version suffix delimited by a full stop,
+      e.g. P01.01.
+    source: Annex §2.1.1.
+
+sequence:
+  # Annex §1.2.7: the number field is sequential within a series. Gaps are a warning: a missing
+  # container may simply not have been produced yet.
+  field: number
+  scope: folder
+  warn_on_gap: true
+
+revision:
+  # Annex §2.1.1: preliminary (P) and contractual (C) revision series per container identifier.
+  field: revision
+  allow_version_suffix: true
+  warn_on_gap: true
+
+metadata:
+  # Annex §2: metadata is not part of the identifier unless the container is exported, so a title
+  # mismatch is an error for a container whose filename asserts its identity.
+  enabled: true
+  compare_ifc_project_name: true
+  compare_doc_title: true
+  ignore_case: true
+  # Tokens from these fields must appear in the document title / IFC project name.
+  required_title_fields: [originator, number]

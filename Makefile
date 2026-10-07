@@ -1,4 +1,4 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p11-run p12-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p11-run p12-run p14-sample p14-check p14-check-clean p14-variant p14-test p14-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
 
 PROFILE ?= small
 SEED ?= 42
@@ -111,6 +111,29 @@ p12-run:
 	$(PY) -m pytest projects/p12-cobie-validator/tests/ -q -p no:cacheprovider --no-cov
 	$(PY) projects/p12-cobie-validator/src/make_sample_cobie.py
 	$(PY) projects/p12-cobie-validator/src/cli.py validate data/cobie/valid.xlsx --out data/cobie/report_valid
+
+P14 = projects/p14-iso19650-checker
+P14_CFG = $(P14)/conventions/uk_national_annex.yml
+P14_VARIANT_CFG = $(P14)/conventions/estates_cde_variant.yml
+
+p14-sample:
+	$(PY) $(P14)/src/make_sample.py --out data/iso19650/sample --n 300 --seed 42
+	$(PY) $(P14)/src/make_sample.py --out data/iso19650/clean --n 200 --clean
+
+p14-check:
+	$(PY) $(P14)/src/cli.py check data/iso19650/sample --config $(P14_CFG) --register data/iso19650/sample_register.csv --suggest --out data/iso19650/report
+
+p14-check-clean:
+	$(PY) $(P14)/src/cli.py check data/iso19650/clean --config $(P14_CFG) --register data/iso19650/clean_register.csv --out data/iso19650/report_clean
+
+p14-variant:
+	$(PY) $(P14)/src/make_sample.py --out data/iso19650/variant --n 120 --clean --config $(P14_VARIANT_CFG)
+	$(PY) $(P14)/src/cli.py check data/iso19650/variant --config $(P14_VARIANT_CFG) --register data/iso19650/variant_register.csv --out data/iso19650/report_variant
+
+p14-test:
+	$(PY) -m pytest $(P14)/tests/ -q -p no:cacheprovider --cov=$(P14)/src --cov-report=term-missing
+
+p14-run: p14-sample p14-test p14-check p14-check-clean p14-variant
 
 AF_COMPOSE = ENV_FILE_PATH=.env docker compose --env-file platform/orchestration/.env --project-directory platform/orchestration -f platform/orchestration/docker-compose.yml -f platform/orchestration/docker-compose.override.yml
 

@@ -11,7 +11,15 @@
    COBie lineage (direct buildingSMART fetch timed out; recorded honestly in
    `projects/p12-cobie-validator/docs/SOURCES.md`). Column order enforced for
    `Component` only; full per-sheet order matrices still need the employer's template.
-4. **ISO 19650 naming convention** (P14): spec's field pattern is unverified memory — read UK BIM Framework / National Annex first.
+4. **ISO 19650 naming convention** (P14): RESOLVED 2026-10-07 for the published edition — CDBB "BIM Toolkit |
+   National Annex Guidance" (Tables 1.1–1.5, 2.2) plus UK BIM Framework Guidance Part C Edition 1 were
+   read and encoded in `projects/p14-iso19650-checker/conventions/uk_national_annex.yml`; every value is
+   quoted in `projects/p14-iso19650-checker/docs/SOURCES.md`. The superseded `uk_example.yml` was deleted.
+   Remaining gap: a **2021 update to the UK National Annex** is reported by secondary sources
+   (https://www.symetri.us/insights/blog/iso-19650-file-naming-update) to rename the fields to
+   *Project – Originator – Functional Breakdown – Spatial Breakdown – Form – Discipline – Number* and to
+   revise the discipline code list. That edition was **not obtained**, so it is not encoded; if the human
+   can supply it, add it as a third convention file and re-verify Tables 1.3–1.5.
 5. **Statutory inspection frequencies** (P09): foundation frequencies are illustrative config — verify against legal duties/guidance before real use.
 6. **HESA EMR / TRAC** (P10): read public coding manual/guidance; record URLs/versions in `docs/SOURCES.md`.
 7. **SFG20** (P07): commercial — do not reproduce; use generic "SFG20-style" templates labelled as such.

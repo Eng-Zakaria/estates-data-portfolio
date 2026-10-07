@@ -1,0 +1,121 @@
+# Second shipped convention: an ORGANISATION-SPECIFIC codification, used to prove the engine is
+# convention-agnostic (swap this file for uk_national_annex.yml with no code change and the results
+# change: see tests/test_conventions.py).
+#
+# PROVENANCE / HONEST SCOPE:
+# This is NOT a national standard and NOT an official convention. It is an example of what an estates
+# team would record in its own information standard, built from the codification freedoms the UK
+# National Annex guidance explicitly allows: fields "can be shortened or expanded as required" and the
+# code schedules "should be/could be expanded with project-specific codes"
+# (https://www.cdbb.cam.ac.uk/files/national_annex_guidance.pdf, §1 and §1.2.3-1.2.6).
+# The identifier still uses the Annex field order and Annex code lists where they exist; only the
+# separator, field widths and the project-specific level/type/discipline codes differ, plus an extra
+# classification facet appended after the number.
+#
+# Differences from uk_national_annex.yml (deliberate, to exercise the engine):
+#   - separator "_" instead of "-"
+#   - project field exactly 5 characters; originator exactly 4
+#   - an extra "asset_class" facet (Uniclass Pr codes are project specific - see P13) inserted at
+#     position 6, shifting number to 7
+#   - project-specific level codes (GF/B/01/M/RF) and type codes
+#   - suitability written as words, not the Annex S-codes
+#   - revision suffix optional
+
+name: estates_cde_variant
+description: >-
+  Example organisation-specific codification (estates CDE) derived from the UK National Annex field
+  order with project-specific codes. Demonstrates that the checker takes all of this from config.
+source:
+  name: Estates team information standard - EXPLICITLY A DEMONSTRATION CONFIG, NOT AN OFFICIAL STANDARD
+  url: https://www.cdbb.cam.ac.uk/files/national_annex_guidance.pdf
+  edition: modelled on the UK National Annex guidance (Annex §1.1 field order, §1.2 freedoms)
+  retrieved: 2026-10-06
+
+separator: "_"
+case: upper
+id_fields: [project, originator, volume_system, level_location, type, role, number]
+
+container_states:
+  WIP: ["WIP"]
+  Shared: ["REV", "INFO"]
+  Published: ["APPROVED"]
+  Archive: ["SUPERSEDED"]
+
+extension_allowlist: [.ifc, .rvt, .pdf, .xlsx, .csv]
+illegal_characters: [" ", "-", "&", "(", ")"]
+path_max_length: 200
+max_stem_length: 80
+
+fields:
+  - name: project
+    position: 0
+    length: 5
+    charset: "A-Z0-9"
+    description: Project code (project-specific, fixed width by the estates team).
+  - name: originator
+    position: 1
+    length: 4
+    charset: "A-Z"
+    description: Internal department code, e.g. ESTM, ENGG, FMVS.
+  - name: volume_system
+    position: 2
+    length: 2
+    charset: "A-Z0-9"
+    allowed_values: [ZZ, XX, BL, CF]
+    description: Volume/system; BL basement, CF campus fabric, ZZ all, XX none.
+  - name: level_location
+    position: 3
+    length: 2
+    charset: "A-Z0-9"
+    # NOTE: quoted, because YAML reads a bare 01/02 as an octal integer, not as the level code "01".
+    allowed_values: ["GF", "B", "01", "02", "M", "RF", "ZZ", "XX"]
+    description: Project-specific level schedule (Annex Table 1.3 expanded for the campus).
+  - name: type
+    position: 4
+    length: 2
+    charset: "A-Z"
+    allowed_values: [DR, CA, CP, RP, SP, SA, SH, DB]
+    description: Subset of the Annex Table 1.4 type codes used by estates information.
+  - name: role
+    position: 5
+    length: 1
+    charset: "A-Z"
+    allowed_values: [A, M, E, F, Q, S]
+    description: Estates-relevant disciplines from Annex Table 1.5.
+  - name: asset_class
+    position: 6
+    length: 3
+    charset: "A-Z0-9"
+    description: Project-specific asset classification facet inserted before the number.
+  - name: number
+    position: 7
+    min_length: 3
+    max_length: 4
+    charset: "0-9"
+    description: Sequential number, project-specific width.
+  - name: status
+    position: 8
+    allowed_values: [WIP, REV, INFO, APPROVED, SUPERSEDED]
+    description: Suitability expressed as words rather than the Annex S/A/B/CR codes.
+  - name: revision
+    position: 9
+    required: false
+    pattern: "[PC]?[0-9]{1,3}"
+    description: Optional revision token.
+
+sequence:
+  field: number
+  scope: folder
+  warn_on_gap: true
+
+revision:
+  field: revision
+  allow_version_suffix: false
+  warn_on_gap: false
+
+metadata:
+  enabled: false
+  compare_ifc_project_name: false
+  compare_doc_title: false
+  ignore_case: true
+  required_title_fields: []

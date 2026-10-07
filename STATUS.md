@@ -16,10 +16,10 @@
 | P08 | Net zero & carbon | ✅ done | 2026-10-05 | acceptance MISSING (review) — 7 tests, 4 validation SQL, PBI handoff |
 | P09 | Compliance tracker | ✅ done | 2026-10-05 | acceptance MISSING (review) — 11 tests, digest golden, 5 validation SQL, PBI |
 | P10 | Mock institutional return | ✅ done | 2026-10-06 | acceptance + SPEC MISSING (review) — 10 tests, deterministic re-run |
-| P11 | IFC - analytics | ? done | 2026-10-06 | acceptance: docs/ACCEPTANCE_P11.md � 6 tests, 0.49s extract, QA finds all planted defects, recon 31 matched/12 mismatches, powerbi handoff added |
+| P11 | IFC - analytics | ? done | 2026-10-06 | acceptance: docs/ACCEPTANCE_P11.md � 6 tests, 0.49s extract, QA finds all planted defects, recon 31 matched/12 mismatches, powerbi handoff added |
 | P12 | COBie validator & loader | ✅ done | 2026-10-06 | acceptance: docs/ACCEPTANCE_P12.md — 17 tests, 42 seeded events 100% category recall, valid 100/corrupt 39.0, loader 8→unchanged |
 | P13 | Uniclass mapper | 🔨 in progress | | src+tests UNCOMMITTED; no README/SPEC/acceptance; mock Uniclass placeholder |
-| P14 | ISO 19650 checker | 🚧 partial | | code+conventions+README+tests committed; SPEC/docs/acceptance MISSING (review) |
+| P14 | ISO 19650 checker | ✅ done | 2026-10-07 | acceptance: projects/p14-iso19650-checker/docs/ACCEPTANCE_P14.md — convention verified from CDBB National Annex + UK BIM Framework Part C (quoted in docs/SOURCES.md); 83 tests, 94% cov, 20 rule ids, 301-file sample 94.0% compliant, clean sample 0 false positives, config swap 0 vs 1320 errors, apply+rollback reversible |
 | P15 | BMS/sensor ingestion | 🚧 partial | | scaffold only (compose/grafana/schema/simulator); no README/tests/docs/acceptance |
 | P16 | Energy anomaly detection | 🔨 in progress | | src+tests UNCOMMITTED; no README/SPEC/acceptance |
 | P17 | Air quality & occupancy | ✅ done | 2026-10-06 | acceptance: docs/ACCEPTANCE_P17.md — 38 tests; README/SPEC MISSING (review) |

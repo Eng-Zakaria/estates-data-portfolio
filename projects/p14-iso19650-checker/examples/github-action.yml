@@ -1,0 +1,84 @@
+# Example GitHub Actions workflow: gate a pull request on the information container naming convention.
+#
+# Copy to .github/workflows/iso19650-check.yml in the repository that holds the project files, and set
+# PROJECT / CONFIG / PATHS. Nothing here is wired into this portfolio repo: the sample project is
+# generated rather than committed, so a CI run here would have nothing to check.
+#
+# Outputs: JUnit XML for the Checks tab, plus an HTML report and the generated container register as
+# build artefacts, and the compliance summary printed into the job log.
+
+name: iso19650-convention-check
+
+on:
+  pull_request:
+    paths:
+      - "projects/**"
+      - "conventions/**"
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+
+    env:
+      PROJECT: projects/p14-iso19650-checker
+      CONFIG: conventions/uk_national_annex.yml      # relative to PROJECT
+      TARGET: data/cde                              # the folder to check
+      OUT: data/iso19650/report
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the checker's runtime dependencies
+        run: python -m pip install --disable-pip-version-check pyyaml pydantic typer jinja2
+
+      - name: Generate the demo project (skip this step in a real repository)
+        run: python "$PROJECT/src/make_sample.py" --out "$TARGET" --n 300 --seed 42
+
+      - name: Check naming convention (fails the job on error-severity findings)
+        run: |
+          python "$PROJECT/src/cli.py" check "$TARGET" \
+            --config "$PROJECT/$CONFIG" \
+            --format junit \
+            --out "$OUT" \
+            --fail-on error
+
+      - name: Compliance summary (always shown, even when the gate fails)
+        if: always()
+        run: |
+          python "$PROJECT/src/cli.py" check "$TARGET" \
+            --config "$PROJECT/$CONFIG" \
+            --format text \
+            --out "$OUT" \
+            --fail-on none || true
+          echo "--- compliance summary ---"
+          cat "$OUT/compliance_summary.csv"
+
+      - name: "Apply the safe renames (opt-in: only when explicitly enabled)"
+        if: "always() && github.event_name == 'push' && vars.ISO19650_AUTO_RENAME == 'true'"
+        run: python "$PROJECT/src/cli.py" apply "$TARGET" --config "$PROJECT/$CONFIG" --apply --log "$OUT/rename_log.csv"
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: iso19650-report
+          path: ${{ env.OUT }}
+          retention-days: 14
+
+      # GitHub's test reporter shows the JUnit file in the Checks tab:
+      #   https://github.com/marketplace/actions/test-reporter
+      - name: Publish test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: ${{ env.OUT }}/junit.xml
+          reporter: java-junit

@@ -1,0 +1,19 @@
+# Example pre-commit configuration for the P14 ISO 19650-style convention checker.
+#
+# Install from the repository root:
+#   pre-commit install --hook-type pre-commit --config projects/p14-iso19650-checker/examples/pre-commit.yaml
+#
+# This is an *example*: it checks a conventional folder layout in the consuming repository. Copy it to
+# your own .pre-commit-config.yaml and set PROJECT/CONFIG to your project and convention file.
+#
+# Requires: bash, python, and the checker on disk (pip install pyyaml pydantic typer jinja2).
+
+repos:
+  - repo: local
+    hooks:
+      - id: iso19650-naming
+        name: information container naming convention
+        entry: projects/p14-iso19650-checker/examples/pre-commit-hook.sh
+        language: system
+        pass_filenames: false       # the hook resolves the changed folders itself
+        always_run: true
