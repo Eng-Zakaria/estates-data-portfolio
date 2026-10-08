@@ -1,0 +1,274 @@
+{
+  "injection_scores": {
+    "mad": {
+      "drift": {
+        "precision": 0.625,
+        "recall": 0.143,
+        "f1": 0.233,
+        "mean_delay_periods": 36.8,
+        "n": 35
+      },
+      "flatline": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      },
+      "missing": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      },
+      "ooh": {
+        "precision": 0.25,
+        "recall": 0.029,
+        "f1": 0.051,
+        "mean_delay_periods": 27.0,
+        "n": 35
+      },
+      "spike": {
+        "precision": 1.0,
+        "recall": 0.743,
+        "f1": 0.852,
+        "mean_delay_periods": 0.0,
+        "n": 35
+      },
+      "step": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      }
+    },
+    "isolation_forest": {
+      "drift": {
+        "precision": 0.483,
+        "recall": 0.4,
+        "f1": 0.438,
+        "mean_delay_periods": 29.4,
+        "n": 35
+      },
+      "flatline": {
+        "precision": 0.048,
+        "recall": 0.029,
+        "f1": 0.036,
+        "mean_delay_periods": 31.0,
+        "n": 35
+      },
+      "missing": {
+        "precision": 0.048,
+        "recall": 0.029,
+        "f1": 0.036,
+        "mean_delay_periods": 49.0,
+        "n": 35
+      },
+      "ooh": {
+        "precision": 0.391,
+        "recall": 0.257,
+        "f1": 0.31,
+        "mean_delay_periods": 5.9,
+        "n": 35
+      },
+      "spike": {
+        "precision": 0.652,
+        "recall": 0.857,
+        "f1": 0.741,
+        "mean_delay_periods": 1.2,
+        "n": 35
+      },
+      "step": {
+        "precision": 0.174,
+        "recall": 0.114,
+        "f1": 0.138,
+        "mean_delay_periods": 43.5,
+        "n": 35
+      }
+    },
+    "cusum": {
+      "drift": {
+        "precision": 0.044,
+        "recall": 1.0,
+        "f1": 0.085,
+        "mean_delay_periods": 1.2,
+        "n": 35
+      },
+      "flatline": {
+        "precision": 0.044,
+        "recall": 1.0,
+        "f1": 0.084,
+        "mean_delay_periods": 0.4,
+        "n": 35
+      },
+      "missing": {
+        "precision": 0.03,
+        "recall": 0.714,
+        "f1": 0.058,
+        "mean_delay_periods": 41.8,
+        "n": 35
+      },
+      "ooh": {
+        "precision": 0.044,
+        "recall": 1.0,
+        "f1": 0.085,
+        "mean_delay_periods": 0.1,
+        "n": 35
+      },
+      "spike": {
+        "precision": 0.045,
+        "recall": 1.0,
+        "f1": 0.085,
+        "mean_delay_periods": 0.0,
+        "n": 35
+      },
+      "step": {
+        "precision": 0.044,
+        "recall": 1.0,
+        "f1": 0.085,
+        "mean_delay_periods": 0.1,
+        "n": 35
+      }
+    },
+    "flatline": {
+      "drift": {
+        "precision": 0.034,
+        "recall": 0.029,
+        "f1": 0.031,
+        "mean_delay_periods": 0.0,
+        "n": 35
+      },
+      "flatline": {
+        "precision": 0.5,
+        "recall": 0.457,
+        "f1": 0.478,
+        "mean_delay_periods": 44.0,
+        "n": 35
+      },
+      "missing": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      },
+      "ooh": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      },
+      "spike": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      },
+      "step": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      }
+    },
+    "missing": {
+      "drift": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      },
+      "flatline": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      },
+      "missing": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mean_delay_periods": 0.0,
+        "n": 35
+      },
+      "ooh": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      },
+      "spike": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      },
+      "step": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mean_delay_periods": -1,
+        "n": 35
+      }
+    }
+  },
+  "injection_n": 210,
+  "held_out_meter": "M-B001-E01",
+  "seed": 7,
+  "action_list_top5": [
+    {
+      "building": "B007",
+      "meter_id": "M-B007-E01",
+      "source": "small",
+      "peak": 43.37686,
+      "types": "gradual_drift,high_overnight_baseload,step_change",
+      "kwh_year": 27918.7,
+      "gbp_year": 7817.23
+    },
+    {
+      "building": "B019",
+      "meter_id": "M-B019-G01",
+      "source": "default-cache",
+      "peak": 10.76261,
+      "types": "spike,step_change",
+      "kwh_year": 2912.0,
+      "gbp_year": 815.37
+    },
+    {
+      "building": "B008",
+      "meter_id": "M-B008-E01",
+      "source": "small",
+      "peak": 43.885230000000035,
+      "types": "spike",
+      "kwh_year": 310.8,
+      "gbp_year": 87.03
+    },
+    {
+      "building": "B004",
+      "meter_id": "M-B004-E01",
+      "source": "small",
+      "peak": 52.36907000000002,
+      "types": "spike",
+      "kwh_year": 189.8,
+      "gbp_year": 53.14
+    },
+    {
+      "building": "B006",
+      "meter_id": "M-B006-E01",
+      "source": "small",
+      "peak": 13.443200000000008,
+      "types": "spike",
+      "kwh_year": 64.5,
+      "gbp_year": 18.05
+    }
+  ]
+}

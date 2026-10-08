@@ -1,0 +1,50 @@
+[
+  {
+    "building": "Lamb_education_Alina",
+    "site": "Lamb",
+    "total_flags": 17246,
+    "types": "flatline_meter_fault,missing_data,step_change",
+    "kwh_year": 0.0,
+    "usd_year_illustrative": 0.0
+  },
+  {
+    "building": "Rat_education_Chance",
+    "site": "Rat",
+    "total_flags": 17068,
+    "types": "flatline_meter_fault,missing_data,step_change",
+    "kwh_year": 122.6,
+    "usd_year_illustrative": 18.39
+  },
+  {
+    "building": "Lamb_education_Camille",
+    "site": "Lamb",
+    "total_flags": 16760,
+    "types": "flatline_meter_fault,step_change",
+    "kwh_year": 0.0,
+    "usd_year_illustrative": 0.0
+  },
+  {
+    "building": "Rat_education_Angelica",
+    "site": "Rat",
+    "total_flags": 16678,
+    "types": "high_overnight_baseload,missing_data,step_change,weekend_operation",
+    "kwh_year": 57406.7,
+    "usd_year_illustrative": 8611.0
+  },
+  {
+    "building": "Lamb_education_Eula",
+    "site": "Lamb",
+    "total_flags": 16222,
+    "types": "flatline_meter_fault,gradual_drift,missing_data,spike,step_change",
+    "kwh_year": 608.8,
+    "usd_year_illustrative": 91.32
+  },
+  {
+    "building": "Lamb_education_Freddy",
+    "site": "Lamb",
+    "total_flags": 16197,
+    "types": "flatline_meter_fault,missing_data,step_change",
+    "kwh_year": 0.0,
+    "usd_year_illustrative": 0.0
+  }
+]

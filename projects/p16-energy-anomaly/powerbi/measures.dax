@@ -1,0 +1,92 @@
+-- P16 measures.dax — Energy exceptions (synthetic campus). Format strings included.
+-- All campus numbers are synthetic. Savings are attributed only to flagged
+-- fault modes; a stuck/gappy meter has £0 by design, not by accident.
+
+-- Number of meters analysed. Format: 0
+[Meters Analysed] =
+COUNTROWS ( mart_energy_exceptions )
+
+-- Meters with at least one fault label. Format: 0
+[Meters With Findings] =
+CALCULATE (
+    COUNTROWS ( mart_energy_exceptions ),
+    NOT ISBLANK ( mart_energy_exceptions[types] )
+)
+
+-- Share of meters with a finding. Format: 0.0%
+[Meters With Findings %] =
+DIVIDE ( [Meters With Findings], [Meters Analysed] )
+
+-- Attributed annual kWh (excess above baseline on flagged meters only).
+-- Format: #,##0
+[Attributed kWh/yr] =
+SUM ( fct_meter_anomaly[kwh_year] )
+
+-- Attributed annual cost at the illustrative £0.28/kWh tariff. Format: £#,##0
+[Attributed £/yr] =
+SUM ( fct_meter_anomaly[gbp_year] )
+
+-- Attributed annual carbon using DESNZ 2025 factors already applied in the
+-- pipeline (electricity 0.177, gas 0.2027 kgCO2e/kWh). Format: #,##0
+[Attributed kgCO2e/yr] =
+SUM ( fct_meter_anomaly[kgco2e_year] )
+
+-- Savings uncertainty band (±25% default). Format: #,##0
+[Savings Low kWh/yr] =
+CALCULATE ( [Attributed kWh/yr], ALL ( fct_meter_anomaly ) ) * 0.75
+    -- For a per-row band use SUM(fct_meter_anomaly[kwh_lo]) / [kwh_hi] instead;
+    -- these two columns are the stated ±25% band for each meter.
+
+[Savings High kWh/yr] =
+SUM ( fct_meter_anomaly[kwh_hi] )
+
+-- £/m² is deliberately absent: P16 has no floor-area join. Do not add one
+-- without sourcing floor areas from the P07/P18 asset tables, or the ratio
+-- will silently mix synthetic and real denominators.
+
+-- Findings by fault type. Format: 0
+[Findings by Type] =
+COUNTROWS ( fct_finding )
+
+-- Meters where overnight baseload is the dominant complaint. Format: 0
+[Overnight Baseload Meters] =
+CALCULATE (
+    COUNTROWS ( mart_energy_exceptions ),
+    CONTAINS ( "high_overnight_baseload", mart_energy_exceptions[types], 0 )
+)
+
+-- Meters with a stuck/missing-meter fault: these carry £0 savings by design.
+-- Format: 0
+[Meter Faults] =
+CALCULATE (
+    COUNTROWS ( mart_energy_exceptions ),
+    CONTAINS ( "flatline_meter_fault", mart_energy_exceptions[types], 0 )
+)
+
+-- Average annual savings per flagged meter. Format: £#,##0
+[Avg £/Flagged Meter] =
+DIVIDE ( [Attributed £/yr], [Meters With Findings] )
+
+-- Share of attributed cost carried by the top 3 meters. Format: 0.0%
+[Top 3 Cost Concentration] =
+DIVIDE (
+    CALCULATE (
+        [Attributed £/yr],
+        TOPN ( 3, mart_energy_exceptions, [Attributed £/yr], DESC )
+    ),
+    [Attributed £/yr]
+)
+
+-- Rank within the exceptions list (1 = highest £/yr). Format: 0
+[Finding Rank] =
+RANKX (
+    ALL ( mart_energy_exceptions ),
+    [Attributed £/yr],
+    DESC,
+    DENSE
+)
+
+-- Step-change attribution flag: 1 where the finding is a change-point step.
+-- Use in a table to explain why a meter is listed.
+[Is Step Change] =
+CONTAINS ( "step_change", mart_energy_exceptions[types], 0 )

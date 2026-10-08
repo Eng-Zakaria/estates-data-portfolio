@@ -1,0 +1,164 @@
+[
+  {
+    "building": "B007",
+    "meter_id": "M-B007-E01",
+    "source": "small",
+    "peak": 43.37686,
+    "types": "gradual_drift,high_overnight_baseload,step_change",
+    "kwh_year": 27918.7,
+    "gbp_year": 7817.23
+  },
+  {
+    "building": "B019",
+    "meter_id": "M-B019-G01",
+    "source": "default-cache",
+    "peak": 10.76261,
+    "types": "spike,step_change",
+    "kwh_year": 2912.0,
+    "gbp_year": 815.37
+  },
+  {
+    "building": "B008",
+    "meter_id": "M-B008-E01",
+    "source": "small",
+    "peak": 43.885230000000035,
+    "types": "spike",
+    "kwh_year": 310.8,
+    "gbp_year": 87.03
+  },
+  {
+    "building": "B004",
+    "meter_id": "M-B004-E01",
+    "source": "small",
+    "peak": 52.36907000000002,
+    "types": "spike",
+    "kwh_year": 189.8,
+    "gbp_year": 53.14
+  },
+  {
+    "building": "B006",
+    "meter_id": "M-B006-E01",
+    "source": "small",
+    "peak": 13.443200000000008,
+    "types": "spike",
+    "kwh_year": 64.5,
+    "gbp_year": 18.05
+  },
+  {
+    "building": "B002",
+    "meter_id": "M-B002-E01",
+    "source": "small",
+    "peak": 13.344670000000002,
+    "types": "spike",
+    "kwh_year": 54.1,
+    "gbp_year": 15.15
+  },
+  {
+    "building": "B001",
+    "meter_id": "M-B001-E01",
+    "source": "small",
+    "peak": 27.019670000000005,
+    "types": "step_change",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  },
+  {
+    "building": "B001",
+    "meter_id": "M-B001-G01",
+    "source": "small",
+    "peak": 9.117430000000002,
+    "types": "",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  },
+  {
+    "building": "B002",
+    "meter_id": "M-B002-G01",
+    "source": "small",
+    "peak": 4.851,
+    "types": "",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  },
+  {
+    "building": "B003",
+    "meter_id": "M-B003-E01",
+    "source": "small",
+    "peak": 17.40905,
+    "types": "step_change",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  },
+  {
+    "building": "B003",
+    "meter_id": "M-B003-G01",
+    "source": "small",
+    "peak": 6.148670000000003,
+    "types": "",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  },
+  {
+    "building": "B004",
+    "meter_id": "M-B004-G01",
+    "source": "small",
+    "peak": 16.777100000000004,
+    "types": "",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  },
+  {
+    "building": "B005",
+    "meter_id": "M-B005-E01",
+    "source": "small",
+    "peak": 38.03206000000001,
+    "types": "step_change",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  },
+  {
+    "building": "B005",
+    "meter_id": "M-B005-G01",
+    "source": "small",
+    "peak": 12.616810000000001,
+    "types": "",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  },
+  {
+    "building": "B006",
+    "meter_id": "M-B006-G01",
+    "source": "small",
+    "peak": 4.811150000000006,
+    "types": "",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  },
+  {
+    "building": "B007",
+    "meter_id": "M-B007-G01",
+    "source": "small",
+    "peak": 14.263430000000001,
+    "types": "",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  },
+  {
+    "building": "B008",
+    "meter_id": "M-B008-G01",
+    "source": "small",
+    "peak": 14.032200000000008,
+    "types": "",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  },
+  {
+    "building": "B015",
+    "meter_id": "M-B015-E01",
+    "source": "default-cache",
+    "peak": 38.496,
+    "types": "flatline_meter_fault,step_change",
+    "kwh_year": 0.0,
+    "gbp_year": 0.0
+  }
+]
