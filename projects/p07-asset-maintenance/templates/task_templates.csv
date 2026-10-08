@@ -1,0 +1,29 @@
+# Maintenance task-template library (synthetic)
+
+> **These are SFG20-style GENERIC example templates, not SFG20 content.**
+> SFG20 is a commercial (BESA) maintenance specification; its task
+> schedules are licensed and must not be reproduced here. This file shows
+> how real SFG20 (or in-house) task templates would link to assets by
+> `asset_type`. A production deployment would load the actual SFG20
+> schedule under licence into the same schema.
+#
+template_id,asset_type,frequency_months,trade,template_name,source_note
+TT-001,AHU,3,Mechanical,"AHU quarterly inspection (filters, belts, coils)","SFG20-style generic, not SFG20 content"
+TT-002,AHU,12,Mechanical,"AHU annual strip-down and recommission","SFG20-style generic, not SFG20 content"
+TT-003,Boiler,12,Mechanical,"Boiler annual service and flue inspection","SFG20-style generic, not SFG20 content"
+TT-004,Chiller,3,Mechanical,"Chiller quarterly refrigerant and oil check","SFG20-style generic, not SFG20 content"
+TT-005,Pump,6,Mechanical,"Pump six-monthly seal and vibration check","SFG20-style generic, not SFG20 content"
+TT-006,Fan Coil,12,Mechanical,"Fan coil annual clean and filter change","SFG20-style generic, not SFG20 content"
+TT-007,VAV Box,12,Mechanical,"VAV box annual damper and sensor check","SFG20-style generic, not SFG20 content"
+TT-008,Radiator,12,Fabric,"Radiator annual valve and leak check","SFG20-style generic, not SFG20 content"
+TT-009,Lift,6,Fabric,"Lift six-monthly LOLER-style thorough examination","SFG20-style generic, not SFG20 content"
+TT-010,Fire Alarm Panel,6,Electrical,"Fire alarm panel six-monthly test","SFG20-style generic, not SFG20 content"
+TT-011,UPS,12,Electrical,"UPS annual battery load test","SFG20-style generic, not SFG20 content"
+TT-012,Generator,12,Electrical,"Generator annual load-bank test","SFG20-style generic, not SFG20 content"
+TT-013,Lighting,12,Electrical,"Lighting annual condition and emergency check","SFG20-style generic, not SFG20 content"
+TT-014,Sprinkler Pump,6,Mechanical,"Sprinkler pump six-monthly flow test","SFG20-style generic, not SFG20 content"
+TT-015,BMS Controller,12,Controls,"BMS controller annual point-to-point check","SFG20-style generic, not SFG20 content"
+TT-016,Access Controller,12,Controls,"Access controller annual reader and lock audit","SFG20-style generic, not SFG20 content"
+TT-017,Fume Cupboard,6,Controls,"Fume cupboard six-monthly LEV face-velocity check","SFG20-style generic, not SFG20 content"
+TT-018,Autoclave,12,Controls,"Autoclave annual pressure-vessel check","SFG20-style generic, not SFG20 content"
+TT-019,Statutory,12,Fabric,"Statutory inspection placeholder (EICR/gas/lifts)","SFG20-style generic, not SFG20 content"

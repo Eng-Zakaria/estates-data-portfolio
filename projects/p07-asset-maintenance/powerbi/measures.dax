@@ -1,0 +1,90 @@
+// P07 measures.dax — Asset & maintenance performance (synthetic).
+// Format strings included. Ties to validation/v01-v05.sql.
+
+// ---- Page 1: Overview ----
+
+// Total work orders raised. Format: 0
+Total WOs = COUNTROWS ( fct_work_order )
+
+// PPM completion % = PPM complete / PPM raised. Format: 0.0%
+PPM Completion % =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( fct_work_order ), fct_work_order[wo_type] = "PPM", fct_work_order[status] = "Complete" ),
+    CALCULATE ( COUNTROWS ( fct_work_order ), fct_work_order[wo_type] = "PPM" )
+)
+
+// Planned : reactive ratio. Format: 0.00
+Planned : Reactive =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( fct_work_order ), fct_work_order[plan_category] IN { "planned", "other_planned" } ),
+    CALCULATE ( COUNTROWS ( fct_work_order ), fct_work_order[wo_type] = "Reactive" )
+)
+
+// Reactive MTTR (days). Format: 0.0
+MTTR Days =
+AVERAGEX (
+    FILTER ( fct_work_order, fct_work_order[wo_type] = "Reactive" && fct_work_order[status] = "Complete" ),
+    fct_work_order[days_to_complete]
+)
+
+// Total WO cost. Format: £#,##0
+Total Cost £ = SUM ( fct_work_order[cost_gbp] )
+
+// Cost per m2 GIA. Format: £0.000
+Cost per m2 £ =
+DIVIDE ( [Total Cost £], SUM ( dim_building[gia_m2] ) )
+
+// ---- Page 2: Backlog & SLA ----
+
+// Open backlog count. Format: 0
+Backlog Count =
+CALCULATE ( COUNTROWS ( fct_work_order ), fct_work_order[is_open] = TRUE () )
+
+// Backlog age band (calculated column on fct_work_order, see build-guide):
+// 0-30 / 31-90 / 91-180 / 180+ days from raised_ts to as-of date.
+// SLA met % by priority. Format: 0.0%
+SLA Met % =
+VAR TargetDays =
+    SWITCH (
+        SELECTEDVALUE ( fct_work_order[priority] ),
+        "P1", 1, "P2", 5, "P3", 10, "P4", 20, BLANK ()
+    )
+RETURN
+    DIVIDE (
+        CALCULATE (
+            COUNTROWS ( fct_work_order ),
+            fct_work_order[status] = "Complete",
+            fct_work_order[days_to_complete] <= TargetDays
+        ),
+        CALCULATE ( COUNTROWS ( fct_work_order ), fct_work_order[status] = "Complete" )
+    )
+
+// ---- Page 3: Reliability ----
+
+// Repeat-failure assets (>= 3 reactive in 12m). Format: 0
+Repeat Failure Assets =
+CALCULATE ( COUNTROWS ( mart_asset_health ), mart_asset_health[is_repeat_failure] = TRUE () )
+
+// Reactive jobs last 12m (asset grain). Format: 0
+Reactive 12m = SUM ( mart_asset_health[reactive_12m] )
+
+// MTBF days (assets with >= 2 reactive completions; computed in SQL view
+// v03, surfaced as a table visual — no single-value measure).
+
+// ---- Page 4: Lifecycle ----
+
+// Assets by condition grade (table visual on mart_asset_health[condition_grade]).
+// Remaining life % (asset grain). Format: 0%
+Remaining Life % = AVERAGE ( mart_asset_health[remaining_life_pct] )
+
+// 5-year renewal forecast £ by year (calculated column on dim_asset:
+// renewal_year = YEAR(install_date) + expected_life_years).
+// Format: £#,##0
+Renewal Forecast £ =
+CALCULATE (
+    SUM ( dim_asset[replacement_cost_gbp] ),
+    dim_asset[renewal_year] >= 2026 && dim_asset[renewal_year] <= 2030
+)
+
+// ---- Page 5: Building drill-through ----
+// All page-1/2/4 measures reused; drill-through filter = dim_building[building_id].

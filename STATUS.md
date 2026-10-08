@@ -12,7 +12,7 @@
 | P04 | dbt project | ✅ done | 2026-10-05 | acceptance: docs/ACCEPTANCE_P04.md — 196 pass/0 err, 147+2 tests |
 | P05 | CI/CD for data | ✅ done | 2026-10-05 | acceptance: docs/ACCEPTANCE_P05.md — workflows verified locally |
 | P06 | Space utilisation | ✅ done | 2026-10-05 | acceptance MISSING (review) — 7 tests, 5 validation SQL, PBI handoff |
-| P07 | Asset & maintenance | ☐ | | not started |
+| P07 | Asset & maintenance | ☑ done | 2026-10-08 | acceptance: projects/p07-asset-maintenance/docs/ACCEPTANCE_P07.md — 7 tests, 5 validation SQL, RLS + test cases, bad-actors top-10 (B012 plant default-only, reported) |
 | P08 | Net zero & carbon | ✅ done | 2026-10-05 | acceptance MISSING (review) — 7 tests, 4 validation SQL, PBI handoff |
 | P09 | Compliance tracker | ✅ done | 2026-10-05 | acceptance MISSING (review) — 11 tests, digest golden, 5 validation SQL, PBI |
 | P10 | Mock institutional return | ✅ done | 2026-10-06 | acceptance + SPEC MISSING (review) — 10 tests, deterministic re-run |

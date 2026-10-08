@@ -4,7 +4,9 @@
 
 | Name | URL | Licence | Version/year | Retrieved | Used for |
 |---|---|---|---|---|---|
-| (foundation) | — | — | — | — | Foundation `campus_synth` is 100% synthetic (numpy RNG + Faker names only). No standards codes, factors or rules are embedded. |
+| (foundation) | – | – | – | – | Foundation `campus_synth` is 100% synthetic (numpy RNG + Faker names only). No standards codes, factors or rules are embedded. |
+| P07 maintenance task-template library (synthetic) | – | – | – | – | `projects/p07-asset-maintenance/templates/task_templates.csv`: generic SFG20-style example templates mapped to asset_type. **Not SFG20 content** — SFG20 is a commercial BESA specification; real schedules would be loaded under licence into the same schema. |
+| P07 SLA targets by priority (synthetic config) | – | – | – | – | Illustrative config (P1 1d, P2 5d, P3 10d, P4 20d) in `projects/p07-asset-maintenance/methodology.md` and `powerbi/measures.dax`. The gold schema carries no SLA table; replace with the estate's actual SLA table before real use. |
 | DESNZ/DEFRA GHG conversion factors (flat-format workbook) | https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2025 (workbook: https://assets.publishing.service.gov.uk/media/6846b6ea57f3515d9611f0dd/ghg-conversion-factors-2025-flat-format.xlsx) | Open Government Licence v3.0 | 2025 | 2026-10-05 (re-fetched live by `platform/dbt/scripts/fetch_desnz.py`; byte-identical to committed seed) | P04 `dim_emission_factor` seed: electricity 0.177, natural gas 0.2027 kgCO2e/kWh. Factors extracted by script from the official workbook, never typed from memory. |
 
 | GHG Protocol Corporate Standard (scope definitions) | https://ghgprotocol.org/corporate-standard | Publicly available guidance; referenced here, not reproduced — check terms before redistributing excerpts | Current (cited 2026-10-05) | 2026-10-05 | P08 `methodology.md`: Scope 1/2 definitions. |

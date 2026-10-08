@@ -90,6 +90,9 @@ p11-run:
 p06-run:
 	$(PY) -m pytest projects/p06-space-utilisation/tests/ -q -p no:cacheprovider --no-cov
 
+p07-run:
+	$(PY) -m pytest projects/p07-asset-maintenance/tests/ -q -p no:cacheprovider --no-cov
+
 p19:
 	$(PY) projects/p19-spatial-carbon-map/scripts/fetch_osm.py
 	$(PY) projects/p19-spatial-carbon-map/scripts/build_outputs.py
