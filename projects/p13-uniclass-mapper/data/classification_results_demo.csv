@@ -1,0 +1,188 @@
+description,true_code,table,description_norm,asset_id,chosen_code,chosen_title,hybrid_score,confidence_band,matched_terms,cand_1,cand_1_score,cand_2,cand_2_score,cand_3,cand_3_score,is_mock
+AHU-03 air hndlg unit L2,Pr_50_20_10,Products,air handling unit air handling unit l2,0,Pr_50_20_10,Air handling units,0.999,auto,word:air;word:handling;word:unit;tag:prefix,Pr_50_20_10,0.999,Ss_50_20_10,0.588,Pr_50_20,0.463,True
+AHU-02 air handling unit roof,Pr_50_20_10,Products,air handling unit air handling unit roof,1,Pr_50_20_10,Air handling units,1.0,auto,word:air;word:handling;word:unit;tag:prefix,Pr_50_20_10,1.0,Ss_50_20_10,0.636,Pr_50_20,0.482,True
+Boiler no 2 (Remeha),Pr_50_10_10,Products,boiler number 2 remeha,2,Pr_50_10_10,Boilers,0.707,auto,word:boiler,Pr_50_10_10,0.707,Pr_50_70_10,0.586,Ss_50_10_10,0.44,True
+FCU-05 fan coil unit room 214,Pr_50_20_20,Products,fan coil unit fan coil unit room 214,3,Pr_50_20_20,Fan coil units,1.0,auto,word:coil;word:fan;word:unit;tag:prefix,Pr_50_20_20,1.0,Pr_50_20_40,0.813,Ss_50_20_20,0.697,True
+variable air volume box,Pr_50_20_30,Products,variable air volume box,4,Pr_50_20_30,VAV boxes,0.557,auto,word:vav,Pr_50_20_30,0.557,Ss_50_20_30,0.449,Pr_50_20_10,0.378,True
+boiler feed pump,Pr_50_40_10,Products,boiler feed pump,5,Pr_50_40_10,Pumps,0.89,auto,syn:boiler feed pump;word:pump,Pr_50_40_10,0.89,Pr_50_10_10,0.666,Pr_50_70_10,0.562,True
+roof extract fan,Pr_50_20_10,Products,roof extract fan,6,Pr_50_20_40,Fan coils,0.498,auto,word:fan,Pr_50_20_40,0.498,Pr_50_20_10,0.496,Pr_50_20_20,0.447,True
+plate heat exchanger HWS,Pr_50_20_10,Products,plate heat exchanger hws,7,Pr_50_10_20,Heat emitters,0.485,auto,word:heat,Pr_50_10_20,0.485,Pr_50_40_20,0.399,Pr_50_10,0.345,True
+high bay luminaire warehouse,Pr_50_30_20,Products,high bay luminaire warehouse,8,Pr_50_30_20,Luminaires,1.0,auto,syn:luminaire;syn:high bay;word:luminaire,Pr_50_30_20,1.0,Pr_30_30,0.249,Pr_50_30_10,0.249,True
+transformer 11kV/415V,Pr_50_30_10,Products,transformer 11kv 415v,9,Pr_50_30_10,Distribution boards,0.402,auto,syn:transformer,Pr_50_30_10,0.402,Pr_50_30,0.329,Pr_50_60_20,0.286,True
+generator set 500kVA,Pr_50_30_10,Products,generator set 500kva,10,Pr_50_30_10,Distribution boards,0.372,auto,syn:generator,Pr_50_30_10,0.372,Pr_50_30,0.299,Pr_70_20,0.28,True
+fire extinguisher CO2,Pr_50_50_10,Products,fire extinguisher co2,11,Pr_50_50_10,Fire extinguishers,1.0,auto,syn:fire extinguisher;word:extinguisher;word:fire,Pr_50_50_10,1.0,Ss_50_50_10,0.675,Pr_50_50,0.529,True
+smoke detector ceiling,Pr_50_60_20,Products,smoke detector ceiling,12,Pr_50_60_20,Sensors,0.625,auto,syn:smoke detector,Pr_50_60_20,0.625,Pr_50_50,0.335,Pr_50_10_20,0.329,True
+gas fired heater,Pr_50_70_10,Products,gas fired heater,13,Pr_50_70_10,Gas boilers,0.846,auto,syn:gas fired heater;word:gas,Pr_50_70_10,0.846,Pr_50_70,0.531,Pr_50_40_20,0.528,True
+humidity sensor AHU,Pr_50_60_20,Products,humidity sensor air handling unit,14,Pr_50_20_10,Air handling units,0.776,auto,word:air;word:handling;word:unit,Pr_50_20_10,0.776,Ss_50_20_10,0.516,Pr_50_20,0.447,True
+hot water calorifier,Pr_50_40_20,Products,hot water calorifier,15,Pr_50_40_20,Water heaters,0.549,auto,word:water,Pr_50_40_20,0.549,Pr_60_10,0.369,Pr_60_20,0.319,True
+refrigeration system,Ss_50_80,Systems,refrigeration system,16,Ss_50_80,Refrigeration systems,1.0,auto,syn:refrigeration system;word:refrigeration;word:system,Ss_50_80,1.0,Ss_50_10,0.595,Ss_50_80_10,0.572,True
+air handling unit plantroom,Pr_50_20_10,Products,air handling unit plantroom,17,Pr_50_20_10,Air handling units,0.972,auto,word:air;word:handling;word:unit,Pr_50_20_10,0.972,Ss_50_20_10,0.72,Pr_50_20,0.512,True
+air handling unit no 2 (Remeha),Pr_50_20_10,Products,air handling unit number 2 remeha,18,Pr_50_20_10,Air handling units,0.835,auto,word:air;word:handling;word:unit,Pr_50_20_10,0.835,Ss_50_20_10,0.573,Pr_50_20,0.452,True
+AHU-03 air handling unit,Pr_50_20_10,Products,air handling unit air handling unit,19,Pr_50_20_10,Air handling units,1.0,auto,word:air;word:handling;word:unit;tag:prefix,Pr_50_20_10,1.0,Ss_50_20_10,0.636,Pr_50_20,0.482,True
+air handling unit no 3 (Worcester Bosch),Pr_50_20_10,Products,air handling unit number 3 worcester bosch,20,Pr_50_20_10,Air handling units,0.835,auto,word:air;word:handling;word:unit,Pr_50_20_10,0.835,Ss_50_20_10,0.573,Pr_50_20,0.452,True
+air hndling unit lab,Pr_50_20_10,Products,air hndling unit lab,21,Pr_50_20_10,Air handling units,0.804,auto,word:air;word:unit,Pr_50_20_10,0.804,Ss_50_20_10,0.485,Pr_50_20,0.476,True
+air handler roof,Pr_50_20_10,Products,air handler roof,22,Pr_50_20_10,Air handling units,0.607,auto,word:air,Pr_50_20_10,0.607,Pr_50_20,0.406,Ss_50_20_10,0.357,True
+air handler plantroom,Pr_50_20_10,Products,air handler plantroom,23,Pr_50_20_10,Air handling units,0.607,auto,word:air,Pr_50_20_10,0.607,Pr_50_20,0.406,Ss_50_20_10,0.357,True
+air handler no 1,Pr_50_20_10,Products,air handler number 1,24,Pr_50_20_10,Air handling units,0.542,auto,word:air,Pr_50_20_10,0.542,Pr_50_20,0.325,Ss_50_20_10,0.289,True
+ahu L1,Pr_50_20_10,Products,air handling unit l1,25,Pr_50_20_10,Air handling units,1.0,auto,word:air;word:handling;word:unit;tag:prefix,Pr_50_20_10,1.0,Ss_50_20_10,0.634,Pr_50_20,0.49,True
+ahu no 2 (Mitsubishi),Pr_50_20_10,Products,air handling unit number 2 mitsubishi,26,Pr_50_20_10,Air handling units,0.952,auto,word:air;word:handling;word:unit;tag:prefix,Pr_50_20_10,0.952,Ss_50_20_10,0.532,Pr_50_20,0.442,True
+boiler no 3,Pr_50_10_10,Products,boiler number 3,27,Pr_50_10_10,Boilers,0.707,auto,word:boiler,Pr_50_10_10,0.707,Pr_50_70_10,0.586,Ss_50_10_10,0.44,True
+oil boiler L1,Pr_50_10_10,Products,oil boiler l1,28,Pr_50_10_10,Boilers,0.784,auto,word:boiler,Pr_50_10_10,0.784,Pr_50_70_10,0.668,Ss_50_10_10,0.495,True
+oil boiler L3,Pr_50_10_10,Products,oil boiler l3,29,Pr_50_10_10,Boilers,0.784,auto,word:boiler,Pr_50_10_10,0.784,Pr_50_70_10,0.668,Ss_50_10_10,0.495,True
+condensing boiler basement,Pr_50_10_10,Products,condensing boiler basement,30,Pr_50_10_10,Boilers,0.689,auto,word:boiler,Pr_50_10_10,0.689,Pr_50_70_10,0.576,Ss_50_10_10,0.408,True
+condensing boiler room 110,Pr_50_10_10,Products,condensing boiler room 110,31,Pr_50_10_10,Boilers,0.689,auto,word:boiler,Pr_50_10_10,0.689,Pr_50_70_10,0.576,Ss_50_10_10,0.408,True
+condensing boiler no 2,Pr_50_10_10,Products,condensing boiler number 2,32,Pr_50_10_10,Boilers,0.596,auto,word:boiler,Pr_50_10_10,0.596,Pr_50_70_10,0.499,Ss_50_10_10,0.365,True
+biomass boiler L3,Pr_50_10_10,Products,biomass boiler l3,33,Pr_50_10_10,Boilers,0.704,auto,word:boiler,Pr_50_10_10,0.704,Pr_50_70_10,0.559,Ss_50_10_10,0.436,True
+biomass boiler rm 305,Pr_50_10_10,Products,biomass boiler room 305,34,Pr_50_10_10,Boilers,0.704,auto,word:boiler,Pr_50_10_10,0.704,Pr_50_70_10,0.559,Ss_50_10_10,0.436,True
+biomass boiler no 1 (Grundfos),Pr_50_10_10,Products,biomass boiler number 1 grundfos,35,Pr_50_10_10,Boilers,0.588,auto,word:boiler,Pr_50_10_10,0.588,Pr_50_70_10,0.495,Ss_50_10_10,0.362,True
+boiler plant roof,Pr_50_10_10,Products,boiler plant roof,36,Pr_50_10_10,Boilers,0.915,auto,word:boiler,Pr_50_10_10,0.915,Pr_50_70_10,0.689,Ss_50_10_10,0.65,True
+boiler plant rm 101,Pr_50_10_10,Products,boiler plant room 101,37,Pr_50_10_10,Boilers,0.915,auto,word:boiler,Pr_50_10_10,0.915,Pr_50_70_10,0.689,Ss_50_10_10,0.65,True
+boiler plant rm 214,Pr_50_10_10,Products,boiler plant room 214,38,Pr_50_10_10,Boilers,0.915,auto,word:boiler,Pr_50_10_10,0.915,Pr_50_70_10,0.689,Ss_50_10_10,0.65,True
+boiler plant rm 305,Pr_50_10_10,Products,boiler plant room 305,39,Pr_50_10_10,Boilers,0.915,auto,word:boiler,Pr_50_10_10,0.915,Pr_50_70_10,0.689,Ss_50_10_10,0.65,True
+boiler plant no 1 (Satchwell),Pr_50_10_10,Products,boiler plant number 1 satchwell,40,Pr_50_10_10,Boilers,0.707,auto,word:boiler,Pr_50_10_10,0.707,Pr_50_70_10,0.586,Ss_50_10_10,0.44,True
+boiler plant no 2,Pr_50_10_10,Products,boiler plant number 2,41,Pr_50_10_10,Boilers,0.707,auto,word:boiler,Pr_50_10_10,0.707,Pr_50_70_10,0.586,Ss_50_10_10,0.44,True
+fan coil unit no 2,Pr_50_20_20,Products,fan coil unit number 2,42,Pr_50_20_20,Fan coil units,0.835,auto,word:coil;word:fan;word:unit,Pr_50_20_20,0.835,Pr_50_20_40,0.7,Ss_50_20_20,0.557,True
+fan coil unit no 3,Pr_50_20_20,Products,fan coil unit number 3,43,Pr_50_20_20,Fan coil units,0.835,auto,word:coil;word:fan;word:unit,Pr_50_20_20,0.835,Pr_50_20_40,0.7,Ss_50_20_20,0.557,True
+fan coil corridor,Pr_50_20_40,Products,fan coil corridor,44,Pr_50_20_40,Fan coils,0.953,auto,word:coil;word:fan,Pr_50_20_40,0.953,Pr_50_20_20,0.87,Ss_50_20_40,0.674,True
+fan coil no 1 (Daikin),Pr_50_20_40,Products,fan coil number 1 daikin,45,Pr_50_20_40,Fan coils,0.768,auto,word:coil;word:fan,Pr_50_20_40,0.768,Pr_50_20_20,0.723,Ss_50_20_40,0.493,True
+FCU-02 fan coil,Pr_50_20_40,Products,fan coil unit fan coil,46,Pr_50_20_40,Fan coils,1.0,auto,word:coil;word:fan;tag:prefix,Pr_50_20_40,1.0,Pr_50_20_20,0.855,Ss_50_20_40,0.664,True
+FCU-03 fan coil,Pr_50_20_40,Products,fan coil unit fan coil,47,Pr_50_20_40,Fan coils,1.0,auto,word:coil;word:fan;tag:prefix,Pr_50_20_40,1.0,Pr_50_20_20,0.855,Ss_50_20_40,0.664,True
+fcu corridor,Pr_50_20_40,Products,fan coil unit corridor,48,Pr_50_20_40,Fan coils,1.0,auto,word:coil;word:fan;tag:prefix,Pr_50_20_40,1.0,Pr_50_20_20,0.87,Ss_50_20_40,0.674,True
+fcu no 2 (Daikin),Pr_50_20_40,Products,fan coil unit number 2 daikin,49,Pr_50_20_40,Fan coils,0.918,auto,word:coil;word:fan;tag:prefix,Pr_50_20_40,0.918,Pr_50_20_20,0.723,Ss_50_20_40,0.493,True
+vav box corridor,Pr_50_20_30,Products,variable air volume box corridor,50,Pr_50_20_30,VAV boxes,0.723,auto,word:vav;tag:prefix,Pr_50_20_30,0.723,Ss_50_20_30,0.46,Pr_50_20_10,0.369,True
+vav box no 3 (Hamworthy),Pr_50_20_30,Products,variable air volume box number 3 hamworthy,51,Pr_50_20_30,VAV boxes,0.714,auto,word:vav;tag:prefix,Pr_50_20_30,0.714,Ss_50_20_30,0.438,Pr_50_20,0.333,True
+variable air volume box corridor,Pr_50_20_30,Products,variable air volume box corridor,52,Pr_50_20_30,VAV boxes,0.557,auto,word:vav,Pr_50_20_30,0.557,Ss_50_20_30,0.449,Pr_50_20_10,0.378,True
+variable air volume box lab,Pr_50_20_30,Products,variable air volume box lab,53,Pr_50_20_30,VAV boxes,0.557,auto,word:vav,Pr_50_20_30,0.557,Ss_50_20_30,0.449,Pr_50_20_10,0.378,True
+VAV-01 variable air volume box,Pr_50_20_30,Products,variable air volume variable air volume box,54,Pr_50_20_30,VAV boxes,0.707,auto,word:vav;tag:prefix,Pr_50_20_30,0.707,Ss_50_20_30,0.442,Pr_50_20_10,0.369,True
+variable air volume box no 2 (Daikin),Pr_50_20_30,Products,variable air volume box number 2 daikin,55,Pr_50_20_30,VAV boxes,0.552,auto,word:vav,Pr_50_20_30,0.552,Ss_50_20_30,0.43,Pr_50_20_10,0.346,True
+vav basement,Pr_50_20_30,Products,variable air volume basement,56,Pr_50_20_30,VAV boxes,0.672,auto,word:vav;tag:prefix,Pr_50_20_30,0.672,Pr_50_20_10,0.406,Pr_50_20,0.342,True
+vav room 110,Pr_50_20_30,Products,variable air volume room 110,57,Pr_50_20_30,VAV boxes,0.672,auto,word:vav;tag:prefix,Pr_50_20_30,0.672,Pr_50_20_10,0.406,Pr_50_20,0.342,True
+vav no 3,Pr_50_20_30,Products,variable air volume number 3,58,Pr_50_20_30,VAV boxes,0.667,auto,word:vav;tag:prefix,Pr_50_20_30,0.667,Pr_50_20_10,0.364,Pr_50_20,0.337,True
+chiller roof,Pr_50_80_10,Products,chiller roof,59,Pr_50_80_10,Chillers,0.958,auto,word:chiller,Pr_50_80_10,0.958,Ss_50_80_10,0.595,Pr_50_10_10,0.341,True
+CH-02 chiller,Pr_50_80_10,Products,ch-02 chiller,60,Pr_50_80_10,Chillers,1.0,auto,word:chiller;tag:prefix,Pr_50_80_10,1.0,Ss_50_80_10,0.595,Pr_50_10_10,0.341,True
+chiller no 2,Pr_50_80_10,Products,chiller number 2,61,Pr_50_80_10,Chillers,0.755,auto,word:chiller,Pr_50_80_10,0.755,Ss_50_80_10,0.431,Pr_50_40_20,0.31,True
+absorption chiller L2,Pr_50_80_10,Products,absorption chiller l2,62,Pr_50_80_10,Chillers,0.651,auto,word:chiller,Pr_50_80_10,0.651,Ss_50_80_10,0.448,Pr_50_10_10,0.328,True
+absorption chiller roof,Pr_50_80_10,Products,absorption chiller roof,63,Pr_50_80_10,Chillers,0.651,auto,word:chiller,Pr_50_80_10,0.651,Ss_50_80_10,0.448,Pr_50_10_10,0.328,True
+absorption chiller plantroom,Pr_50_80_10,Products,absorption chiller plantroom,64,Pr_50_80_10,Chillers,0.651,auto,word:chiller,Pr_50_80_10,0.651,Ss_50_80_10,0.448,Pr_50_10_10,0.328,True
+absorption chiller rm 305,Pr_50_80_10,Products,absorption chiller room 305,65,Pr_50_80_10,Chillers,0.651,auto,word:chiller,Pr_50_80_10,0.651,Ss_50_80_10,0.448,Pr_50_10_10,0.328,True
+CH-02 absorption chiller,Pr_50_80_10,Products,ch-02 absorption chiller,66,Pr_50_80_10,Chillers,0.801,auto,word:chiller;tag:prefix,Pr_50_80_10,0.801,Ss_50_80_10,0.448,Pr_50_10_10,0.328,True
+air cooled chiller rm 214,Pr_50_80_10,Products,air cooled chiller room 214,67,Pr_50_80_10,Chillers,0.709,auto,word:chiller,Pr_50_80_10,0.709,Ss_50_80_10,0.49,Pr_50_20_10,0.361,True
+air cooled chiller no 2 (Daikin),Pr_50_80_10,Products,air cooled chiller number 2 daikin,68,Pr_50_80_10,Chillers,0.619,auto,word:chiller,Pr_50_80_10,0.619,Ss_50_80_10,0.427,Pr_50_20,0.328,True
+chilled water pump basement,Pr_50_40_10,Products,chilled water pump basement,69,Pr_50_40_10,Pumps,0.89,auto,syn:chilled water pump;word:pump,Pr_50_40_10,0.89,Pr_50_40_20,0.504,Pr_60_10,0.384,True
+chilled water pump lab,Pr_50_40_10,Products,chilled water pump lab,70,Pr_50_40_10,Pumps,0.89,auto,syn:chilled water pump;word:pump,Pr_50_40_10,0.89,Pr_50_40_20,0.504,Pr_60_10,0.384,True
+chilled water pump no 2,Pr_50_40_10,Products,chilled water pump number 2,71,Pr_50_40_10,Pumps,0.69,auto,syn:chilled water pump;word:pump,Pr_50_40_10,0.69,Pr_50_40_20,0.465,Pr_60_10,0.336,True
+P-02 heating water pump,Pr_50_40_10,Products,p-02 heating water pump,72,Pr_50_40_10,Pumps,0.862,auto,syn:heating water pump;word:pump,Pr_50_40_10,0.862,Pr_50_40_20,0.589,Pr_50_10,0.538,True
+heating water pump no 2 (Worcester Bosch),Pr_50_40_10,Products,heating water pump number 2 worcester bosch,73,Pr_50_40_10,Pumps,0.686,auto,syn:heating water pump;word:pump,Pr_50_40_10,0.686,Pr_50_40_20,0.55,Pr_50_10,0.472,True
+condensate pump roof,Pr_50_40_10,Products,condensate pump roof,74,Pr_50_40_10,Pumps,0.9,auto,syn:condensate pump;word:pump,Pr_50_40_10,0.9,Ss_50_40_10,0.381,Pr_50_40,0.264,True
+condensate pump plantroom,Pr_50_40_10,Products,condensate pump plantroom,75,Pr_50_40_10,Pumps,0.9,auto,syn:condensate pump;word:pump,Pr_50_40_10,0.9,Ss_50_40_10,0.381,Pr_50_40,0.264,True
+P-01 condensate pump,Pr_50_40_10,Products,p-01 condensate pump,76,Pr_50_40_10,Pumps,0.9,auto,syn:condensate pump;word:pump,Pr_50_40_10,0.9,Ss_50_40_10,0.381,Pr_50_40,0.264,True
+condensate pump no 3,Pr_50_40_10,Products,condensate pump number 3,77,Pr_50_40_10,Pumps,0.7,auto,syn:condensate pump;word:pump,Pr_50_40_10,0.7,Ss_50_40_10,0.308,Pr_50_40,0.265,True
+boiler feed pump basement,Pr_50_40_10,Products,boiler feed pump basement,78,Pr_50_40_10,Pumps,0.89,auto,syn:boiler feed pump;word:pump,Pr_50_40_10,0.89,Pr_50_10_10,0.666,Pr_50_70_10,0.562,True
+boiler feed pump corridor,Pr_50_40_10,Products,boiler feed pump corridor,79,Pr_50_40_10,Pumps,0.89,auto,syn:boiler feed pump;word:pump,Pr_50_40_10,0.89,Pr_50_10_10,0.666,Pr_50_70_10,0.562,True
+boiler feed pump no 2,Pr_50_40_10,Products,boiler feed pump number 2,80,Pr_50_40_10,Pumps,0.794,auto,syn:boiler feed pump;word:pump,Pr_50_40_10,0.794,Pr_50_10_10,0.552,Pr_50_70_10,0.462,True
+luminaire L1,Pr_50_30_20,Products,luminaire l1,81,Pr_50_30_20,Luminaires,1.0,auto,syn:luminaire;word:luminaire,Pr_50_30_20,1.0,Pr_40_10,0.344,Pr_10_10,0.244,True
+luminaire plantroom,Pr_50_30_20,Products,luminaire plantroom,82,Pr_50_30_20,Luminaires,1.0,auto,syn:luminaire;word:luminaire,Pr_50_30_20,1.0,Pr_40_10,0.344,Pr_10_10,0.244,True
+luminaire rm 101,Pr_50_30_20,Products,luminaire room 101,83,Pr_50_30_20,Luminaires,1.0,auto,syn:luminaire;word:luminaire,Pr_50_30_20,1.0,Pr_40_10,0.344,Pr_10_10,0.244,True
+luminaire no 1,Pr_50_30_20,Products,luminaire number 1,84,Pr_50_30_20,Luminaires,1.0,auto,syn:luminaire;word:luminaire,Pr_50_30_20,1.0,Pr_40_10,0.2,Pr_60_20,0.195,True
+luminaire no 3 (Daikin),Pr_50_30_20,Products,luminaire number 3 daikin,85,Pr_50_30_20,Luminaires,1.0,auto,syn:luminaire;word:luminaire,Pr_50_30_20,1.0,Pr_40_10,0.2,Pr_60_20,0.195,True
+led panel light L3,Pr_50_30_20,Products,led panel light l3,86,Pr_50_30_20,Luminaires,0.565,auto,syn:led panel light,Pr_50_30_20,0.565,Pr_30_30,0.242,Pr_50_10_20,0.24,True
+led panel light plantroom,Pr_50_30_20,Products,led panel light plantroom,87,Pr_50_30_20,Luminaires,0.565,auto,syn:led panel light,Pr_50_30_20,0.565,Pr_30_30,0.242,Pr_50_10_20,0.24,True
+led panel light basement,Pr_50_30_20,Products,led panel light basement,88,Pr_50_30_20,Luminaires,0.565,auto,syn:led panel light,Pr_50_30_20,0.565,Pr_30_30,0.242,Pr_50_10_20,0.24,True
+led panel light no 1,Pr_50_30_20,Products,led panel light number 1,89,Pr_50_30_20,Luminaires,0.533,auto,syn:led panel light,Pr_50_30_20,0.533,Pr_50_30,0.204,Pr_50_10_20,0.203,True
+led panel light no 2,Pr_50_30_20,Products,led panel light number 2,90,Pr_50_30_20,Luminaires,0.533,auto,syn:led panel light,Pr_50_30_20,0.533,Pr_50_30,0.204,Pr_50_10_20,0.203,True
+downlight lab,Pr_50_30_20,Products,downlight lab,91,Pr_50_30_20,Luminaires,0.452,auto,syn:downlight,Pr_50_30_20,0.452,Pr_40_10,0.226,Pr_30_30,0.217,True
+downlight no 1,Pr_50_30_20,Products,downlight number 1,92,Pr_50_30_20,Luminaires,0.522,auto,syn:downlight,Pr_50_30_20,0.522,Pr_30_30,0.21,Pr_40_10,0.206,True
+high bay light rm 101,Pr_50_30_20,Products,high bay light room 101,93,Pr_50_30_20,Luminaires,0.423,auto,syn:high bay,Pr_50_30_20,0.423,Pr_30_30,0.228,Pr_50_30_10,0.226,True
+high bay light room 110,Pr_50_30_20,Products,high bay light room 110,94,Pr_50_30_20,Luminaires,0.423,auto,syn:high bay,Pr_50_30_20,0.423,Pr_30_30,0.228,Pr_50_30_10,0.226,True
+high bay light corridor,Pr_50_30_20,Products,high bay light corridor,95,Pr_50_30_20,Luminaires,0.423,auto,syn:high bay,Pr_50_30_20,0.423,Pr_30_30,0.228,Pr_50_30_10,0.226,True
+DB-02 distribution board,Pr_50_30_10,Products,db-02 distribution board,96,Pr_50_30_10,Distribution boards,1.0,auto,syn:distribution board;word:board;word:distribution;tag:prefix,Pr_50_30_10,1.0,Ss_50_30_10,0.395,Pr_50_30,0.263,True
+distribution board no 2 (Daikin),Pr_50_30_10,Products,distribution board number 2 daikin,97,Pr_50_30_10,Distribution boards,1.0,auto,syn:distribution board;word:board;word:distribution,Pr_50_30_10,1.0,Ss_50_30_10,0.264,Pr_50_40,0.21,True
+mcc L3,Pr_50_30_10,Products,motor control centre l3,98,Pr_50_30_10,Distribution boards,0.506,auto,syn:mcc;tag:prefix,Pr_50_30_10,0.506,Pr_50_60,0.425,Pr_70,0.398,True
+mcc rm 305,Pr_50_30_10,Products,motor control centre room 305,99,Pr_50_30_10,Distribution boards,0.506,auto,syn:mcc;tag:prefix,Pr_50_30_10,0.506,Pr_50_60,0.425,Pr_70,0.398,True
+mcc no 2,Pr_50_30_10,Products,motor control centre number 2,100,Pr_50_30_10,Distribution boards,0.571,auto,syn:mcc;tag:prefix,Pr_50_30_10,0.571,Pr_50_60,0.343,Pr_70,0.321,True
+ups L2,Pr_50_30_10,Products,uninterruptible power supply l2,101,Pr_50_30_10,Distribution boards,0.338,auto,tag:prefix,Pr_50_30_10,0.338,Pr_50_40,0.29,Pr_50_30,0.229,True
+ups no 1,Pr_50_30_10,Products,uninterruptible power supply number 1,102,Pr_50_30_10,Distribution boards,0.329,auto,tag:prefix,Pr_50_30_10,0.329,Pr_50_40,0.287,Pr_70_20,0.194,True
+generator L2,Pr_50_30_10,Products,generator l2,103,Pr_50_30_10,Distribution boards,0.396,auto,syn:generator,Pr_50_30_10,0.396,Pr_70_20,0.342,Pr_50_30,0.308,True
+generator L3,Pr_50_30_10,Products,generator l3,104,Pr_50_30_10,Distribution boards,0.396,auto,syn:generator,Pr_50_30_10,0.396,Pr_70_20,0.342,Pr_50_30,0.308,True
+generator roof,Pr_50_30_10,Products,generator roof,105,Pr_50_30_10,Distribution boards,0.396,auto,syn:generator,Pr_50_30_10,0.396,Pr_70_20,0.342,Pr_50_30,0.308,True
+generator rm 214,Pr_50_30_10,Products,generator room 214,106,Pr_50_30_10,Distribution boards,0.396,auto,syn:generator,Pr_50_30_10,0.396,Pr_70_20,0.342,Pr_50_30,0.308,True
+generator corridor,Pr_50_30_10,Products,generator corridor,107,Pr_50_30_10,Distribution boards,0.396,auto,syn:generator,Pr_50_30_10,0.396,Pr_70_20,0.342,Pr_50_30,0.308,True
+generator lab,Pr_50_30_10,Products,generator lab,108,Pr_50_30_10,Distribution boards,0.396,auto,syn:generator,Pr_50_30_10,0.396,Pr_70_20,0.342,Pr_50_30,0.308,True
+generator no 2 (Satchwell),Pr_50_30_10,Products,generator number 2 satchwell,109,Pr_50_30_10,Distribution boards,0.342,auto,syn:generator,Pr_50_30_10,0.342,Pr_70_20,0.262,Pr_50_30,0.257,True
+fire extinguisher no 1 (Satchwell),Pr_50_50_10,Products,fire extinguisher number 1 satchwell,110,Pr_50_50_10,Fire extinguishers,1.0,auto,syn:fire extinguisher;word:extinguisher;word:fire,Pr_50_50_10,1.0,Ss_50_50_10,0.555,Pr_50_50,0.47,True
+FE-02 fire extinguisher,Pr_50_50_10,Products,fe-02 fire extinguisher,111,Pr_50_50_10,Fire extinguishers,1.0,auto,syn:fire extinguisher;word:extinguisher;word:fire;tag:prefix,Pr_50_50_10,1.0,Ss_50_50_10,0.675,Pr_50_50,0.529,True
+fire alarm panel corridor,Pr_50_50_10,Products,fire alarm panel corridor,112,Pr_50_50_10,Fire extinguishers,0.781,auto,syn:fire alarm panel;word:fire,Pr_50_50_10,0.781,Pr_50_50,0.497,Ss_50_50,0.281,True
+FE-01 fire alarm panel,Pr_50_50_10,Products,fe-01 fire alarm panel,113,Pr_50_50_10,Fire extinguishers,0.931,auto,syn:fire alarm panel;word:fire;tag:prefix,Pr_50_50_10,0.931,Pr_50_50,0.497,Ss_50_50,0.281,True
+fire alarm panel no 3 (Grundfos),Pr_50_50_10,Products,fire alarm panel number 3 grundfos,114,Pr_50_50_10,Fire extinguishers,0.756,auto,syn:fire alarm panel;word:fire,Pr_50_50_10,0.756,Pr_50_50,0.451,Ss_50_50,0.225,True
+sprinkler room 110,Pr_50_50_20,Products,sprinkler room 110,115,Pr_50_50_20,Sprinklers,0.958,auto,word:sprinkler,Pr_50_50_20,0.958,Ss_50_50_20,0.631,Pr_50_10_10,0.308,True
+sprinkler lab,Pr_50_50_20,Products,sprinkler lab,116,Pr_50_50_20,Sprinklers,0.958,auto,word:sprinkler,Pr_50_50_20,0.958,Ss_50_50_20,0.631,Pr_50_10_10,0.308,True
+SPR-03 sprinkler,Pr_50_50_20,Products,spr-03 sprinkler,117,Pr_50_50_20,Sprinklers,1.0,auto,word:sprinkler;tag:prefix,Pr_50_50_20,1.0,Ss_50_50_20,0.631,Pr_50_10_10,0.308,True
+fire damper L1,Pr_50_50_20,Products,fire damper l1,118,Pr_50_50_20,Sprinklers,0.573,auto,syn:fire damper,Pr_50_50_20,0.573,Pr_50_50_10,0.534,Pr_50_50,0.531,True
+fire damper no 1,Pr_50_50_20,Products,fire damper number 1,119,Pr_50_50_20,Sprinklers,0.54,auto,syn:fire damper,Pr_50_50_20,0.54,Pr_50_50_10,0.484,Pr_50_50,0.436,True
+fire damper no 1 (Mitsubishi),Pr_50_50_20,Products,fire damper number 1 mitsubishi,120,Pr_50_50_20,Sprinklers,0.54,auto,syn:fire damper,Pr_50_50_20,0.54,Pr_50_50_10,0.484,Pr_50_50,0.436,True
+bms controller L1,Pr_50_60_10,Products,building management system controller l1,121,Pr_50_60_10,Building management systems,0.996,auto,syn:bms controller;word:management;word:system;tag:prefix,Pr_50_60_10,0.996,Pr_70_10,0.548,Pr_70,0.513,True
+bms controller plantroom,Pr_50_60_10,Products,building management system controller plantroom,122,Pr_50_60_10,Building management systems,0.996,auto,syn:bms controller;word:management;word:system;tag:prefix,Pr_50_60_10,0.996,Pr_70_10,0.548,Pr_70,0.513,True
+bms controller rm 214,Pr_50_60_10,Products,building management system controller room 214,123,Pr_50_60_10,Building management systems,0.996,auto,syn:bms controller;word:management;word:system;tag:prefix,Pr_50_60_10,0.996,Pr_70_10,0.548,Pr_70,0.513,True
+temperature sensor roof,Pr_50_60_20,Products,temperature sensor roof,124,Pr_50_60_20,Sensors,0.665,auto,word:sensor,Pr_50_60_20,0.665,Ss_50_60_20,0.388,Pr_70_20,0.353,True
+temperature sensor plantroom,Pr_50_60_20,Products,temperature sensor plantroom,125,Pr_50_60_20,Sensors,0.665,auto,word:sensor,Pr_50_60_20,0.665,Ss_50_60_20,0.388,Pr_70_20,0.353,True
+temperature sensor no 1 (Grundfos),Pr_50_60_20,Products,temperature sensor number 1 grundfos,126,Pr_50_60_20,Sensors,0.556,auto,word:sensor,Pr_50_60_20,0.556,Ss_50_60_20,0.304,Pr_50_10_20,0.274,True
+temperature sensor no 2,Pr_50_60_20,Products,temperature sensor number 2,127,Pr_50_60_20,Sensors,0.556,auto,word:sensor,Pr_50_60_20,0.556,Ss_50_60_20,0.304,Pr_50_10_20,0.274,True
+co2 sensor L1,Pr_50_60_20,Products,co2 sensor l1,128,Pr_50_60_20,Sensors,0.935,auto,word:sensor,Pr_50_60_20,0.935,Ss_50_60_20,0.633,Pr_70_20,0.36,True
+co2 sensor L3,Pr_50_60_20,Products,co2 sensor l3,129,Pr_50_60_20,Sensors,0.935,auto,word:sensor,Pr_50_60_20,0.935,Ss_50_60_20,0.633,Pr_70_20,0.36,True
+co2 sensor rm 101,Pr_50_60_20,Products,co2 sensor room 101,130,Pr_50_60_20,Sensors,0.935,auto,word:sensor,Pr_50_60_20,0.935,Ss_50_60_20,0.633,Pr_70_20,0.36,True
+co2 sensor corridor,Pr_50_60_20,Products,co2 sensor corridor,131,Pr_50_60_20,Sensors,0.935,auto,word:sensor,Pr_50_60_20,0.935,Ss_50_60_20,0.633,Pr_70_20,0.36,True
+pressure sensor plantroom,Pr_50_60_20,Products,pressure sensor plantroom,132,Pr_50_60_20,Sensors,0.676,auto,word:sensor,Pr_50_60_20,0.676,Ss_50_60_20,0.412,Pr_70_20,0.314,True
+S-01 pressure sensor,Pr_50_60_20,Products,s-01 pressure sensor,133,Pr_50_60_20,Sensors,0.676,auto,word:sensor,Pr_50_60_20,0.676,Ss_50_60_20,0.412,Pr_70_20,0.314,True
+humidity sensor L2,Pr_50_60_20,Products,humidity sensor l2,134,Pr_50_60_20,Sensors,0.649,auto,word:sensor,Pr_50_60_20,0.649,Ss_50_60_20,0.35,Pr_50_40_20,0.238,True
+humidity sensor rm 214,Pr_50_60_20,Products,humidity sensor room 214,135,Pr_50_60_20,Sensors,0.649,auto,word:sensor,Pr_50_60_20,0.649,Ss_50_60_20,0.35,Pr_50_40_20,0.238,True
+S-02 humidity sensor,Pr_50_60_20,Products,s-02 humidity sensor,136,Pr_50_60_20,Sensors,0.649,auto,word:sensor,Pr_50_60_20,0.649,Ss_50_60_20,0.35,Pr_50_40_20,0.238,True
+humidity sensor no 3,Pr_50_60_20,Products,humidity sensor number 3,137,Pr_50_60_20,Sensors,0.54,auto,word:sensor,Pr_50_60_20,0.54,Ss_50_60_20,0.285,Pr_70_20,0.26,True
+S-03 occupancy sensor,Pr_50_60_20,Products,s-03 occupancy sensor,138,Pr_50_60_20,Sensors,0.634,auto,word:sensor,Pr_50_60_20,0.634,Ss_50_60_20,0.351,Pr_70_20,0.287,True
+occupancy sensor no 3,Pr_50_60_20,Products,occupancy sensor number 3,139,Pr_50_60_20,Sensors,0.529,auto,word:sensor,Pr_50_60_20,0.529,Ss_50_60_20,0.284,Pr_70_20,0.249,True
+occupancy sensor no 3 (Remeha),Pr_50_60_20,Products,occupancy sensor number 3 remeha,140,Pr_50_60_20,Sensors,0.529,auto,word:sensor,Pr_50_60_20,0.529,Ss_50_60_20,0.284,Pr_70_20,0.249,True
+gas boiler basement,Pr_50_70_10,Products,gas boiler basement,141,Pr_50_70_10,Gas boilers,0.942,auto,word:boiler;word:gas,Pr_50_70_10,0.942,Pr_50_10_10,0.851,Ss_50_70_10,0.694,True
+gas boiler no 1,Pr_50_70_10,Products,gas boiler number 1,142,Pr_50_70_10,Gas boilers,0.768,auto,word:boiler;word:gas,Pr_50_70_10,0.768,Pr_50_10_10,0.66,Ss_50_70_10,0.522,True
+gas boiler no 3 (Worcester Bosch),Pr_50_70_10,Products,gas boiler number 3 worcester bosch,143,Pr_50_70_10,Gas boilers,0.768,auto,word:boiler;word:gas,Pr_50_70_10,0.768,Pr_50_10_10,0.66,Ss_50_70_10,0.522,True
+gas fired heater rm 305,Pr_50_70_10,Products,gas fired heater room 305,144,Pr_50_70_10,Gas boilers,0.846,auto,syn:gas fired heater;word:gas,Pr_50_70_10,0.846,Pr_50_70,0.531,Pr_50_40_20,0.528,True
+gas fired heater no 3,Pr_50_70_10,Products,gas fired heater number 3,145,Pr_50_70_10,Gas boilers,0.745,auto,syn:gas fired heater;word:gas,Pr_50_70_10,0.745,Pr_50_40_20,0.461,Pr_50_70,0.426,True
+radiator roof,Pr_50_10_20,Products,radiator roof,146,Pr_50_10_20,Heat emitters,0.64,auto,syn:radiator,Pr_50_10_20,0.64,Pr_50_40_20,0.322,Pr_70_20,0.289,True
+radiator rm 305,Pr_50_10_20,Products,radiator room 305,147,Pr_50_10_20,Heat emitters,0.64,auto,syn:radiator,Pr_50_10_20,0.64,Pr_50_40_20,0.322,Pr_70_20,0.289,True
+radiator lab,Pr_50_10_20,Products,radiator lab,148,Pr_50_10_20,Heat emitters,0.64,auto,syn:radiator,Pr_50_10_20,0.64,Pr_50_40_20,0.322,Pr_70_20,0.289,True
+radiator no 2,Pr_50_10_20,Products,radiator number 2,149,Pr_50_10_20,Heat emitters,0.615,auto,syn:radiator,Pr_50_10_20,0.615,Pr_50_40_20,0.293,Pr_70_20,0.269,True
+radiator no 2 (Trane),Pr_50_10_20,Products,radiator number 2 trane,150,Pr_50_10_20,Heat emitters,0.615,auto,syn:radiator,Pr_50_10_20,0.615,Pr_50_40_20,0.293,Pr_70_20,0.269,True
+lthw radiator roof,Pr_50_10_20,Products,lthw radiator roof,151,Pr_50_10_20,Heat emitters,0.597,auto,syn:radiator,Pr_50_10_20,0.597,Pr_50_40_20,0.29,Pr_50_20_20,0.279,True
+lthw radiator plantroom,Pr_50_10_20,Products,lthw radiator plantroom,152,Pr_50_10_20,Heat emitters,0.597,auto,syn:radiator,Pr_50_10_20,0.597,Pr_50_40_20,0.29,Pr_50_20_20,0.279,True
+lthw radiator no 3,Pr_50_10_20,Products,lthw radiator number 3,153,Pr_50_10_20,Heat emitters,0.54,auto,syn:radiator,Pr_50_10_20,0.54,Pr_50_40_20,0.264,Pr_50_20_20,0.24,True
+panel radiator L2,Pr_50_10_20,Products,panel radiator l2,154,Pr_50_10_20,Heat emitters,0.613,auto,syn:radiator,Pr_50_10_20,0.613,Pr_50_40_20,0.322,Pr_70_20,0.304,True
+RAD-03 panel radiator,Pr_50_10_20,Products,rad-03 panel radiator,155,Pr_50_10_20,Heat emitters,0.763,auto,syn:radiator;tag:prefix,Pr_50_10_20,0.763,Pr_50_40_20,0.322,Pr_70_20,0.304,True
+panel radiator no 3 (Hamworthy),Pr_50_10_20,Products,panel radiator number 3 hamworthy,156,Pr_50_10_20,Heat emitters,0.596,auto,syn:radiator,Pr_50_10_20,0.596,Pr_50_40_20,0.277,Pr_70_20,0.273,True
+RAD-02 underfloor heating,Pr_50_10_20,Products,rad-02 underfloor heating,157,Pr_50_10_20,Heat emitters,0.613,auto,syn:underfloor heating;tag:prefix,Pr_50_10_20,0.613,Pr_50_10,0.536,Ss_50_10,0.369,True
+underfloor heating no 3 (Armstrong),Pr_50_10_20,Products,underfloor heating number 3 armstrong,158,Pr_50_10_20,Heat emitters,0.537,auto,syn:underfloor heating,Pr_50_10_20,0.537,Pr_50_10,0.493,Ss_50_10,0.32,True
+water heater roof,Pr_50_40_20,Products,water heater roof,159,Pr_50_40_20,Water heaters,0.964,auto,word:heater;word:water,Pr_50_40_20,0.964,Ss_50_40_20,0.678,Pr_50_40,0.432,True
+water heater no 3 (Daikin),Pr_50_40_20,Products,water heater number 3 daikin,160,Pr_50_40_20,Water heaters,0.804,auto,word:heater;word:water,Pr_50_40_20,0.804,Ss_50_40_20,0.521,Pr_60_20,0.382,True
+hot water calorifier L2,Pr_50_40_20,Products,hot water calorifier l2,161,Pr_50_40_20,Water heaters,0.549,auto,word:water,Pr_50_40_20,0.549,Pr_60_10,0.369,Pr_60_20,0.319,True
+hot water calorifier corridor,Pr_50_40_20,Products,hot water calorifier corridor,162,Pr_50_40_20,Water heaters,0.549,auto,word:water,Pr_50_40_20,0.549,Pr_60_10,0.369,Pr_60_20,0.319,True
+HX-03 hot water calorifier,Pr_50_40_20,Products,hx-03 hot water calorifier,163,Pr_50_40_20,Water heaters,0.699,auto,word:water;tag:prefix,Pr_50_40_20,0.699,Pr_60_10,0.369,Pr_60_20,0.319,True
+boiler system building 1,Ss_50_10_10,Systems,boiler system building 1,164,Ss_50_10_10,Boiler systems,0.972,auto,word:boiler;word:system,Ss_50_10_10,0.972,Ss_50_70_10,0.819,Ss_50_80_10,0.63,True
+air handling unit system roof,Ss_50_20_10,Systems,air handling unit system roof,165,Ss_50_20_10,Air handling unit systems,1.0,auto,syn:air handling unit system;word:air;word:handling;word:system;word:unit,Ss_50_20_10,1.0,Pr_50_20_10,0.69,Ss_50_20,0.605,True
+ahu system L1,Ss_50_20_10,Systems,air handling unit system l1,166,Ss_50_20_10,Air handling unit systems,1.0,auto,syn:ahu system;word:air;word:handling;word:system;word:unit,Ss_50_20_10,1.0,Pr_50_20_10,0.658,Ss_50_20,0.577,True
+ahu system basement,Ss_50_20_10,Systems,air handling unit system basement,167,Ss_50_20_10,Air handling unit systems,1.0,auto,syn:ahu system;word:air;word:handling;word:system;word:unit,Ss_50_20_10,1.0,Pr_50_20_10,0.658,Ss_50_20,0.577,True
+fan coil unit system L1,Ss_50_20_20,Systems,fan coil unit system l1,168,Ss_50_20_20,Fan coil unit systems,1.0,auto,syn:fan coil unit system;word:coil;word:fan;word:system;word:unit,Ss_50_20_20,1.0,Ss_50_20_40,0.897,Pr_50_20_20,0.666,True
+fan coil system plantroom,Ss_50_20_40,Systems,fan coil system plantroom,169,Ss_50_20_40,Fan coil systems,1.0,auto,syn:fan coil system;word:coil;word:fan;word:system,Ss_50_20_40,1.0,Ss_50_20_20,0.853,Pr_50_20_40,0.643,True
+fcu system L3,Ss_50_20_40,Systems,fan coil unit system l3,170,Ss_50_20_40,Fan coil systems,0.973,auto,word:coil;word:fan;word:system,Ss_50_20_40,0.973,Ss_50_20_20,0.853,Pr_50_20_40,0.643,True
+vav box system L3,Ss_50_20_30,Systems,variable air volume box system l3,171,Ss_50_20_30,VAV box systems,1.0,auto,syn:vav box system;word:box;word:system;word:vav,Ss_50_20_30,1.0,Ss_50_20_10,0.466,Ss_50_20,0.448,True
+vav system building 2,Ss_50_20_30,Systems,variable air volume system building 2,172,Ss_50_20_30,VAV box systems,0.887,auto,syn:vav system;word:system;word:vav,Ss_50_20_30,0.887,Ss_50_20_10,0.483,Ss_50_20,0.455,True
+power distribution system plantroom,Ss_50_30_10,Systems,power distribution system plantroom,173,Ss_50_30_10,Power distribution systems,1.0,auto,syn:power distribution system;word:distribution;word:power;word:system,Ss_50_30_10,1.0,Ss_50_30,0.536,Ss_50_30_20,0.5,True
+electrical distribution system plantroom,Ss_50_30_10,Systems,electrical distribution system plantroom,174,Ss_50_30_10,Power distribution systems,1.0,auto,syn:electrical distribution system;word:distribution;word:system,Ss_50_30_10,1.0,Ss_50_30,0.782,Ss_50_30_20,0.481,True
+lighting system L2,Ss_50_30_20,Systems,lighting system l2,175,Ss_50_30_20,Lighting systems,1.0,auto,syn:lighting system;word:lighting;word:system,Ss_50_30_20,1.0,Ss_50_10,0.569,Ss_50_30,0.568,True
+lighting control system roof,Ss_50_30_20,Systems,lighting control system roof,176,Ss_50_30_20,Lighting systems,1.0,auto,syn:lighting control system;word:lighting;word:system,Ss_50_30_20,1.0,Ss_50_60,0.613,Ss_70,0.546,True
+pump system L1,Ss_50_40_10,Systems,pump system l1,177,Ss_50_40_10,Pump systems,1.0,auto,syn:pump system;word:pump;word:system,Ss_50_40_10,1.0,Ss_50_70,0.576,Pr_50_40_10,0.565,True
+pumping system L3,Ss_50_40_10,Systems,pumping system l3,178,Ss_50_40_10,Pump systems,1.0,auto,syn:pumping system;word:system,Ss_50_40_10,1.0,Ss_50_70,0.554,Ss_50_10,0.532,True
+sprinkler system plantroom,Ss_50_50_20,Systems,sprinkler system plantroom,179,Ss_50_50_20,Sprinkler systems,1.0,auto,syn:sprinkler system;word:sprinkler;word:system,Ss_50_50_20,1.0,Pr_50_50_20,0.646,Ss_50_60_20,0.532,True
+fire suppression system basement,Ss_50_50_20,Systems,fire suppression system basement,180,Ss_50_50_20,Sprinkler systems,0.797,auto,syn:fire suppression system;word:system,Ss_50_50_20,0.797,Ss_50_50,0.779,Ss_50_50_10,0.677,True
+bms system L3,Ss_50_60_10,Systems,building management system system l3,181,Ss_50_60_10,Building management systems,0.948,auto,syn:bms system;word:management;word:system,Ss_50_60_10,0.948,Ss_70_10,0.65,Ss_70,0.613,True
+building management system L3,Ss_50_60_10,Systems,building management system l3,182,Ss_50_60_10,Building management systems,0.99,auto,syn:building management system;word:management;word:system,Ss_50_60_10,0.99,Ss_70,0.726,Ss_70_10,0.692,True
+gas boiler system plantroom,Ss_50_70_10,Systems,gas boiler system plantroom,183,Ss_50_70_10,Gas boiler systems,1.0,auto,syn:gas boiler system;word:boiler;word:gas;word:system,Ss_50_70_10,1.0,Ss_50_10_10,0.873,Ss_50_70,0.771,True
+gas heating system plantroom,Ss_50_70_10,Systems,gas heating system plantroom,184,Ss_50_70_10,Gas boiler systems,0.994,auto,syn:gas heating system;word:gas;word:system,Ss_50_70_10,0.994,Ss_50_10,0.853,Ss_50_70,0.771,True
+chiller system L3,Ss_50_80_10,Systems,chiller system l3,185,Ss_50_80_10,Chiller systems,1.0,auto,syn:chiller system;word:chiller;word:system,Ss_50_80_10,1.0,Ss_50_10_10,0.607,Pr_50_80_10,0.606,True
+chilled water system plantroom,Ss_50_80_10,Systems,chilled water system plantroom,186,Ss_50_80_10,Chiller systems,0.952,auto,syn:chilled water system;word:system,Ss_50_80_10,0.952,Ss_50_40_20,0.678,Ss_50_10_10,0.519,True

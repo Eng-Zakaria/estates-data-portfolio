@@ -1,0 +1,160 @@
+{
+  "seed": 42,
+  "golden_n": 1324,
+  "splits": {
+    "train": 909,
+    "dev": 187,
+    "test": 228
+  },
+  "per_method": {
+    "train": {
+      "fuzzy": {
+        "n": 909,
+        "top1": 0.1804,
+        "top3": 0.5633,
+        "top1_correct": 164,
+        "top3_correct": 512
+      },
+      "embedding": {
+        "n": 909,
+        "top1": 0.5743,
+        "top3": 0.8064,
+        "top1_correct": 522,
+        "top3_correct": 733
+      },
+      "hybrid": {
+        "n": 909,
+        "top1": 0.9846,
+        "top3": 0.9978,
+        "top1_correct": 895,
+        "top3_correct": 907
+      }
+    },
+    "dev": {
+      "fuzzy": {
+        "n": 187,
+        "top1": 0.1765,
+        "top3": 0.5722,
+        "top1_correct": 33,
+        "top3_correct": 107
+      },
+      "embedding": {
+        "n": 187,
+        "top1": 0.5668,
+        "top3": 0.8182,
+        "top1_correct": 106,
+        "top3_correct": 153
+      },
+      "hybrid": {
+        "n": 187,
+        "top1": 0.984,
+        "top3": 0.9893,
+        "top1_correct": 184,
+        "top3_correct": 185
+      }
+    },
+    "test": {
+      "fuzzy": {
+        "n": 228,
+        "top1": 0.2149,
+        "top3": 0.6096,
+        "top1_correct": 49,
+        "top3_correct": 139
+      },
+      "embedding": {
+        "n": 228,
+        "top1": 0.5702,
+        "top3": 0.8114,
+        "top1_correct": 130,
+        "top3_correct": 185
+      },
+      "hybrid": {
+        "n": 228,
+        "top1": 0.9781,
+        "top3": 0.9956,
+        "top1_correct": 223,
+        "top3_correct": 227
+      }
+    }
+  },
+  "thresholds": {
+    "tau_high": 0.3,
+    "tau_low": 0.3,
+    "tuned_on": "dev",
+    "precision": 0.984,
+    "rate": 1.0
+  },
+  "auto_accept": {
+    "dev": {
+      "n": 187,
+      "tau_high": 0.3,
+      "tau_low": 0.3,
+      "auto_accept": 187,
+      "auto_accept_rate": 1.0,
+      "auto_accept_precision": 0.984,
+      "review": 0,
+      "reject": 0
+    },
+    "test": {
+      "n": 228,
+      "tau_high": 0.3,
+      "tau_low": 0.3,
+      "auto_accept": 227,
+      "auto_accept_rate": 0.9956,
+      "auto_accept_precision": 0.9824,
+      "review": 0,
+      "reject": 1
+    }
+  },
+  "confused_pairs_test": [
+    {
+      "true_code": "Pr_50_10_20",
+      "pred_code": "Pr_50_10",
+      "count": 4
+    },
+    {
+      "true_code": "Pr_50_40",
+      "pred_code": "Pr_50_20_20",
+      "count": 1
+    }
+  ],
+  "calibration_test": [
+    {
+      "bin_lo": 0.0,
+      "bin_hi": 0.2,
+      "n": 0,
+      "empirical_accuracy": 0.0,
+      "mid": 0.1
+    },
+    {
+      "bin_lo": 0.2,
+      "bin_hi": 0.4,
+      "n": 7,
+      "empirical_accuracy": 0.8571,
+      "mid": 0.3
+    },
+    {
+      "bin_lo": 0.4,
+      "bin_hi": 0.6,
+      "n": 49,
+      "empirical_accuracy": 0.9184,
+      "mid": 0.5
+    },
+    {
+      "bin_lo": 0.6,
+      "bin_hi": 0.8,
+      "n": 64,
+      "empirical_accuracy": 1.0,
+      "mid": 0.7
+    },
+    {
+      "bin_lo": 0.8,
+      "bin_hi": 1.0,
+      "n": 108,
+      "empirical_accuracy": 1.0,
+      "mid": 0.9
+    }
+  ],
+  "is_mock": true,
+  "warning": "NON-AUTHORITATIVE mock Uniclass placeholder \u2014 development only, not final."
+}

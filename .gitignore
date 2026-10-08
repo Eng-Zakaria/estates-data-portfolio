@@ -2,6 +2,16 @@
 # Generated outputs (can be large) are never committed.
 data/
 data_snapshots/
+# Exception: P13's small, synthetic reference/eval inputs are committed so the
+# project runs from a clean clone (~250 KB total). The sentence-transformers model
+# cache and derived vectors stay ignored via
+# projects/p13-uniclass-mapper/data/reference/embeddings/.gitignore
+!projects/p13-uniclass-mapper/data/
+!projects/p13-uniclass-mapper/data/**
+# ...but never the downloaded code list itself: NBS terms of use are unreviewed, so
+# official tables stay local (see projects/p13-uniclass-mapper/docs/SOURCES.md §1).
+projects/p13-uniclass-mapper/data/uniclass_2015.csv
+projects/p13-uniclass-mapper/data/uniclass_fetch.log
 /prompts_unzipped/
 prompts.zip
 /prompts_tmp/

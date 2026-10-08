@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="320" role="img" aria-label="Calibration plot">
+<rect width="420" height="320" fill="white"/>
+<line x1="44" y1="276" x2="376" y2="44" stroke="#999" stroke-dasharray="5,4"/>
+<polyline points="77.2,276.0 143.6,77.2 210.0,62.9 276.4,44.0 342.8,44.0" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<circle cx="77.2" cy="276.0" r="5" fill="#1f77b4"><title>n=0 acc=0.0</title></circle>
+<circle cx="143.6" cy="77.2" r="5" fill="#1f77b4"><title>n=7 acc=0.8571</title></circle>
+<circle cx="210.0" cy="62.9" r="5" fill="#1f77b4"><title>n=49 acc=0.9184</title></circle>
+<circle cx="276.4" cy="44.0" r="5" fill="#1f77b4"><title>n=64 acc=1.0</title></circle>
+<circle cx="342.8" cy="44.0" r="5" fill="#1f77b4"><title>n=108 acc=1.0</title></circle>
+<text x="210.0" y="312" text-anchor="middle" font-size="12">mean predicted score (bin mid)</text>
+<text x="12" y="160.0" text-anchor="middle" font-size="12" transform="rotate(-90 12 160.0)">empirical acc</text>
+</svg>

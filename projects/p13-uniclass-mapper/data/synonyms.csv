@@ -1,0 +1,53 @@
+phrase,code
+boiler feed pump,Pr_50_40_10
+heating water pump,Pr_50_40_10
+chilled water pump,Pr_50_40_10
+condensate pump,Pr_50_40_10
+circulation pump,Pr_50_40_10
+radiator,Pr_50_10_20
+underfloor heating,Pr_50_10_20
+transformer,Pr_50_30_10
+generator,Pr_50_30_10
+distribution board,Pr_50_30_10
+motor control centre,Pr_50_30_10
+mcc,Pr_50_30_10
+luminaire,Pr_50_30_20
+downlight,Pr_50_30_20
+led panel light,Pr_50_30_20
+emergency light,Pr_50_30_20
+high bay,Pr_50_30_20
+fire extinguisher,Pr_50_50_10
+sprinkler head,Pr_50_50_20
+fire damper,Pr_50_50_20
+bms controller,Pr_50_60_10
+emergency light fitting,Pr_50_30_20
+fire door,Pr_50_50
+fire alarm panel,Pr_50_50_10
+fire alarm system,Ss_50_50
+smoke detector,Pr_50_60_20
+gas fired heater,Pr_50_70_10
+supply fan,Pr_50_20_10
+extract fan,Pr_50_20_10
+chilled water system,Ss_50_80_10
+chiller system,Ss_50_80_10
+refrigeration system,Ss_50_80
+ahu system,Ss_50_20_10
+hot water system,Ss_50_40_20
+air handling unit system,Ss_50_20_10
+air handling system,Ss_50_20_10
+fan coil unit system,Ss_50_20_20
+fan coil system,Ss_50_20_40
+vav box system,Ss_50_20_30
+vav system,Ss_50_20_30
+power distribution system,Ss_50_30_10
+electrical distribution system,Ss_50_30_10
+lighting system,Ss_50_30_20
+lighting control system,Ss_50_30_20
+pump system,Ss_50_40_10
+pumping system,Ss_50_40_10
+sprinkler system,Ss_50_50_20
+fire suppression system,Ss_50_50_20
+bms system,Ss_50_60_10
+building management system,Ss_50_60_10
+gas boiler system,Ss_50_70_10
+gas heating system,Ss_50_70_10

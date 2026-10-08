@@ -1,0 +1,97 @@
+code,title,level,parent_code,table,version,source_url,retrieved_date,is_mock
+Pr_10,"Site and building elements",1,,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_20,"Structural elements",1,,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_30,"Internal finishes",1,,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_40,"Fittings, furnishings and equipment",1,,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50,"Services equipment",1,,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_60,"Disposal systems",1,,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_70,"Management and control elements",1,,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_80,"Construction aids",1,,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_10_10,Foundations,2,Pr_10,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_10_20,Substructure,2,Pr_10,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_20_10,Frame,2,Pr_20,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_20_20,Floors,2,Pr_20,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_20_30,Walls,2,Pr_20,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_20_40,Roofs,2,Pr_20,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_30_10,"Wall finishes",2,Pr_30,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_30_20,"Floor finishes",2,Pr_30,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_30_30,"Ceiling finishes",2,Pr_30,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_40_10,Furniture,2,Pr_40,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_40_20,"Sanitary fittings",2,Pr_40,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_10,"Heating equipment",2,Pr_50,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_10_10,Boilers,3,Pr_50_10,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_10_20,"Heat emitters",3,Pr_50_10,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_20,"Ventilation and air conditioning equipment",2,Pr_50,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_20_10,"Air handling units",3,Pr_50_20,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_20_20,"Fan coil units",3,Pr_50_20,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_20_30,VAV boxes,3,Pr_50_20,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_20_40,"Fan coils",3,Pr_50_20,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_30,"Electrical equipment",2,Pr_50,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_30_10,"Distribution boards",3,Pr_50_30,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_30_20,Luminaires,3,Pr_50_30,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_40,"Water supply and drainage equipment",2,Pr_50,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_40_10,Pumps,3,Pr_50_40,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_40_20,"Water heaters",3,Pr_50_40,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_50,"Fire protection equipment",2,Pr_50,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_50_10,"Fire extinguishers",3,Pr_50_50,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_50_20,Sprinklers,3,Pr_50_50,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_60,"Control and monitoring equipment",2,Pr_50,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_60_10,"Building management systems",3,Pr_50_60,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_60_20,Sensors,3,Pr_50_60,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_70,"Gas equipment",2,Pr_50,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_70_10,"Gas boilers",3,Pr_50_70,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_80,"Refrigeration equipment",2,Pr_50,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_50_80_10,Chillers,3,Pr_50_80,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_60_10,"Foul water drainage",2,Pr_60,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_60_20,"Surface water drainage",2,Pr_60,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_70_10,"Building management systems",2,Pr_70,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_70_20,"Energy monitoring",2,Pr_70,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_80_10,Scaffolding,2,Pr_80,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Pr_80_20,"Temporary works",2,Pr_80,Products,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_10,"Site and building elements",1,,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_20,"Structural systems",1,,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_30,"Enclosure systems",1,,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_40,"Finish systems",1,,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50,"Services systems",1,,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_60,"Disposal systems",1,,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_70,"Management and control systems",1,,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_10_10,"Site preparation",2,Ss_10,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_10_20,Groundworks,2,Ss_10,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_20_10,"Frame systems",2,Ss_20,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_20_20,"Floor systems",2,Ss_20,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_20_30,"Wall systems",2,Ss_20,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_20_40,"Roof systems",2,Ss_20,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_30_10,"External wall systems",2,Ss_30,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_30_20,"Window and door systems",2,Ss_30,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_30_30,"Roofing systems",2,Ss_30,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_40_10,"Wall finish systems",2,Ss_40,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_40_20,"Floor finish systems",2,Ss_40,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_40_30,"Ceiling finish systems",2,Ss_40,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_10,"Heating systems",2,Ss_50,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_10_10,"Boiler systems",3,Ss_50_10,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_10_20,"Heat emitter systems",3,Ss_50_10,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_20,"Ventilation and air conditioning systems",2,Ss_50,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_20_10,"Air handling unit systems",3,Ss_50_20,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_20_20,"Fan coil unit systems",3,Ss_50_20,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_20_30,"VAV box systems",3,Ss_50_20,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_20_40,"Fan coil systems",3,Ss_50_20,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_30,"Electrical systems",2,Ss_50,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_30_10,"Power distribution systems",3,Ss_50_30,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_30_20,"Lighting systems",3,Ss_50_30,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_40,"Water supply and drainage systems",2,Ss_50,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_40_10,"Pump systems",3,Ss_50_40,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_40_20,"Water heater systems",3,Ss_50_40,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_50,"Fire protection systems",2,Ss_50,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_50_10,"Fire extinguisher systems",3,Ss_50_50,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_50_20,"Sprinkler systems",3,Ss_50_50,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_60,"Control and monitoring systems",2,Ss_50,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_60_10,"Building management systems",3,Ss_50_60,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_60_20,"Sensor systems",3,Ss_50_60,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_70,"Gas systems",2,Ss_50,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_70_10,"Gas boiler systems",3,Ss_50_70,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_80,"Refrigeration systems",2,Ss_50,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_50_80_10,"Chiller systems",3,Ss_50_80,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_60_10,"Foul water drainage systems",2,Ss_60,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_60_20,"Surface water drainage systems",2,Ss_60,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_70_10,"Building management systems",2,Ss_70,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE
+Ss_70_20,"Energy monitoring systems",2,Ss_70,Systems,2015,https://uniclass.thenbs.com/download,2026-10-06,TRUE

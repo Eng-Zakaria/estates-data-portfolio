@@ -1,0 +1,10 @@
+# Model weights are never committed (AGENTS.md hard rule 10).
+# The sentence-transformers model cache is downloaded on first run by
+# scripts/fetch_uniclass.py / src/embedder.py and cached here so the pipeline
+# runs offline afterwards.
+models--sentence-transformers--*
+*.onnx
+*.safetensors
+*.bin
+# Derived title vectors: rebuilt on demand by src/embedder.py
+uniclass_embeddings_*.npy

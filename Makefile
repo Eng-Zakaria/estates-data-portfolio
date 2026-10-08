@@ -1,4 +1,4 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p11-run p12-run p14-sample p14-check p14-check-clean p14-variant p14-test p14-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p11-run p12-run p13-fetch p13-eval p13-test p13-run p14-sample p14-check p14-check-clean p14-variant p14-test p14-run p16-test p16-eval p16-thresholds p16-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
 
 PROFILE ?= small
 SEED ?= 42
@@ -115,6 +115,22 @@ p12-run:
 	$(PY) projects/p12-cobie-validator/src/make_sample_cobie.py
 	$(PY) projects/p12-cobie-validator/src/cli.py validate data/cobie/valid.xlsx --out data/cobie/report_valid
 
+P13 = projects/p13-uniclass-mapper
+
+# Attempts the official NBS download; exits non-zero (ignored) when the tables
+# are gated, in which case the non-authoritative placeholder is written instead.
+p13-fetch:
+	- $(PY) $(P13)/scripts/fetch_uniclass.py
+
+# Reproduces every number in the README and docs/ACCEPTANCE_P13.md (seed 42).
+p13-eval:
+	$(PY) $(P13)/src/eval.py
+
+p13-test:
+	$(PY) -m pytest $(P13)/tests/ -q -p no:cacheprovider --no-cov
+
+p13-run: p13-fetch p13-eval p13-test
+
 P14 = projects/p14-iso19650-checker
 P14_CFG = $(P14)/conventions/uk_national_annex.yml
 P14_VARIANT_CFG = $(P14)/conventions/estates_cde_variant.yml
@@ -137,6 +153,19 @@ p14-test:
 	$(PY) -m pytest $(P14)/tests/ -q -p no:cacheprovider --cov=$(P14)/src --cov-report=term-missing
 
 p14-run: p14-sample p14-test p14-check p14-check-clean p14-variant
+
+P16 = projects/p16-energy-anomaly
+
+p16-test:
+	$(PY) -m pytest $(P16)/tests/ -q -p no:cacheprovider --no-cov
+
+p16-eval:
+	PYTHONPATH=$(P16)/src $(PY) -m anomaly.cli evaluate --out $(P16)/outputs
+
+p16-thresholds:
+	$(PY) $(P16)/scripts/threshold_separation.py
+
+p16-run: p16-test p16-eval p16-thresholds
 
 AF_COMPOSE = ENV_FILE_PATH=.env docker compose --env-file platform/orchestration/.env --project-directory platform/orchestration -f platform/orchestration/docker-compose.yml -f platform/orchestration/docker-compose.override.yml
 

@@ -1,0 +1,188 @@
+description,true_code,table,description_norm
+AHU-03 air hndlg unit L2,Pr_50_20_10,Products,air handling unit air handling unit l2
+AHU-02 air handling unit roof,Pr_50_20_10,Products,air handling unit air handling unit roof
+Boiler no 2 (Remeha),Pr_50_10_10,Products,boiler number 2 remeha
+FCU-05 fan coil unit room 214,Pr_50_20_20,Products,fan coil unit fan coil unit room 214
+variable air volume box,Pr_50_20_30,Products,variable air volume box
+boiler feed pump,Pr_50_40_10,Products,boiler feed pump
+roof extract fan,Pr_50_20_10,Products,roof extract fan
+plate heat exchanger HWS,Pr_50_20_10,Products,plate heat exchanger hws
+high bay luminaire warehouse,Pr_50_30_20,Products,high bay luminaire warehouse
+transformer 11kV/415V,Pr_50_30_10,Products,transformer 11kv 415v
+generator set 500kVA,Pr_50_30_10,Products,generator set 500kva
+fire extinguisher CO2,Pr_50_50_10,Products,fire extinguisher co2
+smoke detector ceiling,Pr_50_60_20,Products,smoke detector ceiling
+gas fired heater,Pr_50_70_10,Products,gas fired heater
+humidity sensor AHU,Pr_50_60_20,Products,humidity sensor air handling unit
+hot water calorifier,Pr_50_40_20,Products,hot water calorifier
+refrigeration system,Ss_50_80,Systems,refrigeration system
+air handling unit plantroom,Pr_50_20_10,Products,air handling unit plantroom
+air handling unit no 2 (Remeha),Pr_50_20_10,Products,air handling unit number 2 remeha
+AHU-03 air handling unit,Pr_50_20_10,Products,air handling unit air handling unit
+air handling unit no 3 (Worcester Bosch),Pr_50_20_10,Products,air handling unit number 3 worcester bosch
+air hndling unit lab,Pr_50_20_10,Products,air hndling unit lab
+air handler roof,Pr_50_20_10,Products,air handler roof
+air handler plantroom,Pr_50_20_10,Products,air handler plantroom
+air handler no 1,Pr_50_20_10,Products,air handler number 1
+ahu L1,Pr_50_20_10,Products,air handling unit l1
+ahu no 2 (Mitsubishi),Pr_50_20_10,Products,air handling unit number 2 mitsubishi
+boiler no 3,Pr_50_10_10,Products,boiler number 3
+oil boiler L1,Pr_50_10_10,Products,oil boiler l1
+oil boiler L3,Pr_50_10_10,Products,oil boiler l3
+condensing boiler basement,Pr_50_10_10,Products,condensing boiler basement
+condensing boiler room 110,Pr_50_10_10,Products,condensing boiler room 110
+condensing boiler no 2,Pr_50_10_10,Products,condensing boiler number 2
+biomass boiler L3,Pr_50_10_10,Products,biomass boiler l3
+biomass boiler rm 305,Pr_50_10_10,Products,biomass boiler room 305
+biomass boiler no 1 (Grundfos),Pr_50_10_10,Products,biomass boiler number 1 grundfos
+boiler plant roof,Pr_50_10_10,Products,boiler plant roof
+boiler plant rm 101,Pr_50_10_10,Products,boiler plant room 101
+boiler plant rm 214,Pr_50_10_10,Products,boiler plant room 214
+boiler plant rm 305,Pr_50_10_10,Products,boiler plant room 305
+boiler plant no 1 (Satchwell),Pr_50_10_10,Products,boiler plant number 1 satchwell
+boiler plant no 2,Pr_50_10_10,Products,boiler plant number 2
+fan coil unit no 2,Pr_50_20_20,Products,fan coil unit number 2
+fan coil unit no 3,Pr_50_20_20,Products,fan coil unit number 3
+fan coil corridor,Pr_50_20_40,Products,fan coil corridor
+fan coil no 1 (Daikin),Pr_50_20_40,Products,fan coil number 1 daikin
+FCU-02 fan coil,Pr_50_20_40,Products,fan coil unit fan coil
+FCU-03 fan coil,Pr_50_20_40,Products,fan coil unit fan coil
+fcu corridor,Pr_50_20_40,Products,fan coil unit corridor
+fcu no 2 (Daikin),Pr_50_20_40,Products,fan coil unit number 2 daikin
+vav box corridor,Pr_50_20_30,Products,variable air volume box corridor
+vav box no 3 (Hamworthy),Pr_50_20_30,Products,variable air volume box number 3 hamworthy
+variable air volume box corridor,Pr_50_20_30,Products,variable air volume box corridor
+variable air volume box lab,Pr_50_20_30,Products,variable air volume box lab
+VAV-01 variable air volume box,Pr_50_20_30,Products,variable air volume variable air volume box
+variable air volume box no 2 (Daikin),Pr_50_20_30,Products,variable air volume box number 2 daikin
+vav basement,Pr_50_20_30,Products,variable air volume basement
+vav room 110,Pr_50_20_30,Products,variable air volume room 110
+vav no 3,Pr_50_20_30,Products,variable air volume number 3
+chiller roof,Pr_50_80_10,Products,chiller roof
+CH-02 chiller,Pr_50_80_10,Products,ch-02 chiller
+chiller no 2,Pr_50_80_10,Products,chiller number 2
+absorption chiller L2,Pr_50_80_10,Products,absorption chiller l2
+absorption chiller roof,Pr_50_80_10,Products,absorption chiller roof
+absorption chiller plantroom,Pr_50_80_10,Products,absorption chiller plantroom
+absorption chiller rm 305,Pr_50_80_10,Products,absorption chiller room 305
+CH-02 absorption chiller,Pr_50_80_10,Products,ch-02 absorption chiller
+air cooled chiller rm 214,Pr_50_80_10,Products,air cooled chiller room 214
+air cooled chiller no 2 (Daikin),Pr_50_80_10,Products,air cooled chiller number 2 daikin
+chilled water pump basement,Pr_50_40_10,Products,chilled water pump basement
+chilled water pump lab,Pr_50_40_10,Products,chilled water pump lab
+chilled water pump no 2,Pr_50_40_10,Products,chilled water pump number 2
+P-02 heating water pump,Pr_50_40_10,Products,p-02 heating water pump
+heating water pump no 2 (Worcester Bosch),Pr_50_40_10,Products,heating water pump number 2 worcester bosch
+condensate pump roof,Pr_50_40_10,Products,condensate pump roof
+condensate pump plantroom,Pr_50_40_10,Products,condensate pump plantroom
+P-01 condensate pump,Pr_50_40_10,Products,p-01 condensate pump
+condensate pump no 3,Pr_50_40_10,Products,condensate pump number 3
+boiler feed pump basement,Pr_50_40_10,Products,boiler feed pump basement
+boiler feed pump corridor,Pr_50_40_10,Products,boiler feed pump corridor
+boiler feed pump no 2,Pr_50_40_10,Products,boiler feed pump number 2
+luminaire L1,Pr_50_30_20,Products,luminaire l1
+luminaire plantroom,Pr_50_30_20,Products,luminaire plantroom
+luminaire rm 101,Pr_50_30_20,Products,luminaire room 101
+luminaire no 1,Pr_50_30_20,Products,luminaire number 1
+luminaire no 3 (Daikin),Pr_50_30_20,Products,luminaire number 3 daikin
+led panel light L3,Pr_50_30_20,Products,led panel light l3
+led panel light plantroom,Pr_50_30_20,Products,led panel light plantroom
+led panel light basement,Pr_50_30_20,Products,led panel light basement
+led panel light no 1,Pr_50_30_20,Products,led panel light number 1
+led panel light no 2,Pr_50_30_20,Products,led panel light number 2
+downlight lab,Pr_50_30_20,Products,downlight lab
+downlight no 1,Pr_50_30_20,Products,downlight number 1
+high bay light rm 101,Pr_50_30_20,Products,high bay light room 101
+high bay light room 110,Pr_50_30_20,Products,high bay light room 110
+high bay light corridor,Pr_50_30_20,Products,high bay light corridor
+DB-02 distribution board,Pr_50_30_10,Products,db-02 distribution board
+distribution board no 2 (Daikin),Pr_50_30_10,Products,distribution board number 2 daikin
+mcc L3,Pr_50_30_10,Products,motor control centre l3
+mcc rm 305,Pr_50_30_10,Products,motor control centre room 305
+mcc no 2,Pr_50_30_10,Products,motor control centre number 2
+ups L2,Pr_50_30_10,Products,uninterruptible power supply l2
+ups no 1,Pr_50_30_10,Products,uninterruptible power supply number 1
+generator L2,Pr_50_30_10,Products,generator l2
+generator L3,Pr_50_30_10,Products,generator l3
+generator roof,Pr_50_30_10,Products,generator roof
+generator rm 214,Pr_50_30_10,Products,generator room 214
+generator corridor,Pr_50_30_10,Products,generator corridor
+generator lab,Pr_50_30_10,Products,generator lab
+generator no 2 (Satchwell),Pr_50_30_10,Products,generator number 2 satchwell
+fire extinguisher no 1 (Satchwell),Pr_50_50_10,Products,fire extinguisher number 1 satchwell
+FE-02 fire extinguisher,Pr_50_50_10,Products,fe-02 fire extinguisher
+fire alarm panel corridor,Pr_50_50_10,Products,fire alarm panel corridor
+FE-01 fire alarm panel,Pr_50_50_10,Products,fe-01 fire alarm panel
+fire alarm panel no 3 (Grundfos),Pr_50_50_10,Products,fire alarm panel number 3 grundfos
+sprinkler room 110,Pr_50_50_20,Products,sprinkler room 110
+sprinkler lab,Pr_50_50_20,Products,sprinkler lab
+SPR-03 sprinkler,Pr_50_50_20,Products,spr-03 sprinkler
+fire damper L1,Pr_50_50_20,Products,fire damper l1
+fire damper no 1,Pr_50_50_20,Products,fire damper number 1
+fire damper no 1 (Mitsubishi),Pr_50_50_20,Products,fire damper number 1 mitsubishi
+bms controller L1,Pr_50_60_10,Products,building management system controller l1
+bms controller plantroom,Pr_50_60_10,Products,building management system controller plantroom
+bms controller rm 214,Pr_50_60_10,Products,building management system controller room 214
+temperature sensor roof,Pr_50_60_20,Products,temperature sensor roof
+temperature sensor plantroom,Pr_50_60_20,Products,temperature sensor plantroom
+temperature sensor no 1 (Grundfos),Pr_50_60_20,Products,temperature sensor number 1 grundfos
+temperature sensor no 2,Pr_50_60_20,Products,temperature sensor number 2
+co2 sensor L1,Pr_50_60_20,Products,co2 sensor l1
+co2 sensor L3,Pr_50_60_20,Products,co2 sensor l3
+co2 sensor rm 101,Pr_50_60_20,Products,co2 sensor room 101
+co2 sensor corridor,Pr_50_60_20,Products,co2 sensor corridor
+pressure sensor plantroom,Pr_50_60_20,Products,pressure sensor plantroom
+S-01 pressure sensor,Pr_50_60_20,Products,s-01 pressure sensor
+humidity sensor L2,Pr_50_60_20,Products,humidity sensor l2
+humidity sensor rm 214,Pr_50_60_20,Products,humidity sensor room 214
+S-02 humidity sensor,Pr_50_60_20,Products,s-02 humidity sensor
+humidity sensor no 3,Pr_50_60_20,Products,humidity sensor number 3
+S-03 occupancy sensor,Pr_50_60_20,Products,s-03 occupancy sensor
+occupancy sensor no 3,Pr_50_60_20,Products,occupancy sensor number 3
+occupancy sensor no 3 (Remeha),Pr_50_60_20,Products,occupancy sensor number 3 remeha
+gas boiler basement,Pr_50_70_10,Products,gas boiler basement
+gas boiler no 1,Pr_50_70_10,Products,gas boiler number 1
+gas boiler no 3 (Worcester Bosch),Pr_50_70_10,Products,gas boiler number 3 worcester bosch
+gas fired heater rm 305,Pr_50_70_10,Products,gas fired heater room 305
+gas fired heater no 3,Pr_50_70_10,Products,gas fired heater number 3
+radiator roof,Pr_50_10_20,Products,radiator roof
+radiator rm 305,Pr_50_10_20,Products,radiator room 305
+radiator lab,Pr_50_10_20,Products,radiator lab
+radiator no 2,Pr_50_10_20,Products,radiator number 2
+radiator no 2 (Trane),Pr_50_10_20,Products,radiator number 2 trane
+lthw radiator roof,Pr_50_10_20,Products,lthw radiator roof
+lthw radiator plantroom,Pr_50_10_20,Products,lthw radiator plantroom
+lthw radiator no 3,Pr_50_10_20,Products,lthw radiator number 3
+panel radiator L2,Pr_50_10_20,Products,panel radiator l2
+RAD-03 panel radiator,Pr_50_10_20,Products,rad-03 panel radiator
+panel radiator no 3 (Hamworthy),Pr_50_10_20,Products,panel radiator number 3 hamworthy
+RAD-02 underfloor heating,Pr_50_10_20,Products,rad-02 underfloor heating
+underfloor heating no 3 (Armstrong),Pr_50_10_20,Products,underfloor heating number 3 armstrong
+water heater roof,Pr_50_40_20,Products,water heater roof
+water heater no 3 (Daikin),Pr_50_40_20,Products,water heater number 3 daikin
+hot water calorifier L2,Pr_50_40_20,Products,hot water calorifier l2
+hot water calorifier corridor,Pr_50_40_20,Products,hot water calorifier corridor
+HX-03 hot water calorifier,Pr_50_40_20,Products,hx-03 hot water calorifier
+boiler system building 1,Ss_50_10_10,Systems,boiler system building 1
+air handling unit system roof,Ss_50_20_10,Systems,air handling unit system roof
+ahu system L1,Ss_50_20_10,Systems,air handling unit system l1
+ahu system basement,Ss_50_20_10,Systems,air handling unit system basement
+fan coil unit system L1,Ss_50_20_20,Systems,fan coil unit system l1
+fan coil system plantroom,Ss_50_20_40,Systems,fan coil system plantroom
+fcu system L3,Ss_50_20_40,Systems,fan coil unit system l3
+vav box system L3,Ss_50_20_30,Systems,variable air volume box system l3
+vav system building 2,Ss_50_20_30,Systems,variable air volume system building 2
+power distribution system plantroom,Ss_50_30_10,Systems,power distribution system plantroom
+electrical distribution system plantroom,Ss_50_30_10,Systems,electrical distribution system plantroom
+lighting system L2,Ss_50_30_20,Systems,lighting system l2
+lighting control system roof,Ss_50_30_20,Systems,lighting control system roof
+pump system L1,Ss_50_40_10,Systems,pump system l1
+pumping system L3,Ss_50_40_10,Systems,pumping system l3
+sprinkler system plantroom,Ss_50_50_20,Systems,sprinkler system plantroom
+fire suppression system basement,Ss_50_50_20,Systems,fire suppression system basement
+bms system L3,Ss_50_60_10,Systems,building management system system l3
+building management system L3,Ss_50_60_10,Systems,building management system l3
+gas boiler system plantroom,Ss_50_70_10,Systems,gas boiler system plantroom
+gas heating system plantroom,Ss_50_70_10,Systems,gas heating system plantroom
+chiller system L3,Ss_50_80_10,Systems,chiller system l3
+chilled water system plantroom,Ss_50_80_10,Systems,chilled water system plantroom
