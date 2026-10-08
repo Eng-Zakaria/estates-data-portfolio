@@ -84,7 +84,7 @@ def extract_tables(ifc_path: Path) -> dict[str, pd.DataFrame]:
             {
                 "global_id": e.GlobalId,
                 "name": e.Name,
-                "ifc_class": e.is_a(),
+                "ifc_class": e.is_a(),  # type: ignore[no-untyped-call]
             }
         )
     df_elements = pd.DataFrame(elem_rows)
@@ -97,7 +97,7 @@ def extract_tables(ifc_path: Path) -> dict[str, pd.DataFrame]:
             {
                 "global_id": t.GlobalId,
                 "name": t.Name,
-                "ifc_class": t.is_a(),
+                "ifc_class": t.is_a(),  # type: ignore[no-untyped-call]
             }
         )
     df_types = pd.DataFrame(type_rows)

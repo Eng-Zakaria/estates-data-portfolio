@@ -37,7 +37,7 @@ def reconcile(tables: dict[str, pd.DataFrame], out_dir: Path) -> pd.DataFrame:
     recon.to_parquet(out_dir / "recon_model_vs_register.parquet", index=False)
 
     # Summary by building
-    summary = recon.groupby(["building_id", "status"]).size().unstack(fill_value=0).reset_index()
+    summary = recon.groupby(["building_id", "status"], observed=False).size().unstack(fill_value=0).reset_index()
     summary.to_csv(out_dir / "recon_summary_by_building.csv", index=False)
 
     # Planted defect recall

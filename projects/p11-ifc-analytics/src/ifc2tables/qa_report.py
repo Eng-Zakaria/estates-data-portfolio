@@ -8,11 +8,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 
 
-def qa_report(tables: dict[str, pd.DataFrame], out_dir: Path) -> dict:
+def qa_report(tables: dict[str, pd.DataFrame], out_dir: Path) -> dict[str, Any]:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     spaces = tables.get("ifc_spaces", pd.DataFrame())
@@ -22,7 +23,7 @@ def qa_report(tables: dict[str, pd.DataFrame], out_dir: Path) -> dict:
     systems = tables.get("ifc_system_members", pd.DataFrame())
     properties = tables.get("ifc_properties_long", pd.DataFrame())
 
-    report = {
+    report: dict[str, Any] = {
         "counts": {
             "spaces": len(spaces),
             "elements": len(elements),
