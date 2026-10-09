@@ -1,0 +1,261 @@
+{
+  "uid": "p15-active-faults",
+  "title": "BMS Active Faults (synthetic)",
+  "description": "Open alerts, dead-letter reasons and detected fault windows. Synthetic data.",
+  "tags": [
+    "p15",
+    "bms",
+    "synthetic",
+    "monitoring"
+  ],
+  "timezone": "Europe/London",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "templating": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "table",
+      "title": "Open alerts",
+      "description": "Raised by the Node-RED staleness check every 5 minutes. One open row per point and alert type.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT point_id, alert_type, severity, ts, detail\n  FROM bms.alerts\n WHERE resolved_at IS NULL\n ORDER BY ts DESC"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Alert volume by type",
+      "description": "",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": [],
+        "custom": {
+          "drawStyle": "line",
+          "lineWidth": 1,
+          "fillOpacity": 5,
+          "showPoints": "never",
+          "spanNulls": false
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT ts AS time, alert_type AS metric, count(*) AS value\n  FROM bms.alerts\n WHERE ts > now() - INTERVAL '24 hours'\n GROUP BY ts, alert_type\n ORDER BY ts"
+        }
+      ],
+      "legendFormat": "{{alert_type}}"
+    },
+    {
+      "id": 3,
+      "type": "table",
+      "title": "Dead letter by reason",
+      "description": "Why messages were rejected. A new reason code appearing is the signal to look at a controller's configuration.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT reason, count(*) AS n, max(ts) AS latest\n  FROM bms.dead_letter\n WHERE ts > now() - INTERVAL '24 hours'\n GROUP BY reason\n ORDER BY n DESC"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Dead letter sample payloads",
+      "description": "Enough of the payload to identify the device without dumping a whole history into the dashboard.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT ts, topic, reason, left(payload, 120) AS payload\n  FROM bms.dead_letter\n ORDER BY ts DESC\n LIMIT 25"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Findings by rule (offline detector)",
+      "description": "SEM-01..05 from the batch detector in src/health.py, loaded by `make iot-load-findings`.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT rule_id, count(*) AS findings, count(DISTINCT point_id) AS points\n  FROM bms.findings\n WHERE start_ts > now() - INTERVAL '24 hours'\n GROUP BY rule_id\n ORDER BY findings DESC"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "table",
+      "title": "Findings detail",
+      "description": "One row per detected window, with the evidence in plain words.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT start_ts, end_ts, rule_id, point_id, samples, detail\n  FROM bms.findings\n WHERE start_ts > now() - INTERVAL '24 hours'\n ORDER BY start_ts DESC\n LIMIT 50"
+        }
+      ]
+    }
+  ]
+}

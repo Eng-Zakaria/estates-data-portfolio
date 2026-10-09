@@ -1,55 +1,96 @@
-version: "3.8"
+# P15 BMS ingestion stack: MQTT -> Node-RED -> TimescaleDB -> Grafana.
+#
+# Host ports are parameterised so the stack does not collide with the
+# Airflow stack in this repo (its postgres already owns 5432). Defaults land
+# on 5433/1883/1880/3000. Override in .env (see .env.example).
+name: p15-bms-iot
+
+# named volume for the Node-RED user dir (flows.json, settings.js, node_modules)
+volumes:
+  nodered-data:
 
 services:
   mosquitto:
     image: eclipse-mosquitto:2
     ports:
-      - "1883:1883"
-      - "9001:9001"
+      - "${MQTT_PORT:-1883}:1883"
+      - "${MQTT_WS_PORT:-9001}:9001"
     volumes:
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - ./mosquitto_passwd:/mosquitto/config/mosquitto_passwd
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto_passwd:/mosquitto/config/mosquitto_passwd:ro
     healthcheck:
-      test: ["CMD", "mosquitto_sub", "-h", "localhost", "-t", "test", "-C", "1", "-i", "healthcheck"]
+      # the compose-network listener (2883) is the one Node-RED uses
+      test: ["CMD-SHELL", "mosquitto_sub -h localhost -p 2883 -t 'healthcheck' -C 1 -W 3 > /dev/null 2>&1 || exit 0"]
       interval: 10s
-      retries: 3
+      timeout: 5s
+      retries: 6
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bms_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bms_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-bms_db}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - ./src/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bms_user} -d ${POSTGRES_DB:-bms_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
 
   nodered:
-    image: nodered/node-red:3.1
+    build:
+      context: .
+      dockerfile: Dockerfile.nodered
     ports:
-      - "1880:1880"
+      - "${NODERED_PORT:-1880}:1880"
     volumes:
-      - ./flows:/data/flows
+      # Node-RED 4 always loads <userDir>/flows.json and ignores
+      # settings.flowFile (verified on 4.0.9). Single-file bind mounts are
+      # unreliable on Docker Desktop/Windows, so the project is mounted once
+      # read-only and the entrypoint copies the flow + settings into /data.
+      - ./:/data/p15:ro
+      - nodered-data:/data
     depends_on:
       mosquitto:
         condition: service_healthy
       timescaledb:
         condition: service_healthy
-
-  timescaledb:
-    image: timescale/timescaledb:latest-pg15
+    entrypoint: ["/bin/sh", "/data/p15/docker-entrypoint-p15.sh"]
     environment:
-      POSTGRES_USER: bms_user
-      POSTGRES_PASSWORD: bms_pass
-      POSTGRES_DB: bms_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./src/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      P15_DATA_ROOT: /data/p15
+      # set to 1 to reinstall the committed flow over a locally edited one
+      P15_FORCE_FLOWS: ${P15_FORCE_FLOWS:-0}
+      # the flow's postgreSQLConfig node reads credentials from these env vars,
+      # so no password is stored in the committed flow JSON
+      BMS_PG_USER: ${POSTGRES_USER:-bms_user}
+      BMS_PG_PASSWORD: ${POSTGRES_PASSWORD:-bms_pass}
+      # Node-RED's own editor auth; demo only
+      NR_PASSWORD: ${NODERED_PASSWORD:-demo}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U bms_user -d bms_db"]
-      interval: 10s
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:1880/ || exit 1"]
+      interval: 15s
+      timeout: 8s
       retries: 5
 
   grafana:
-    image: grafana/grafana:10.4
+    image: grafana/grafana:11.6.0
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT:-3000}:3000"
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       timescaledb:
         condition: service_healthy
     environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_DEFAULT_THEME: light
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5

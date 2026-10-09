@@ -1,0 +1,165 @@
+{
+  "uid": "p15-completeness",
+  "title": "BMS Data Completeness (synthetic)",
+  "description": "Is the data complete enough to trust the dashboards built on it? Synthetic data.",
+  "tags": [
+    "p15",
+    "bms",
+    "synthetic",
+    "monitoring"
+  ],
+  "timezone": "Europe/London",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "templating": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "heatmap",
+      "title": "Coverage heatmap",
+      "description": "Expected samples vs actual, per building and point class. This is the panel that catches a gateway that stopped talking to one controller.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 10
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "calculate": false,
+        "color": {
+          "mode": "scheme",
+          "scheme": "Spectral"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT bucket AS time, building || ' / ' || point_class AS metric, completeness_pct AS value\n  FROM bms.v_completeness\n ORDER BY building, point_class"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Messages ingested per hour",
+      "description": "Throughput. A step change here means points stopped arriving, not that the plant stopped.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": [],
+        "custom": {
+          "drawStyle": "line",
+          "lineWidth": 1,
+          "fillOpacity": 5,
+          "showPoints": "never",
+          "spanNulls": false
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT time_bucket(INTERVAL '1 hour', ts) AS time, count(*) AS value\n  FROM bms.readings\n WHERE ts > now() - INTERVAL '24 hours'\n GROUP BY 1\n ORDER BY 1"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Dead letter per hour",
+      "description": "Rejections over the same window, so the two charts can be read together.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": [],
+        "custom": {
+          "drawStyle": "line",
+          "lineWidth": 1,
+          "fillOpacity": 5,
+          "showPoints": "never",
+          "spanNulls": false
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT time_bucket(INTERVAL '1 hour', ts) AS time, count(*) AS value\n  FROM bms.dead_letter\n WHERE ts > now() - INTERVAL '24 hours'\n GROUP BY 1\n ORDER BY 1"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+# P15 Node-RED image.
+#
+# Two Node-RED 4 specifics handled here (both verified on 4.0.9):
+#   1. The core `buffer` node no longer exists, so the flow batches in a
+#      function node (see scripts/patch_batcher.py).
+#   2. Palette modules are loaded from <userDir>/node_modules, not from the
+#      global npm root, so the PostgreSQL nodes are installed into /data.
+#
+# Versions pinned: node-red 4.0.9 (Docker Hub tag 4.0),
+# node-red-contrib-postgresql 0.16.2 (npm `latest` tag; declares
+# node-red >= 0.20.0 and registers the `postgresql` node type).
+FROM nodered/node-red:4.0
+
+USER root
+RUN mkdir -p /data/node_modules \
+ && npm install --prefix /data --no-save --unsafe-perm node-red-contrib-postgresql@0.16.2 \
+ && npm cache clean --force
+USER node-red

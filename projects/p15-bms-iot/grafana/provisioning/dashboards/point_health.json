@@ -1,0 +1,190 @@
+{
+  "uid": "p15-point-health",
+  "title": "BMS Point Health (synthetic)",
+  "description": "Staleness, completeness and comms quality per point. Synthetic data.",
+  "tags": [
+    "p15",
+    "bms",
+    "synthetic",
+    "monitoring"
+  ],
+  "timezone": "Europe/London",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "templating": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "table",
+      "title": "Points not healthy",
+      "description": "The triage list: any point below full coverage, or carrying suspect-quality values. Sorted worst first.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 9
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT point_id, building, point_class, samples_24h, completeness_pct, last_seen, good_pct\n  FROM bms.v_point_health\n WHERE completeness_pct < 100 OR good_pct < 100\n ORDER BY completeness_pct ASC\n LIMIT 100"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "heatmap",
+      "title": "Completeness by building and point class",
+      "description": "A whole point class flat at zero for one building is a controller or network segment that has stopped reporting, not a data quality blip.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "calculate": false,
+        "color": {
+          "mode": "scheme",
+          "scheme": "Spectral"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT bucket AS time, building || ' / ' || point_class AS metric, completeness_pct AS value\n  FROM bms.v_completeness\n ORDER BY building, point_class"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "table",
+      "title": "Longest gaps in the last day",
+      "description": "Staleness is the first thing to check when a dashboard looks suspiciously flat.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "m",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT point_id, max_gap_minutes\n  FROM bms.v_point_health\n WHERE max_gap_minutes IS NOT NULL\n ORDER BY max_gap_minutes DESC\n LIMIT 20"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Suspect quality share",
+      "description": "Suspect values are accepted, not dropped: the pipeline records them so an operator can decide. A rising share means the plant is reporting trouble, not that the pipeline is broken.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 24,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": [],
+        "custom": {
+          "drawStyle": "line",
+          "lineWidth": 1,
+          "fillOpacity": 5,
+          "showPoints": "never",
+          "spanNulls": false
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT bucket AS time, point_id AS metric,\n       100.0 * count(*) FILTER (WHERE quality = 'suspect') / NULLIF(count(*), 0) AS value\n  FROM bms.readings\n WHERE ts > now() - INTERVAL '24 hours'\n GROUP BY bucket, point_id\n ORDER BY bucket"
+        }
+      ],
+      "legendFormat": "{{point_id}}"
+    }
+  ]
+}

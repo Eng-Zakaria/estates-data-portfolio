@@ -39,3 +39,8 @@ platform/dbt/dbt_packages/
 platform/dbt/.user.yml
 # Local run logs (P05 CI writes artefacts to job uploads instead).
 logs/
+# Scratch caches from throwaway tools (BDG2/embeddings/HTTP caches).
+cache/
+/spike_test.ifc
+# Node-RED / Node tool state inside containers.
+projects/p15-bms-iot/projects/

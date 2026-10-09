@@ -1,0 +1,111 @@
+[
+  {
+    "id": "tab_p15_seed",
+    "type": "tab",
+    "label": "Seed point registry",
+    "disabled": false,
+    "info": "Loads src/point_registry.csv into bms.points at deploy, so the Grafana dashboards and the staleness alert have point metadata for buildings, systems and equipment."
+  },
+  {
+    "id": "inject_seed",
+    "type": "inject",
+    "z": "tab_p15_seed",
+    "name": "seed registry once",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "3",
+    "topic": "",
+    "x": 170,
+    "y": 120,
+    "wires": [
+      [
+        "fn_registry"
+      ]
+    ]
+  },
+  {
+    "id": "fn_registry",
+    "type": "function",
+    "z": "tab_p15_seed",
+    "name": "registry params",
+    "func": "// point registry CSV -> $1 for the bulk upsert\nreturn { params: [JSON.stringify(global.get('BMS_REGISTRY_ROWS'))] };",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 420,
+    "y": 120,
+    "wires": [
+      [
+        "db_seed"
+      ]
+    ]
+  },
+  {
+    "id": "db_seed",
+    "type": "postgresql",
+    "z": "tab_p15_seed",
+    "name": "upsert bms.points",
+    "query": "INSERT INTO bms.points (point_id, building, system, equipment, equipment_kind, point_class, unit, source_address)\nSELECT x->>'point_id', x->>'building', x->>'system', x->>'equipment', x->>'equipment_kind', x->>'point_class', x->>'unit', x->>'source_address'\nFROM jsonb_array_elements($1::jsonb) AS x\nON CONFLICT (point_id) DO UPDATE SET building = EXCLUDED.building, system = EXCLUDED.system, equipment = EXCLUDED.equipment, equipment_kind = EXCLUDED.equipment_kind, point_class = EXCLUDED.point_class, unit = EXCLUDED.unit, source_address = EXCLUDED.source_address;",
+    "postgreSQLConfig": "cfg_pg",
+    "split": false,
+    "rowsPerMsg": 1,
+    "outputs": 1,
+    "x": 680,
+    "y": 120,
+    "wires": [
+      [
+        "seed_debug"
+      ]
+    ]
+  },
+  {
+    "id": "seed_debug",
+    "type": "debug",
+    "z": "tab_p15_seed",
+    "name": "registry seeded",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 920,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "cfg_pg",
+    "type": "postgreSQLConfig",
+    "name": "TimescaleDB (user/password from env)",
+    "host": "timescaledb",
+    "hostFieldType": "str",
+    "port": 5432,
+    "portFieldType": "num",
+    "database": "bms_db",
+    "databaseFieldType": "str",
+    "ssl": false,
+    "sslFieldType": "bool",
+    "applicationName": "p15-nodered",
+    "applicationNameType": "str",
+    "max": 10,
+    "maxFieldType": "num",
+    "idle": 1000,
+    "idleFieldType": "num",
+    "connectionTimeout": 10000,
+    "connectionTimeoutFieldType": "num",
+    "userFieldType": "env",
+    "userEnv": "BMS_PG_USER",
+    "passwordFieldType": "env",
+    "passwordEnv": "BMS_PG_PASSWORD"
+  }
+]

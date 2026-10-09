@@ -1,0 +1,53 @@
+{
+  "version": "1.0",
+  "note": "Single source of truth for ingestion validation. Consumed by src/validate.py (Python, used by tests + simulator self-check) and by the JS in flows/bms_ingest.json (Node-RED runtime). Keep the two implementations in sync; tests/test_validation_contract.py asserts the tables below match src/validate.py.",
+  "payload_schema": {
+    "required_fields": ["ts", "value", "unit", "quality"],
+    "ts_format": "ISO-8601 with timezone or 'Z'",
+    "allowed_quality": ["good", "suspect", "bad"]
+  },
+  "topic_pattern": "^campus/(?P<building>B\\d{3})/(?P<system>ahu|boiler|pump|room)/(?P<equipment>[a-z0-9_]+)/(?P<point_class>[a-z0-9_]+)$",
+  "max_future_skew_minutes": 5,
+  "max_past_age_hours": 168,
+  "max_value_abs": 100000,
+  "rules_by_point_class": {
+    "supply_temp": { "unit": "C", "min": -20, "max": 90 },
+    "return_temp": { "unit": "C", "min": -20, "max": 60 },
+    "damper_pos": { "unit": "%", "min": 0, "max": 100 },
+    "fan_speed": { "unit": "%", "min": 0, "max": 100 },
+    "heating_valve": { "unit": "%", "min": 0, "max": 100 },
+    "cooling_valve": { "unit": "%", "min": 0, "max": 100 },
+    "room_temp": { "unit": "C", "min": 5, "max": 45 },
+    "setpoint": { "unit": "C", "min": 5, "max": 35 },
+    "co2": { "unit": "ppm", "min": 250, "max": 10000 },
+    "occupancy": { "unit": "count", "min": 0, "max": 500 },
+    "sub_meter_kwh": { "unit": "kWh", "min": 0, "max": 1000 }
+  },
+  "semantic_checks": [
+    {
+      "id": "SEM-01",
+      "description": "simultaneous heating and cooling: heating_valve > 20 and cooling_valve > 20 on the same equipment within one 5-minute step",
+      "severity": "warning"
+    },
+    {
+      "id": "SEM-02",
+      "description": "stuck valve: valve position identical for more than 30 consecutive samples while its paired valve moves",
+      "severity": "warning"
+    },
+    {
+      "id": "SEM-03",
+      "description": "out-of-hours operation: fan_speed > 20 outside 07:00-19:00 local on a weekday",
+      "severity": "warning"
+    },
+    {
+      "id": "SEM-04",
+      "description": "flat-line sensor: no variation in a numeric point for more than 6 hours",
+      "severity": "warning"
+    },
+    {
+      "id": "SEM-05",
+      "description": "sustained sensor drift: monotonic (|spearman rho| >= 0.98) over a 6-hour window, range >= 25 units, with no reversal greater than 10 units inside the window; healthy control ramps reverse inside the window and are not flagged",
+      "severity": "warning"
+    }
+  ]
+}

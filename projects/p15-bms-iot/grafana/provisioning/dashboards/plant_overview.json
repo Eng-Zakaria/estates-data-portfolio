@@ -1,18 +1,367 @@
 {
-  "dashboard": {
-    "title": "BMS Plant Overview",
-    "panels": [
-      {
-        "title": "Average Temperature by Point",
-        "type": "timeseries",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
-        "targets": [
-          {
-            "rawSql": "SELECT bucket AS time, avg_value FROM bms.readings_15min WHERE point_id LIKE '%temp%' ORDER BY bucket",
-            "format": "time_series"
-          }
-        ]
-      }
-    ]
-  }
+  "uid": "p15-plant-overview",
+  "title": "BMS Plant Overview (synthetic)",
+  "description": "Synthetic BMS telemetry. Every value on this dashboard comes from the simulator; nothing here describes a real building.",
+  "tags": [
+    "p15",
+    "bms",
+    "synthetic"
+  ],
+  "timezone": "Europe/London",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "templating": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Supply air temperature by building",
+      "description": "15-minute mean supply air temperature. A flat line while the plant is occupied is a stuck sensor or a stopped AHU.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": [],
+        "custom": {
+          "drawStyle": "line",
+          "lineWidth": 1,
+          "fillOpacity": 5,
+          "showPoints": "never",
+          "spanNulls": false
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT bucket AS time, point_id AS metric, avg_value AS value\n  FROM bms.readings_15min\n WHERE point_class = 'supply_temp' AND point_id LIKE ANY (ARRAY['B001', 'B003', 'B007' || '.%'])\n ORDER BY bucket"
+        }
+      ],
+      "legendFormat": "{{point_id}}"
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Fan speed and damper position",
+      "description": "Plant running state. Fan above 20% overnight on a weekday is the SEM-03 signature.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": [],
+        "custom": {
+          "drawStyle": "line",
+          "lineWidth": 1,
+          "fillOpacity": 5,
+          "showPoints": "never",
+          "spanNulls": false
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT bucket AS time, point_id AS metric, avg_value AS value\n  FROM bms.readings_15min\n WHERE point_class IN ('fan_speed', 'damper_pos')\n ORDER BY bucket"
+        }
+      ],
+      "legendFormat": "{{point_id}}"
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Heating and cooling valve positions",
+      "description": "Both valves above 20% on the same AHU at the same time is SEM-01 (simultaneous heating and cooling).",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": [],
+        "custom": {
+          "drawStyle": "line",
+          "lineWidth": 1,
+          "fillOpacity": 5,
+          "showPoints": "never",
+          "spanNulls": false
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT bucket AS time, point_id AS metric, avg_value AS value\n  FROM bms.readings_15min\n WHERE point_class IN ('heating_valve', 'cooling_valve')\n ORDER BY bucket"
+        }
+      ],
+      "legendFormat": "{{point_id}}"
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Room conditions",
+      "description": "Note the unit mismatch on purpose: Grafana applies one unit per panel, so this view is for shape, not absolute values. P17 is the CO2 analysis.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": [],
+        "custom": {
+          "drawStyle": "line",
+          "lineWidth": 1,
+          "fillOpacity": 5,
+          "showPoints": "never",
+          "spanNulls": false
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT bucket AS time, point_id AS metric, avg_value AS value\n  FROM bms.readings_15min\n WHERE point_class IN ('room_temp', 'co2')\n ORDER BY bucket"
+        }
+      ],
+      "legendFormat": "{{point_id}}"
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Points reporting",
+      "description": "Distinct points seen in the last 15 minutes. Below the registry count means something has gone quiet.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 4,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT count(DISTINCT point_id) AS reporting FROM bms.readings\n WHERE ts > now() - INTERVAL '15 minutes'"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Dead-lettered messages",
+      "description": "Messages rejected by the ingestion contract in the last 24 hours. Non-zero is expected (the simulator injects them); a sudden rise is not.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 4,
+        "y": 16,
+        "w": 4,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT count(*) AS dead FROM bms.dead_letter WHERE ts > now() - INTERVAL '24 hours'"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Sub-metered energy",
+      "description": "Summed across plant. The daily aggregate keeps the sum, which is meaningless for temperatures.",
+      "datasource": {
+        "type": "postgres",
+        "uid": "p15-timescaledb"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 16,
+        "w": 16,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kWh",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {}
+        },
+        "overrides": [],
+        "custom": {
+          "drawStyle": "line",
+          "lineWidth": 1,
+          "fillOpacity": 5,
+          "showPoints": "never",
+          "spanNulls": false
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawSql": "SELECT bucket AS time, sum(sum_value) AS value\n  FROM bms.readings_daily\n WHERE point_class = 'sub_meter_kwh'\n GROUP BY bucket\n ORDER BY bucket"
+        }
+      ],
+      "legendFormat": "total"
+    }
+  ]
 }

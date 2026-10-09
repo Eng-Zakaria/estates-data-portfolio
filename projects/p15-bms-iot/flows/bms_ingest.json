@@ -1,0 +1,309 @@
+[
+  {
+    "id": "tab_p15_ingest",
+    "type": "tab",
+    "label": "BMS ingest",
+    "disabled": false,
+    "info": "P15 simulated BMS ingestion. Subscribes campus/# from the MQTT broker, validates against the shared contract (contracts/validation_rules.json), maps topics to canonical point_id via the point registry, batch-inserts into TimescaleDB, routes malformed messages to bms.dead_letter, and raises staleness alerts."
+  },
+  {
+    "id": "broker_localhost",
+    "type": "mqtt-broker",
+    "name": "BMS broker (mosquitto, internal listener)",
+    "broker": "mosquitto",
+    "port": "2883",
+    "clientid": "",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true,
+    "autoUnsubscribe": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": "",
+    "birthMsg": {},
+    "closeTopic": "",
+    "closeQos": "0",
+    "closePayload": "",
+    "closeMsg": {},
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": "",
+    "willMsg": {},
+    "userProps": "",
+    "sessionExpiry": ""
+  },
+  {
+    "id": "sub_campus",
+    "type": "mqtt in",
+    "z": "tab_p15_ingest",
+    "name": "campus/# (BMS points)",
+    "topic": "campus/#",
+    "qos": "0",
+    "datatype": "utf8",
+    "broker": "broker_localhost",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 150,
+    "y": 160,
+    "wires": [
+      [
+        "fn_parse"
+      ]
+    ]
+  },
+  {
+    "id": "fn_parse",
+    "type": "function",
+    "z": "tab_p15_ingest",
+    "name": "validate + map point_id",
+    "func": "const JS_TOPIC_PATTERN = \"^campus/(?<building>B\\\\d{3})/(?<system>ahu|boiler|pump|room)/(?<equipment>[a-z0-9_]+)/(?<point_class>[a-z0-9_]+)$\";\n\n// Validate one BMS message against contracts/validation_rules.json.\n// Mirrors src/validate.py; tests assert both implement the same rules.\nconst rules = global.get('BMS_RULES');\n// rules.topic_pattern is written in Python named-group syntax for\n// src/validate.py; V8 needs (?<name>...) instead of (?P<name>...).\nconst topicPattern = new RegExp(JS_TOPIC_PATTERN);\n\nconst raw = msg.payload;\nconst topic = msg.topic;\n\nfunction reject(reason) {\n  return { topic, payload: typeof raw === 'string' ? raw : JSON.stringify(raw), reason };\n}\n\nconst m = topicPattern.exec(topic);\nif (!m) { return reject('TOPIC_PATTERN'); }\nconst pointClass = m[4];\n\nlet body;\ntry { body = (typeof raw === 'string') ? JSON.parse(raw) : raw; }\ncatch (e) { return reject('MALFORMED_JSON'); }\nif (typeof body !== 'object' || body === null || Array.isArray(body)) { return reject('MISSING_FIELD'); }\n\nfor (const f of rules.payload_schema.required_fields) {\n  if (!(f in body)) { return reject('MISSING_FIELD'); }\n}\nif (!rules.payload_schema.allowed_quality.includes(body.quality)) { return reject('QUALITY_INVALID'); }\nif (typeof body.value !== 'number' || Number.isNaN(body.value)) { return reject('NON_NUMERIC_VALUE'); }\nif (Math.abs(body.value) > rules.max_value_abs) { return reject('OUT_OF_RANGE'); }\n\nconst ts = new Date(body.ts);\nif (isNaN(ts.getTime())) { return reject('TIMESTAMP_FORMAT'); }\nconst now = Date.now();\nif (ts.getTime() > now + rules.max_future_skew_minutes * 60000) { return reject('TIMESTAMP_IN_FUTURE'); }\nif (ts.getTime() < now - rules.max_past_age_hours * 3600000) { return reject('TIMESTAMP_TOO_OLD'); }\n\nconst rule = rules.rules_by_point_class[pointClass];\nif (!rule) { return reject('MISSING_FIELD'); }\nif (String(body.unit) !== String(rule.unit)) { return reject('UNIT_MISMATCH'); }\nif (body.value < rule.min || body.value > rule.max) { return reject('OUT_OF_RANGE'); }\n\n// registry lookup: topic -> canonical point_id\nconst pointId = global.get('BMS_POINTS_BY_TOPIC')[topic];\nif (!pointId) { return reject('UNKNOWN_POINT_ID'); }\n\nreturn { ts: ts.toISOString(), point_id: pointId, value: body.value, unit: body.unit, quality: body.quality };",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 400,
+    "y": 160,
+    "wires": [
+      [
+        "fn_batch"
+      ],
+      [
+        "fn_dead_params"
+      ]
+    ]
+  },
+  {
+    "id": "fn_batch",
+    "type": "function",
+    "z": "tab_p15_ingest",
+    "name": "batch 500 / 5 min",
+    "func": "// Batcher. Node-RED 4 dropped the core `buffer` node, so batching happens\n// here: accumulate in flow context and emit when the batch is full (500 rows)\n// or older than 5 minutes, whichever comes first.\nconst MAX = 500;\nconst MAX_AGE_MS = 5 * 60 * 1000;\n\nconst state = flow.get('batch') || { rows: [], startedAt: Date.now() };\nstate.rows.push(msg.payload);\n\nif (state.rows.length >= MAX || Date.now() - state.startedAt >= MAX_AGE_MS) {\n  const rows = state.rows;\n  flow.set('batch', { rows: [], startedAt: Date.now() });\n  // $1 is the JSON array of accepted readings\n  return { params: [JSON.stringify(rows)] };\n}\nflow.set('batch', state);\nreturn null; // hold until the batch flushes",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "flow.set('batch', { rows: [], startedAt: Date.now() });",
+    "finalize": "",
+    "libs": [],
+    "x": 680,
+    "y": 80,
+    "wires": [
+      [
+        "db_readings"
+      ],
+      [
+        "fn_hb_params"
+      ]
+    ]
+  },
+  {
+    "id": "db_readings",
+    "type": "postgresql",
+    "z": "tab_p15_ingest",
+    "name": "insert readings (upsert)",
+    "query": "INSERT INTO bms.readings (ts, point_id, value, unit, quality)\nSELECT (x->>'ts')::timestamptz, x->>'point_id', (x->>'value')::double precision, x->>'unit', x->>'quality'\nFROM jsonb_array_elements($1::jsonb) AS x\nON CONFLICT (ts DESC, point_id) DO UPDATE SET value = EXCLUDED.value, quality = EXCLUDED.quality;",
+    "postgreSQLConfig": "cfg_pg",
+    "split": false,
+    "rowsPerMsg": 1,
+    "outputs": 1,
+    "x": 960,
+    "y": 40,
+    "wires": [
+      [
+        "ok_debug"
+      ]
+    ]
+  },
+  {
+    "id": "ok_debug",
+    "type": "debug",
+    "z": "tab_p15_ingest",
+    "name": "accepted batches",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1190,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "fn_hb_params",
+    "type": "function",
+    "z": "tab_p15_ingest",
+    "name": "heartbeat params",
+    "func": "// One row per distinct point_id in the flushed batch, so bms.points\n// carries last_seen and the staleness alert can see who went quiet.\nconst seen = {};\nfor (const row of JSON.parse(msg.params[0])) {\n  seen[row.point_id] = row.ts;\n}\nconst rows = Object.keys(seen).map((id) => ({ point_id: id, last_seen: seen[id] }));\nreturn { params: [JSON.stringify(rows)] };",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 960,
+    "y": 160,
+    "wires": [
+      [
+        "db_heartbeat"
+      ]
+    ]
+  },
+  {
+    "id": "db_heartbeat",
+    "type": "postgresql",
+    "z": "tab_p15_ingest",
+    "name": "upsert last_seen",
+    "query": "INSERT INTO bms.points (point_id, last_seen)\nSELECT x->>'point_id', (x->>'last_seen')::timestamptz\nFROM jsonb_array_elements($1::jsonb) AS x\nON CONFLICT (point_id) DO UPDATE SET last_seen = EXCLUDED.last_seen;",
+    "postgreSQLConfig": "cfg_pg",
+    "split": false,
+    "rowsPerMsg": 1,
+    "outputs": 1,
+    "x": 1190,
+    "y": 160,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "fn_dead_params",
+    "type": "function",
+    "z": "tab_p15_ingest",
+    "name": "dead letter params",
+    "func": "// Rejected messages keep their reason code for the point-health dashboard.\nconst rejected = msg.payload;\nreturn { params: [rejected.topic, rejected.payload, rejected.reason] };",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 680,
+    "y": 280,
+    "wires": [
+      [
+        "db_dead"
+      ]
+    ]
+  },
+  {
+    "id": "db_dead",
+    "type": "postgresql",
+    "z": "tab_p15_ingest",
+    "name": "dead letter",
+    "query": "INSERT INTO bms.dead_letter (topic, payload, reason) VALUES ($1, $2, $3);",
+    "postgreSQLConfig": "cfg_pg",
+    "split": false,
+    "rowsPerMsg": 1,
+    "outputs": 1,
+    "x": 960,
+    "y": 280,
+    "wires": [
+      [
+        "dl_debug"
+      ]
+    ]
+  },
+  {
+    "id": "dl_debug",
+    "type": "debug",
+    "z": "tab_p15_ingest",
+    "name": "dead letter count",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 1190,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "inject_stale",
+    "type": "inject",
+    "z": "tab_p15_ingest",
+    "name": "staleness check every 5 min",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "300",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "x": 180,
+    "y": 420,
+    "wires": [
+      [
+        "db_stale"
+      ]
+    ]
+  },
+  {
+    "id": "db_stale",
+    "type": "postgresql",
+    "z": "tab_p15_ingest",
+    "name": "raise staleness alerts",
+    "query": "INSERT INTO bms.alerts (point_id, alert_type, severity, detail)\nSELECT p.point_id, 'STALENESS', 'critical',\n       'no valid samples for ' || FLOOR(EXTRACT(EPOCH FROM (now() - p.last_seen)) / 60)::text || ' min'\nFROM bms.points p\nWHERE p.last_seen IS NOT NULL\n  AND now() - p.last_seen > INTERVAL '10 minutes'\nON CONFLICT (point_id, alert_type) WHERE resolved_at IS NULL DO NOTHING;",
+    "postgreSQLConfig": "cfg_pg",
+    "split": false,
+    "rowsPerMsg": 1,
+    "outputs": 1,
+    "x": 500,
+    "y": 420,
+    "wires": [
+      [
+        "stale_debug"
+      ]
+    ]
+  },
+  {
+    "id": "stale_debug",
+    "type": "debug",
+    "z": "tab_p15_ingest",
+    "name": "staleness alerts raised",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 760,
+    "y": 420,
+    "wires": []
+  },
+  {
+    "id": "cfg_pg",
+    "type": "postgreSQLConfig",
+    "name": "TimescaleDB (user/password from env)",
+    "host": "timescaledb",
+    "hostFieldType": "str",
+    "port": 5432,
+    "portFieldType": "num",
+    "database": "bms_db",
+    "databaseFieldType": "str",
+    "ssl": false,
+    "sslFieldType": "bool",
+    "applicationName": "p15-nodered",
+    "applicationNameType": "str",
+    "max": 10,
+    "maxFieldType": "num",
+    "idle": 1000,
+    "idleFieldType": "num",
+    "connectionTimeout": 10000,
+    "connectionTimeoutFieldType": "num",
+    "userFieldType": "env",
+    "userEnv": "BMS_PG_USER",
+    "passwordFieldType": "env",
+    "passwordEnv": "BMS_PG_PASSWORD"
+  }
+]
