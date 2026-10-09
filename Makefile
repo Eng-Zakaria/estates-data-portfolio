@@ -1,4 +1,4 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p11-run p12-run p13-fetch p13-eval p13-test p13-run p14-sample p14-check p14-check-clean p14-variant p14-test p14-run p16-test p16-eval p16-thresholds p16-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p07-run p09-run p11-run p12-run p13-fetch p13-eval p13-test p13-run p14-sample p14-check p14-check-clean p14-variant p14-test p14-run p16-test p16-eval p16-thresholds p16-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
 
 PROFILE ?= small
 SEED ?= 42
@@ -197,3 +197,7 @@ airflow-pools:
 airflow-backfill:
 	$(AF_COMPOSE) exec -T airflow-scheduler airflow dags backfill ingest_meter_hh -s 2026-02-01 -e 2026-03-02 --rerun-failed-tasks
 	$(PY) platform/orchestration/scripts/export_runs.py
+
+p10-run:
+	$(PY) -m pytest projects/p10-institutional-return/tests/ -q -p no:cacheprovider --no-cov
+	$(PY) projects/p10-institutional-return/src/main.py --return-date 2026-03-31 --out data/p10_output --verify
