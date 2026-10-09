@@ -1,0 +1,179 @@
+# Standards register (P20)
+#
+# Honest status, no invention. `status` is one of:
+#   implemented      - a rule or code list from the official source is encoded and tested
+#   mock             - a development placeholder; NOT the real standard, must not be relied on
+#   awareness-only   - referenced for context; nothing from it is stored or applied
+#   not-obtained     - we wanted it, could not obtain it, so nothing is encoded
+#
+# Nothing here reproduces standard text. URLs point at the official source so a
+# reader can check the claim; licences and access terms are recorded in the root
+# DATA.md. Any entry with `provenance` below points at where the detail lives.
+
+statuses:
+  - implemented
+  - mock
+  - awareness-only
+  - not-obtained
+
+standards:
+  - id: iso_19650
+    name: ISO 19650 (and the UK National Annex)
+    what_it_is: >
+      International standard for managing information over a built asset's life:
+      information containers, naming and numbering, statuses, and who may
+      authorise what.
+    url: https://www.iso.org/standard/68078.html
+    reference_access: "Summary only. The standard text is not reproduced; the UK National Annex guidance is public (see DATA.md)."
+    where_it_touches_data:
+      - P14 checks information container states (WIP, Shared, Published, Archive) and status codes.
+      - 'P14 checks information naming: field widths, delimiter, level, type, discipline, status, revision.'
+      - P12 uses the National Annex's container-to-handover logic to decide what must be delivered.
+    owner: estates-bim
+    status: implemented
+    project: P14
+    limitations: >
+      Structure, code lists and revision formats are encoded from the public UK
+      sources recorded in DATA.md. The full ISO text was not obtained, so nothing
+      here claims full conformance; P14 checks the subset that can be verified.
+    provenance: projects/p14-iso19650-checker/docs/SOURCES.md
+
+  - id: uniclass
+    name: Uniclass 2015
+    what_it_is: >
+      A classification of construction products, spaces and components that lets
+      systems group like with like across projects.
+    url: https://www.nbs.org.uk/products/uniclass/
+    reference_access: "Licensed tables. Not fetched for this repository."
+    where_it_touches_data:
+      - P13 maps free-text asset and space descriptions to Uniclass-like codes.
+      - P11 flags IFC elements with no classification.
+      - P12 would use it to validate COBie component classifications.
+    owner: estates-bim
+    status: mock
+    project: P13
+    limitations: >
+      P13 ships a clearly named development placeholder code list. No code from
+      the official tables is stored, and no output should be presented as a real
+      Uniclass mapping until the licensed tables are obtained.
+    provenance: projects/p13-uniclass-mapper/README.md
+
+  - id: cobie
+    name: COBie
+    what_it_is: >
+      A standard set of spreadsheets for handing over building information, one
+      table per topic such as components, spaces, systems and operations.
+    url: https://www.buildingsmart.org/standards/cobie/
+    reference_access: "Publicly described structure. No COBie data files committed."
+    where_it_touches_data:
+      - P12 validates COBie workbooks against the standard's sheet and key structure.
+      - P12 produces a handover diff that the operations team reviews.
+      - The AIR (handover guide) names COBie sheets as required deliverables.
+    owner: estates-bim
+    status: implemented
+    project: P12
+    limitations: >
+      Implemented for structure, keys and required fields only. Semantic content
+      (for example whether an asset type is sensible) is not machine-checked.
+    provenance: projects/p12-cobie-validator/docs/SOURCES.md
+
+  - id: ghg_protocol
+    name: GHG Protocol
+    what_it_is: >
+      The international standard that classifies emissions into scopes and
+      describes location-based and market-based accounting.
+    url: https://ghgprotocol.org/corporate-standard
+    reference_access: "Publicly available guidance; referenced, not reproduced."
+    where_it_touches_data:
+      - P08 methodology defines Scope 1 (gas) and Scope 2 (purchased electricity, location-based).
+      - The carbon mart labels each fuel row with its scope from dim_emission_factor.
+    owner: estates-energy
+    status: awareness-only
+    project: P08
+    limitations: >
+      Scope definitions are used; the standard's calculation guidance is not
+      implemented, and no market-based accounting is attempted.
+
+  - id: desnz_factors
+    name: DESNZ/DEFRA GHG conversion factors
+    what_it_is: The annual UK government workbook of emission factors per unit of fuel and activity.
+    url: https://www.gov.uk/government/publications/greenhouse-gas-reporting-conversion-factors-2025
+    reference_access: Open Government Licence v3.0
+    where_it_touches_data:
+      - P04 seeds dim_emission_factor from the flat-format workbook, fetched by script.
+      - P08 multiplies kWh by the factor to get kgCO2e.
+    owner: estates-energy
+    status: implemented
+    project: P04
+    limitations: >
+      Factors are refetched each year and change, so published carbon numbers
+      are restated when a new vintage lands. The pipeline records the factor year
+      and source URL in every row.
+
+  - id: sfG20
+    name: SFG20
+    what_it_is: UK benchmarking scheme setting standard energy and carbon values for building services.
+    url: https://www.sfg20.org/
+    reference_access: "Published reports; no values stored here."
+    where_it_touches_data:
+      - Would inform plant efficiency benchmarks in P16 anomaly detection.
+      - Not used by any current table or dashboard.
+    owner: estates-energy
+    status: not-obtained
+    project: ""
+    limitations: >
+      Nothing from SFG20 is encoded. Any future use needs the source recorded in
+      DATA.md first, with the vintage of each benchmark value.
+
+  - id: hesa_emr
+    name: HESA Estates Management Record (EMR)
+    what_it_is: The UK sector data return institutions submit about their estate and sustainability.
+    url: https://www.hesa.ac.uk/data-and-analysis/estates-management-record
+    reference_access: "Public guidance and return templates; not fetched in detail."
+    where_it_touches_data:
+      - P10 produces a mock return pack to rehearse the shape of a submission.
+    owner: estates-finance
+    status: mock
+    project: P10
+    limitations: >
+      P10 is illustrative. The field mapping in P10 was written from general
+      knowledge of a return pack, not from the official specification, so it must
+      not be presented as an official HESA mapping.
+
+  - id: trac
+    name: TRAC sustainability guidance
+    what_it_is: UKRI guidance on sustainability reporting for funded research organisations.
+    url: https://www.ukri.org/what-we-offer/collaborate-internationally/environment-and-sustainability/
+    reference_access: "Public guidance; categories not encoded."
+    where_it_touches_data:
+      - Would define the categories in an institutional sustainability return.
+    owner: estates-energy
+    status: awareness-only
+    project: ""
+    limitations: No TRAC categories or thresholds are stored or applied anywhere in this repository.
+
+  - id: uk_bim_framework_cde
+    name: UK BIM Framework (CDE workflow)
+    what_it_is: "UK guidance for the common data environment: container states, statuses and approvals."
+    url: https://ukbimframework.org/
+    reference_access: Publicly available guidance; structure encoded, text not reproduced.
+    where_it_touches_data:
+      - P14 encodes container states and status-to-state statements for the checks.
+    owner: estates-bim
+    status: implemented
+    project: P14
+    limitations: >
+      Encoded as state and status rules. The full guidance text is not copied into
+      this repository; see DATA.md for the source and licence position.
+
+  - id: rls_iuc
+    name: RICS/IPWS/BCS Standard for the specialist in public sector data estates
+    what_it_is: A UK competency framework for public sector data specialists.
+    url: https://www.gov.uk/government/publications/standard-for-the-specialist-in-public-sector-data-estates
+    reference_access: Publicly available standard document.
+    where_it_touches_data:
+      - Informs the role definitions and data literacy training (E7 in the criteria) in this pack.
+    owner: estates-analytics
+    status: awareness-only
+    project: P20
+    limitations: Referenced for competency framing only; no assessment evidence is claimed here.

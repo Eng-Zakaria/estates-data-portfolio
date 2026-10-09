@@ -1,0 +1,1207 @@
+# Metric registry (P20)
+#
+# Source of truth for what every dashboard number means. Keyed by the KPI name
+# exactly as it appears in the Power BI handoff files
+# (projects/p06..p11/**/powerbi/measures.dax) and the dashboard KPI helper
+# modules (projects/p07-asset-maintenance/src/kpis.py).
+#
+# `tests/test_metrics.py` enforces, both ways:
+#   * every dashboard KPI name has exactly one entry here (matched on `name`);
+#   * every entry here names at least one consumer in `dashboards`, or is
+#     marked `status: planned` with a note in `caveats`.
+#
+# Keys per entry: id, name, kind, status, definition, formula, grain, owner,
+# source_model, caveats, version, dashboards, glossary_term, classification.
+#
+# Synthetic data throughout: these are real definitions of synthetic metrics.
+
+owners:
+  - id: estates-analytics
+    role: data custodian and analytics lead (builds and publishes the metrics)
+  - id: estates-planning
+    role: space, estate planning and academic space use
+  - id: estates-operations
+    role: technical services, assets and maintenance delivery
+  - id: estates-energy
+    role: sustainability, energy and carbon reporting
+  - id: estates-hs
+    role: health, safety and statutory compliance
+  - id: estates-bim
+    role: capital projects, BIM and information management
+  - id: estates-finance
+    role: estates finance, cost and return reporting
+
+classifications: [public, internal, confidential]
+
+kinds: [metric, helper]
+statuses: [live, planned]
+
+metrics:
+  # ---------------------------------------------------------------- P06 space
+  - id: available_hours
+    name: Available Hours
+    kind: metric
+    status: live
+    definition: >
+      Teaching hours a room could have been booked for in the reporting window:
+      teaching days (not weekend, not holiday) multiplied by a 9-hour teaching day.
+    formula: "count(dates where teaching_week > 0 and not weekend and not holiday) * 9"
+    grain: estate x academic year
+    owner: estates-planning
+    source_model: [dim_date, mart_space_utilisation]
+    caveats:
+      - Assumes a 9-hour day and does not model room-by-room opening hours.
+      - Counts teaching weeks only, so term-time booking patterns are visible but evening use is not.
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: available_hours
+    classification: internal
+
+  - id: timetabled_hours
+    name: Timetabled Hours
+    kind: metric
+    status: live
+    definition: Total booked hours of teaching events across the selected scope.
+    formula: "sum(mart_space_utilisation.booked_hours)"
+    grain: space (aggregable to building, estate)
+    owner: estates-planning
+    source_model: [mart_space_utilisation]
+    caveats:
+      - A double-booked room is counted twice; the timetable is not de-conflicted here.
+      - Bookings with a zero group size are retained.
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: booked_hours
+    classification: internal
+
+  - id: frequency_pct
+    name: Frequency %
+    kind: metric
+    status: live
+    definition: Share of available room hours that were booked at least once.
+    formula: "timetabled hours / (count of spaces * available hours)"
+    grain: space, building, category
+    owner: estates-planning
+    source_model: [mart_space_utilisation, dim_date]
+    caveats:
+      - A room booked for 1 hour in 500 available hours scores 0.2%, which reads as "unused" in a room that is barely usable.
+      - Understates demand for rooms with limited opening hours.
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: frequency_pct
+    classification: internal
+
+  - id: avg_occupancy_pct
+    name: Avg Occupancy %
+    kind: metric
+    status: live
+    definition: Average fill of a booked room, as average group size over seat capacity.
+    formula: "avg(mart_space_utilisation.occupancy_rate)"
+    grain: space, building, category
+    owner: estates-planning
+    source_model: [mart_space_utilisation]
+    caveats:
+      - Synthetic group size comes from the timetable, not from sensors; P17 observed counts are a separate fact.
+      - Unweighted mean of room-level rates: many tiny rooms count as much as one lecture theatre.
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: occupancy_rate
+    classification: internal
+
+  - id: utilisation_pct
+    name: Utilisation %
+    kind: metric
+    status: live
+    definition: Room use combining how often a room is booked with how full it is when booked.
+    formula: "frequency % * avg occupancy %"
+    grain: space, building, category
+    owner: estates-planning
+    source_model: [mart_space_utilisation]
+    caveats:
+      - A product, not a time-weighted average: a room booked once and full for 50 people scores like a room booked daily at 50%.
+      - Both inputs are synthetic proxies; treat as a screening view, not an estates fact.
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: utilisation
+    classification: internal
+
+  - id: no_show_pct
+    name: No-show %
+    kind: metric
+    status: live
+    definition: Share of covered timetable events where sensors saw nobody in the room during the event window.
+    formula: "events with no_show_flag = 1 / events with a non-blank no_show_flag"
+    grain: space, building, date
+    owner: estates-planning
+    source_model: [fct_timetable_event, fct_space_observed_occupancy]
+    caveats:
+      - Needs the calculated column built in Power Query from validation/v02_rooms_to_review.sql; without sensor coverage the denominator shrinks and the number can move for the wrong reason.
+      - A no-show is not proof of absence: sensors can fail (see P17 sensor health).
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: no_show
+    classification: internal
+
+  - id: nia_m2
+    name: NIA m2
+    kind: metric
+    status: live
+    definition: "Net Internal Area in square metres: floor area measured inside the external walls."
+    formula: "sum(dim_space.nia_m2)"
+    grain: space, building
+    owner: estates-planning
+    source_model: [dim_space]
+    caveats:
+      - Excludes corridors, stairs, plant and external walls by definition; never compare with GIA.
+      - Synthetic values; the register is the source of truth, not OSM footprints (P19).
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: nia
+    classification: internal
+
+  - id: m2_per_staff_fte
+    name: m2 per Staff FTE
+    kind: metric
+    status: live
+    definition: Net internal area available to a department per full-time-equivalent staff member.
+    formula: "sum(dim_space.nia_m2) / sum(dim_department.staff_fte)"
+    grain: department, faculty, estate
+    owner: estates-planning
+    source_model: [dim_space, dim_department]
+    caveats:
+      - NIA is allocated to a department only when the space is tagged to it; untagged space is excluded, which lowers the estate figure.
+      - FTE counts are synthetic and static for the window.
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: fte
+    classification: internal
+
+  - id: m2_per_student_fte
+    name: m2 per Student FTE
+    kind: metric
+    status: live
+    definition: Net internal area available per full-time-equivalent student.
+    formula: "sum(dim_space.nia_m2) / sum(dim_department.student_fte)"
+    grain: department, faculty, estate
+    owner: estates-planning
+    source_model: [dim_space, dim_department]
+    caveats:
+      - Same allocation caveat as staff: untagged space is excluded.
+      - Part-time and international students are counted as FTE, not headcount.
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: fte
+    classification: internal
+
+  - id: variance_to_median
+    name: Variance to Median
+    kind: metric
+    status: live
+    definition: How far a department's space per staff FTE sits above or below the median department.
+    formula: "(m2 per staff FTE - median(m2 per staff FTE)) / median(m2 per staff FTE)"
+    grain: department
+    owner: estates-planning
+    source_model: [dim_space, dim_department]
+    caveats:
+      - Median, not mean: one very large department cannot pull the benchmark.
+      - Ignores teaching quality, lab requirements and space quality; a lab-heavy department is meant to look high.
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: space_per_fte
+    classification: internal
+
+  - id: releasable_m2
+    name: Releasable m2 (what-if)
+    kind: metric
+    status: live
+    definition: Area that would be in excess if every scope were pushed to a chosen target utilisation.
+    formula: "NIA m2 * (1 - utilisation % / target utilisation param)"
+    grain: space, building, estate
+    owner: estates-planning
+    source_model: [mart_space_utilisation, dim_space]
+    caveats:
+      - What-if only: it does not model decant cost, shared space, statutory limits or teaching quality.
+      - Goes negative for scopes already above target; read as "capped at zero".
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: releasable_area
+    classification: internal
+
+  - id: utilisation_vs_target
+    name: Utilisation vs Target
+    kind: metric
+    status: live
+    definition: Gap in percentage points between actual utilisation and the chosen target.
+    formula: "utilisation % - target utilisation param"
+    grain: space, building, estate
+    owner: estates-planning
+    source_model: [mart_space_utilisation]
+    caveats:
+      - A percentage-point difference, not a percent change: read "0.05" as five points, not 5%.
+    version: 1.0.0
+    dashboards: [p06]
+    glossary_term: utilisation
+    classification: internal
+
+  # ------------------------------------------------------- P07 assets / works
+  - id: ppm_completion
+    name: ppm_completion
+    kind: metric
+    status: live
+    definition: Planned preventive maintenance jobs completed in the period, over planned jobs due in the period.
+    formula: "completed PPM jobs / PPM jobs raised"
+    grain: estate, building, trade, month
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - None when no jobs were raised; the dashboard shows blank, not zero.
+      - Counts job closure, not work quality: a closed job with no evidence still counts.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: ppm
+    classification: internal
+
+  - id: planned_reactive_ratio
+    name: planned_reactive_ratio
+    kind: metric
+    status: live
+    definition: "Planned work (planned, statutory, project) per reactive job: how much of the workload was scheduled rather than called out."
+    formula: "(planned + statutory + project jobs) / reactive jobs"
+    grain: estate, building, trade, month
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - None when there are no reactive jobs in scope.
+      - A high ratio can also mean under-reporting of breakdowns, so read with MTTR and repeat failures.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: reactive
+    classification: internal
+
+  - id: mttr
+    name: mttr
+    kind: metric
+    status: live
+    definition: "Mean time to repair: average days from raising to completing a reactive job."
+    formula: "mean(days_to_complete) over reactive jobs with a completion"
+    grain: estate, building, trade, month
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - Open jobs are excluded, so a long backlog is invisible in MTTR; pair with backlog age band.
+      - Calendar days, not working hours; waits on parts or access count.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: mttr
+    classification: internal
+
+  - id: mtbf
+    name: mtbf
+    kind: metric
+    status: live
+    definition: "Mean time between failures: average gap between consecutive failures of the same asset."
+    formula: "mean(diff(sorted(failure dates))) over assets with >= 2 failures"
+    grain: asset, asset type, building
+    owner: estates-operations
+    source_model: [fct_work_order, dim_asset]
+    caveats:
+      - Only defined for assets with two or more failures; singletons return None, so averages exclude them.
+      - Synthetic failure dates: expect a value for every asset in this demo.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: mtbf
+    classification: internal
+
+  - id: repeat_failure_assets
+    name: is_repeat_failure
+    kind: metric
+    status: live
+    definition: Asset flag for three or more reactive jobs in twelve months.
+    formula: "reactive_12m >= 3"
+    grain: asset
+    owner: estates-operations
+    source_model: [mart_asset_health, fct_work_order]
+    caveats:
+      - Threshold of three is a portfolio convention, not a standard; change it and the count changes.
+      - Counts jobs, not root causes: one fault fixed four times looks like four different failures.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: repeat_failure
+    classification: internal
+
+  - id: remaining_life_pct
+    name: remaining_life_pct
+    kind: metric
+    status: live
+    definition: Share of an asset's expected design life still to run.
+    formula: "1 - age_years / expected_life_years"
+    grain: asset, asset type
+    owner: estates-operations
+    source_model: [mart_asset_health, dim_asset]
+    caveats:
+      - Negative for assets past design life; report as-is.
+      - Design life is a single number per type and ignores condition survey evidence.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: remaining_life
+    classification: internal
+
+  - id: renewal_year
+    name: renewal_year
+    kind: helper
+    status: live
+    definition: Year an asset is expected to need replacing, from install year plus expected life.
+    formula: "install year + expected_life_years"
+    grain: asset
+    owner: estates-operations
+    source_model: [dim_asset]
+    caveats:
+      - Helper, not a KPI: it produces no number on its own.
+      - Unknown install date or life returns None and is dropped from the forecast (counted as a coverage gap).
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: renewal_year
+    classification: internal
+
+  - id: renewal_forecast_gbp
+    name: renewal_forecast
+    kind: metric
+    status: live
+    definition: Replacement cost expected in each future year from assets reaching end of life.
+    formula: "sum(replacement_cost_gbp) grouped by renewal year"
+    grain: year, asset type, building
+    owner: estates-operations
+    source_model: [dim_asset]
+    caveats:
+      - Undated assets are dropped, so the forecast is a floor, not a total.
+      - Replacement cost is a register figure, not a quotation; no inflation applied.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: renewal_forecast
+    classification: internal
+
+  - id: cost_per_m2
+    name: cost_per_m2
+    kind: metric
+    status: live
+    definition: Work-order cost per square metre of gross internal area.
+    formula: "cost_gbp / gia_m2"
+    grain: building, trade, month
+    owner: estates-operations
+    source_model: [fct_work_order, dim_building]
+    caveats:
+      - Uses GIA (the building envelope) deliberately, unlike P06 which uses NIA.
+      - Labour and materials only; excludes overheads and capital spend.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: cost_per_m2
+    classification: internal
+
+  - id: sla_met_pct
+    name: sla_met
+    kind: metric
+    status: live
+    definition: Share of completed jobs finished inside the priority's response target.
+    formula: "count(days_to_complete <= target_days) / count(completed jobs with a target)"
+    grain: priority, trade, building, month
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - Targets are illustrative (P1 1d, P2 5d, P3 10d, P4 20d), set in methodology.md, not by contract.
+      - Open jobs are excluded: the percentage can look healthy while the backlog grows.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: sla
+    classification: internal
+
+  - id: backlog_age_band
+    name: age_band
+    kind: helper
+    status: live
+    definition: "Bands an open job by how long it has been open: 0-30, 31-90, 91-180, 180+ days, or unknown."
+    formula: "fixed thresholds on age in days"
+    grain: work order
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - Helper banding, not a KPI; thresholds are conventions, not standards.
+      - Unknown age (missing raise date) returns None and is shown as a separate bar, never as zero.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: backlog_age
+    classification: internal
+
+  - id: asset_risk_band
+    name: risk_band
+    kind: helper
+    status: live
+    definition: Priority band for an asset from criticality and condition grade.
+    formula: "criticality * condition weight (A=1,B=2,C=3,D=4); >=16 High, >=9 Medium, else Low"
+    grain: asset
+    owner: estates-operations
+    source_model: [dim_asset]
+    caveats:
+      - Helper banding, not a risk model; weights are a convention and are not calibrated against failure data.
+      - Unknown condition or criticality returns None (shown as Unknown), never Low.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: risk_band
+    classification: internal
+
+  # ------------------------------------------------------------- P08 carbon
+  - id: total_energy_kwh
+    name: Total Energy kWh
+    kind: metric
+    status: live
+    definition: Delivered energy in kilowatt hours over the selected period, across all fuels and meters.
+    formula: "sum(fct_energy_daily.kwh)"
+    grain: date, building, fuel, meter
+    owner: estates-energy
+    source_model: [fct_energy_daily]
+    caveats:
+      - Meter-read kWh, not primary energy; gas and electricity are not interchangeable units of demand.
+      - Missing half-hours reduce the total; check fct_energy_daily.n_periods before comparing months.
+    version: 1.0.0
+    dashboards: [p08]
+    glossary_term: energy_kwh
+    classification: internal
+
+  - id: total_emissions_kgco2e
+    name: Total Emissions kgCO2e
+    kind: metric
+    status: live
+    definition: Location-based greenhouse gas emissions in kilograms of CO2 equivalent.
+    formula: "sum(mart_carbon_monthly.kgco2e)"
+    grain: month, fuel, building
+    owner: estates-energy
+    source_model: [mart_carbon_monthly]
+    caveats:
+      - Location-based, not market-based: no renewable tariffs or certificates are claimed.
+      - Factors are DESNZ 2025 flat-format values fetched by script; they change every year.
+    version: 1.0.0
+    dashboards: [p08]
+    glossary_term: emissions_kgco2e
+    classification: public
+
+  - id: scope_1_kgco2e
+    name: Scope 1 kgCO2e
+    kind: metric
+    status: live
+    definition: Direct emissions from fuel burned inside the estate boundary (here, gas combustion).
+    formula: "sum(kgco2e where scope = 'Scope 1')"
+    grain: month, fuel, building
+    owner: estates-energy
+    source_model: [mart_carbon_monthly, dim_emission_factor]
+    caveats:
+      - Covers only fuels in the register; any unmetered burner is missing rather than zero.
+      - Scope definition follows GHG Protocol, awareness-level reference only.
+    version: 1.0.0
+    dashboards: [p08]
+    glossary_term: scope_1
+    classification: public
+
+  - id: scope_2_kgco2e
+    name: Scope 2 kgCO2e
+    kind: metric
+    status: live
+    definition: Indirect emissions from purchased electricity, location-based.
+    formula: "sum(kgco2e where scope = 'Scope 2')"
+    grain: month, fuel, building
+    owner: estates-energy
+    source_model: [mart_carbon_monthly, dim_emission_factor]
+    caveats:
+      - Location-based only. A market-based figure would need contractual instruments that this pipeline does not hold.
+    version: 1.0.0
+    dashboards: [p08]
+    glossary_term: scope_2
+    classification: public
+
+  - id: energy_intensity_kwh_m2
+    name: Energy Intensity kWh per m2
+    kind: metric
+    status: live
+    definition: Energy used per square metre of gross internal area.
+    formula: "sum(kwh) / sum(dim_building.gia_m2)"
+    grain: month, building, estate
+    owner: estates-energy
+    source_model: [fct_energy_daily, dim_building]
+    caveats:
+      - Uses GIA, so it is not comparable with P06's NIA-based ratios.
+      - Weather and occupancy are not normalised here; degree days are available in fct_energy_daily.hdd if you want to.
+    version: 1.0.0
+    dashboards: [p08]
+    glossary_term: energy_intensity
+    classification: public
+
+  - id: emissions_intensity_kgco2e_m2
+    name: Emissions Intensity kgCO2e per m2
+    kind: metric
+    status: live
+    definition: Emissions per square metre of gross internal area.
+    formula: "sum(kgco2e) / sum(dim_building.gia_m2)"
+    grain: month, building, estate
+    owner: estates-energy
+    source_model: [mart_carbon_monthly, dim_building]
+    caveats:
+      - Denominator is GIA; buildings with missing GIA are excluded from the ratio but still counted in totals.
+      - No normalisation for degree days or opening hours.
+    version: 1.0.0
+    dashboards: [p08]
+    glossary_term: emissions_intensity
+    classification: public
+
+  - id: baseload_pct
+    name: Baseload Pct
+    kind: metric
+    status: live
+    definition: Share of peak demand that continues overnight, as an indicator of always-on load.
+    formula: "avg(overnight minimum kW) / avg(daily peak kW) * 100"
+    grain: meter, building, month
+    owner: estates-energy
+    source_model: [fct_meter_hh]
+    caveats:
+      - Needs an hourly calculation table or a Power BI computed column; there is no gold column for it yet.
+      - Overnight window and minimum are conventions (P08 measures.dax states both); change them and the number changes.
+      - High baseload can be legitimate plant load, not only waste.
+    version: 1.0.0
+    dashboards: [p08]
+    glossary_term: baseload
+    classification: internal
+
+  - id: variance_to_pathway_pct
+    name: Variance to Pathway Pct
+    kind: metric
+    status: live
+    definition: How far actual emissions sit above or below a linear pathway to the net zero target year.
+    formula: "(actual - pathway) / pathway, pathway interpolated between baseline year and target year"
+    grain: year, fuel, estate
+    owner: estates-energy
+    source_model: [mart_carbon_monthly]
+    caveats:
+      - Baseline and target year are what-if parameters (defaults: base year first full year, target 2040).
+      - Linear interpolation is a planning convention, not an official pathway.
+    version: 1.0.0
+    dashboards: [p08]
+    glossary_term: variance_to_pathway
+    classification: public
+
+  - id: rolling_12m_kgco2e
+    name: Rolling 12M kgCO2e
+    kind: metric
+    status: live
+    definition: Emissions over the twelve months to the end of each month, to smooth seasonal swings.
+    formula: "sum(kgco2e) over the trailing 12 months"
+    grain: month, fuel, estate
+    owner: estates-energy
+    source_model: [mart_carbon_monthly]
+    caveats:
+      - The first eleven months are partial and must be excluded or annualised; the dashboard filter handles this.
+      - Rolling, so one bad month stays in the series for a year.
+    version: 1.0.0
+    dashboards: [p08]
+    glossary_term: rolling_12m
+    classification: public
+
+  # -------------------------------------------------------- P09 compliance
+  - id: total_inspections
+    name: Total Inspections
+    kind: metric
+    status: live
+    definition: Count of inspections in scope for the period, whatever their status.
+    formula: "countrows(fct_inspection)"
+    grain: building, inspection type, month
+    owner: estates-hs
+    source_model: [fct_inspection]
+    caveats:
+      - Frequencies in the register are illustrative and are not a statement of legal duty.
+      - '"No record" is a status: a building can look compliant simply because nothing was logged.'
+    version: 1.0.0
+    dashboards: [p09]
+    glossary_term: inspection
+    classification: internal
+
+  - id: overdue_count
+    name: Overdue Count
+    kind: metric
+    status: live
+    definition: Inspections whose due date has passed without a recorded completion.
+    formula: "count(mart_compliance_status where status = 'Overdue')"
+    grain: building, inspection type, month
+    owner: estates-hs
+    source_model: [mart_compliance_status]
+    caveats:
+      - Overdue against a synthetic as-of date; use the as-of slicer, not today's date.
+      - Excludes failed inspections with remedial actions, which have their own measure.
+    version: 1.0.0
+    dashboards: [p09]
+    glossary_term: overdue
+    classification: internal
+
+  - id: due_within_30_days
+    name: Due Within 30 Days
+    kind: metric
+    status: live
+    definition: Inspections falling due in the next 30 days from the as-of date.
+    formula: "count(mart_compliance_status where status = 'Due within 30 days')"
+    grain: building, inspection type, month
+    owner: estates-hs
+    source_model: [mart_compliance_status]
+    caveats:
+      - A forward-looking workload signal from the mart's own status logic, not a forecast of contractor capacity.
+    version: 1.0.0
+    dashboards: [p09]
+    glossary_term: due_within_30_days
+    classification: internal
+
+  - id: failed_remedial_open
+    name: Failed Remedial Open
+    kind: metric
+    status: live
+    definition: Failed inspections that still have an open remedial action.
+    formula: "count(mart_compliance_status where status = 'Failed - remedial open')"
+    grain: building, inspection type, month
+    owner: estates-hs
+    source_model: [mart_compliance_status]
+    caveats:
+      - Open means not closed in the tracker; an action closed without evidence still counts as closed.
+      - The red RAG band is driven by this measure alone.
+    version: 1.0.0
+    dashboards: [p09]
+    glossary_term: remedial_action
+    classification: internal
+
+  - id: compliance_days_overdue
+    name: Days Overdue
+    kind: metric
+    status: live
+    definition: Days between the due date and completion, or between due date and as-of date if still open.
+    formula: "date_diff(day, due_date, coalesce(completed_date, as_of_date))"
+    grain: inspection
+    owner: estates-hs
+    source_model: [mart_compliance_status]
+    caveats:
+      - Negative for completed-early inspections; read those as headroom, not a credit.
+      - Calendar days, no working-time or notice-period adjustment.
+    version: 1.0.0
+    dashboards: [p09]
+    glossary_term: days_overdue
+    classification: internal
+
+  - id: compliance_risk_score
+    name: Risk Score
+    kind: metric
+    status: live
+    definition: 0-4 score ranking compliance risk from status and overdue days, used to order the action list.
+    formula: "banded from status (0 compliant to 4 failed with open remedial) and days overdue"
+    grain: building, inspection type
+    owner: estates-hs
+    source_model: [mart_compliance_status]
+    caveats:
+      - A triage ordering, not a legal risk assessment; bands are conventions in the mart.
+      - Scores are not comparable across inspection types.
+    version: 1.0.0
+    dashboards: [p09]
+    glossary_term: risk_score
+    classification: internal
+
+  - id: rag_status
+    name: RAG Status
+    kind: helper
+    status: live
+    definition: Red, amber or green label for a compliance position, derived from status and remedial state.
+    formula: "case logic over status and open remedial actions"
+    grain: building, inspection type
+    owner: estates-hs
+    source_model: [mart_compliance_status]
+    caveats:
+      - Helper label, not a score; a green building with no records at all is still green, which is the main misreading.
+      - Thresholds are conventions and are visible in the mart SQL.
+    version: 1.0.0
+    dashboards: [p09]
+    glossary_term: rag_status
+    classification: internal
+
+  - id: remedial_ageing_days
+    name: Remedial Ageing Days
+    kind: metric
+    status: live
+    definition: Days since a remedial action was raised and it is still open.
+    formula: "date_diff(day, remedial raised date, as_of_date) where action is open"
+    grain: remedial action, inspection
+    owner: estates-hs
+    source_model: [fct_inspection, mart_compliance_status]
+    caveats:
+      - Open actions only, so the average improves as old actions are closed, not as work gets done.
+      - No severity weighting: a cosmetic and a safety-critical action age identically.
+    version: 1.0.0
+    dashboards: [p09]
+    glossary_term: remedial_ageing
+    classification: internal
+
+  - id: compliance_trend_overdue
+    name: Compliance Trend Overdue
+    kind: helper
+    status: live
+    definition: Month-by-month count of overdue inspections used for the trend line.
+    formula: "count(overdue) grouped by month"
+    grain: month, building, inspection type
+    owner: estates-hs
+    source_model: [mart_compliance_status]
+    caveats:
+      - Helper for the trend visual; it inherits every caveat of overdue count.
+      - Month boundaries follow the synthetic calendar, not inspection seasons.
+    version: 1.0.0
+    dashboards: [p09]
+    glossary_term: overdue
+    classification: internal
+
+  # ------------------------------------------------------------- P11 IFC QA
+  - id: elements_without_type
+    name: Elements Without Type
+    kind: metric
+    status: live
+    definition: IFC elements with no type or classification attached, so their function is unknown to downstream systems.
+    formula: "count(elements where type or classification is missing)"
+    grain: IFC model, building
+    owner: estates-bim
+    source_model: ["file:data/gold/ifc/ifc_element.csv"]
+    caveats:
+      - Counts elements the extractor could read; elements missing from the export are invisible here.
+      - '"Unclassified" is a modelling defect, not a data-quality bug in this pipeline.'
+    version: 1.0.0
+    dashboards: [p11]
+    glossary_term: ifc_element
+    classification: internal
+
+  - id: elements_without_classification
+    name: Elements Without Classification
+    kind: metric
+    status: live
+    definition: IFC elements carrying no classification code that a downstream mapper can use.
+    formula: "count(elements where classification is null or empty)"
+    grain: IFC model, building
+    owner: estates-bim
+    source_model: ["file:data/gold/ifc/ifc_element.csv"]
+    caveats:
+      - P13's Uniclass mapping is a dev placeholder, so a null classification here does not mean the code list was consulted.
+    version: 1.0.0
+    dashboards: [p11]
+    glossary_term: ifc_classification
+    classification: internal
+
+  - id: area_source_completeness
+    name: Area Source Completeness
+    kind: metric
+    status: live
+    definition: Share of model area that can be attributed to a source space, i.e. whether the model can be costed or analysed by room.
+    formula: "sum(area of elements with a space) / sum(area of all elements)"
+    grain: IFC model, building
+    owner: estates-bim
+    source_model: ["file:data/gold/ifc/ifc_element.csv"]
+    caveats:
+      - Area means gross element volume-derived area as exported by the extractor, not NIA.
+      - Completeness of space assignment, not of geometry.
+    version: 1.0.0
+    dashboards: [p11]
+    glossary_term: area_completeness
+    classification: internal
+
+  - id: rooms_matched
+    name: Rooms Matched
+    kind: helper
+    status: live
+    definition: Rooms in the space register successfully matched to a room in the IFC model.
+    formula: "count(register rooms with a matched model room)"
+    grain: building, room
+    owner: estates-bim
+    source_model: ["file:data/gold/ifc/ifc_space.csv", dim_space]
+    caveats:
+      - Matched by name and number with a fuzzy fallback; near-matches can be wrong in the same way every time.
+      - Matched is not verified: nobody has confirmed the pairing room by room.
+    version: 1.0.0
+    dashboards: [p11]
+    glossary_term: room_match
+    classification: internal
+
+  - id: rooms_missing_from_model
+    name: Rooms Missing From Model
+    kind: metric
+    status: live
+    definition: Register rooms with no counterpart in the IFC model, i.e. space the model does not describe.
+    formula: "count(register rooms with no matched model room)"
+    grain: building, room
+    owner: estates-bim
+    source_model: ["file:data/gold/ifc/ifc_space.csv", dim_space]
+    caveats:
+      - A room can be missing because it was demolished, or because the model predates a refurbishment; the data cannot tell you which.
+    version: 1.0.0
+    dashboards: [p11]
+    glossary_term: room_match
+    classification: internal
+
+  - id: rooms_over_10pct_area_mismatch
+    name: Rooms Over 10pct Area Mismatch
+    kind: metric
+    status: live
+    definition: Matched rooms where the model's area differs from the register by more than ten per cent.
+    formula: "count(matched rooms where abs(model area - register area) / register area > 0.10)"
+    grain: building, room
+    owner: estates-bim
+    source_model: ["file:data/gold/ifc/ifc_space.csv", dim_space]
+    caveats:
+      - The 10% threshold is a convention for triage, not a tolerance agreed with the designer.
+      - Model area is derived geometry; register area is a stated figure, so both can be right.
+    version: 1.0.0
+    dashboards: [p11]
+    glossary_term: area_mismatch
+    classification: internal
+
+  # --------------------------------------------- planned (not on a dashboard)
+  - id: dq_score
+    name: DQ Score
+    kind: metric
+    status: planned
+    definition: Weighted pass rate across data quality checks for one dataset.
+    formula: "100 * sum(weight * pass_rate) / sum(weight)"
+    grain: dataset, dataset x dimension, building
+    owner: estates-analytics
+    source_model: ["dq:data/quality/gold/dq_scores.parquet"]
+    caveats:
+      - Planned: scores exist in P03 output but are not yet a dbt mart or a dashboard measure.
+      - Score is relative to the checks defined, so it measures the framework as much as the data.
+    version: 0.1.0
+    dashboards: [p03]
+    glossary_term: dq_score
+    classification: internal
+
+  - id: dq_failed_rows
+    name: DQ Failed Rows
+    kind: metric
+    status: planned
+    definition: Rows that failed at least one check and were quarantined, by dataset and reason.
+    formula: "count(distinct quarantined rows) grouped by dataset and reason"
+    grain: dataset, reason, day
+    owner: estates-analytics
+    source_model: ["dq:data/quality/gold/dq_failed_rows.parquet"]
+    caveats:
+      - Planned: available as a P03 output, not yet published in a mart.
+      - A row can fail several checks and is attributed to the first quarantine reason in pipeline order.
+    version: 0.1.0
+    dashboards: [p03]
+    glossary_term: dq_failed_rows
+    classification: internal
+
+  - id: failing_error_checks
+    name: Failing Error Checks
+    kind: metric
+    status: planned
+    definition: Number of checks currently failing at error severity, the CI gate signal.
+    formula: "count(checks where severity = 'error' and status = 'fail')"
+    grain: run, dataset
+    owner: estates-analytics
+    source_model: ["dq:data/quality/gold/dq_alerts.parquet"]
+    caveats:
+      - Planned: the gate runs this in CI but there is no dashboard page for it yet.
+      - One failing check on a tiny dataset can outrank a large volume of passing checks.
+    version: 0.1.0
+    dashboards: [p03]
+    glossary_term: dq_failed_rows
+    classification: internal
+
+  - id: open_work_orders
+    name: Open Work Orders
+    kind: metric
+    status: planned
+    definition: Work orders not yet completed at the reporting date.
+    formula: "count(fct_work_order where is_open)"
+    grain: building, trade, priority, age band
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - Planned: P07 validation SQL v02 computes it, but there is no measures.dax entry yet.
+      - Open includes jobs awaiting parts or access, not only jobs not started.
+    version: 0.1.0
+    dashboards: [p07]
+    glossary_term: open_work_order
+    classification: internal
+
+  - id: asset_ifc_coverage_pct
+    name: Asset IFC Coverage %
+    kind: metric
+    status: planned
+    definition: Share of register assets that can be linked to an IFC GlobalId in the twin crosswalk.
+    formula: "100 * count(assets with an ifc GlobalId) / count(assets)"
+    grain: building, asset type
+    owner: estates-bim
+    source_model: ["file:projects/p18-digital-twin-layer/outputs/entity_crosswalk.csv", dim_asset]
+    caveats:
+      - Planned: P18 computes this in its coverage report; it is not on a dashboard.
+      - A GlobalId match proves an identifier was carried, not that the geometry is correct.
+    version: 0.1.0
+    dashboards: [p18]
+    glossary_term: ifc_globid
+    classification: internal
+
+  # ------------------------------------- P07 Power BI measures (measures.dax)
+  - id: p07_total_wos
+    name: Total WOs
+    kind: metric
+    status: live
+    definition: Total work orders raised in the selected period, whatever their type or status.
+    formula: "countrows(fct_work_order)"
+    grain: estate, building, trade, month
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - Counts jobs, not value: one small job counts the same as a large one.
+      - Includes open jobs, so it is a workload measure, not a completed-work measure.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: work_order
+    classification: internal
+
+  - id: p07_ppm_completion_dax
+    name: PPM Completion %
+    kind: metric
+    status: live
+    definition: Planned preventive maintenance jobs completed in the period, over planned jobs due in the period.
+    formula: "countrows(fct_work_order where wo_type = 'PPM' and status = 'Complete') / countrows(fct_work_order where wo_type = 'PPM')"
+    grain: estate, building, trade, month
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - Same definition as the Python helper ppm_completion; the two artefacts are kept in step by the coverage test.
+      - Counts closure, not quality: a job closed with no evidence still counts.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: ppm
+    classification: internal
+
+  - id: p07_planned_reactive
+    name: "Planned : Reactive"
+    kind: metric
+    status: live
+    definition: "Planned work per reactive job: how much of the workload was scheduled rather than called out."
+    formula: "countrows(fct_work_order where plan_category in ('planned','other_planned')) / countrows(fct_work_order where wo_type = 'Reactive')"
+    grain: estate, building, trade, month
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - Same definition as the Python helper planned_reactive_ratio.
+      - None when there are no reactive jobs in scope.
+      - A high ratio can also mean under-reporting of breakdowns, so read with MTTR and repeat failures.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: reactive
+    classification: internal
+
+  - id: p07_mttr_days
+    name: MTTR Days
+    kind: metric
+    status: live
+    definition: "Mean time to repair: average days from raising to completing a reactive job."
+    formula: "average(fct_work_order.days_to_complete where wo_type = 'Reactive' and status = 'Complete')"
+    grain: estate, building, trade, month
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - Same definition as the Python helper mttr.
+      - Open jobs are excluded, so a long backlog is invisible in MTTR; pair with backlog age band.
+      - Calendar days, not working hours; waits on parts or access count.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: mttr
+    classification: internal
+
+  - id: p07_total_cost
+    name: Total Cost £
+    kind: metric
+    status: live
+    definition: Total work-order cost in pounds over the selected period.
+    formula: "sum(fct_work_order.cost_gbp)"
+    grain: estate, building, trade, month
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - Labour and materials only; excludes overheads and capital spend.
+      - Includes open jobs, so a period with a large unfinished job looks expensive.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: wo_cost
+    classification: internal
+
+  - id: p07_cost_per_m2_gbp
+    name: Cost per m2 £
+    kind: metric
+    status: live
+    definition: Work-order cost per square metre of gross internal area.
+    formula: "sum(fct_work_order.cost_gbp) / sum(dim_building.gia_m2)"
+    grain: building, trade, month
+    owner: estates-operations
+    source_model: [fct_work_order, dim_building]
+    caveats:
+      - Same definition as the Python helper cost_per_m2.
+      - Uses GIA (the building envelope) deliberately, unlike P06 which uses NIA.
+      - Labour and materials only; excludes overheads and capital spend.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: cost_per_m2
+    classification: internal
+
+  - id: p07_backlog_count
+    name: Backlog Count
+    kind: metric
+    status: live
+    definition: Work orders not yet completed at the reporting date.
+    formula: "countrows(fct_work_order where is_open)"
+    grain: building, trade, priority, age band
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - Open includes jobs awaiting parts or access, not only jobs not started.
+      - A count, not a cost: a backlog of small jobs can look worse than one large one.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: open_work_order
+    classification: internal
+
+  - id: p07_sla_met
+    name: SLA Met %
+    kind: metric
+    status: live
+    definition: Share of completed jobs finished inside the priority's response target.
+    formula: "count(completed jobs where days_to_complete <= target) / count(completed jobs with a target)"
+    grain: priority, trade, building, month
+    owner: estates-operations
+    source_model: [fct_work_order]
+    caveats:
+      - Same definition as the Python helper sla_met.
+      - Targets are illustrative (P1 1d, P2 5d, P3 10d, P4 20d), set in methodology.md, not by contract.
+      - Open jobs are excluded: the percentage can look healthy while the backlog grows.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: sla
+    classification: internal
+
+  - id: p07_repeat_failure_assets_dax
+    name: Repeat Failure Assets
+    kind: metric
+    status: live
+    definition: "Count of assets flagged as repeat failures: three or more reactive jobs in twelve months."
+    formula: "countrows(mart_asset_health where is_repeat_failure)"
+    grain: building, asset type
+    owner: estates-operations
+    source_model: [mart_asset_health]
+    caveats:
+      - Same definition as the Python helper is_repeat_failure, applied as a count.
+      - Threshold of three is a portfolio convention, not a standard; change it and the count changes.
+      - Counts jobs, not root causes: one fault fixed four times looks like four different failures.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: repeat_failure
+    classification: internal
+
+  - id: p07_reactive_12m
+    name: Reactive 12m
+    kind: metric
+    status: live
+    definition: Reactive jobs per asset in the last twelve months, at asset grain.
+    formula: "sum(mart_asset_health.reactive_12m)"
+    grain: asset, building, asset type
+    owner: estates-operations
+    source_model: [mart_asset_health]
+    caveats:
+      - A sum of per-asset counts, so it is a workload total, not a distinct-job count.
+      - Assets with no reactive jobs contribute zero, which is the point.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: reactive_12m
+    classification: internal
+
+  - id: p07_remaining_life
+    name: Remaining Life %
+    kind: metric
+    status: live
+    definition: Average share of expected design life still to run across assets.
+    formula: "average(mart_asset_health.remaining_life_pct)"
+    grain: building, asset type
+    owner: estates-operations
+    source_model: [mart_asset_health]
+    caveats:
+      - Same definition as the Python helper remaining_life_pct, averaged.
+      - Negative for assets past design life; report as-is.
+      - Design life is a single number per type and ignores condition survey evidence.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: remaining_life
+    classification: internal
+
+  - id: p07_renewal_forecast_gbp
+    name: Renewal Forecast £
+    kind: metric
+    status: live
+    definition: Replacement cost expected in each future year from assets reaching end of life.
+    formula: "sum(dim_asset.replacement_cost_gbp) grouped by renewal_year"
+    grain: year, asset type, building
+    owner: estates-operations
+    source_model: [dim_asset]
+    caveats:
+      - Same definition as the Python helper renewal_forecast.
+      - Undated assets are dropped, so the forecast is a floor, not a total.
+      - Replacement cost is a register figure, not a quotation; no inflation applied.
+    version: 1.0.0
+    dashboards: [p07]
+    glossary_term: renewal_forecast
+    classification: internal
+
+  # ------------------------------------- P11 Power BI measures (measures.dax)
+  - id: p11_space_count
+    name: Space Count
+    kind: metric
+    status: live
+    definition: Number of spaces extracted from the IFC model.
+    formula: "countrows(ifc_spaces)"
+    grain: IFC model, building
+    owner: estates-bim
+    source_model: ["file:data/gold/ifc/ifc_space.csv"]
+    caveats:
+      - Counts spaces the extractor could read; spaces missing from the export are invisible here.
+      - A count of model spaces, not of register rooms: the two are compared by the room-match measures.
+    version: 1.0.0
+    dashboards: [p11]
+    glossary_term: space
+    classification: internal
+
+  - id: p11_element_count
+    name: Element Count
+    kind: metric
+    status: live
+    definition: Number of building elements extracted from the IFC model, such as AHUs, boilers, pumps and fan coil units.
+    formula: "countrows(ifc_elements)"
+    grain: IFC model, building
+    owner: estates-bim
+    source_model: ["file:data/gold/ifc/ifc_element.csv"]
+    caveats:
+      - Counts elements the extractor could read; elements missing from the export are invisible here.
+      - A count of model elements, not of register assets: the two are compared by the reconciliation.
+    version: 1.0.0
+    dashboards: [p11]
+    glossary_term: ifc_element
+    classification: internal
+
+  - id: p11_zero_area_spaces
+    name: Zero Area Spaces
+    kind: metric
+    status: live
+    definition: Spaces in the IFC model with no area or a non-positive area, found by QA.
+    formula: "countrows(ifc_spaces where area_m2 <= 0)"
+    grain: IFC model, building
+    owner: estates-bim
+    source_model: ["file:data/gold/ifc/ifc_space.csv"]
+    caveats:
+      - A modelling defect, not a data-quality bug in this pipeline.
+      - In the demo model the planted defect count is one; a different count means the model changed.
+    version: 1.0.0
+    dashboards: [p11]
+    glossary_term: zero_area_space
+    classification: internal

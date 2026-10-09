@@ -1,0 +1,822 @@
+# Business glossary and data dictionary supplement (P20)
+#
+# The table/column half of the dictionary is generated from the dbt YAML files
+# (docs/generated/data-dictionary.md). This file is the hand-written half: the
+# words estates people actually use.
+#
+# `dataset:` links a term to a data quality dataset so the generated glossary can
+# show the current measured DQ score. Datasets are the keys in
+# data/quality/gold/dq_scores.csv. Concepts with no dataset say so rather than
+# borrowing someone else's score.
+#
+# `kpi_aliases:` maps every KPI name used by a dashboard (Power BI measures and
+# KPI helper modules) to a term here. tests/test_glossary.py asserts the two
+# sets match exactly, so no dashboard number can be left undefined.
+
+refresh_values: [hourly, daily, weekly, monthly, quarterly, annual, per_release, on_change, static]
+classifications: [public, internal, confidential]
+
+terms:
+  # ------------------------------------------------------------ buildings
+  - id: gia
+    term: GIA (Gross Internal Area)
+    definition: >
+      Floor area measured to the inside face of external walls, including
+      corridors, stairs and plant rooms. It is the denominator used for energy
+      and carbon intensity.
+    owner: estates-planning
+    source_of_truth: space register (synthetic dim_building.gia_m2)
+    refresh: on_change
+    dataset: spaces
+    classification: internal
+    notes: >
+      Never compare GIA with NIA in the same sentence: NIA is always the smaller
+      number. P19 warns that OSM footprints are not floor area at all.
+
+  - id: nia
+    term: NIA (Net Internal Area)
+    definition: >
+      Floor area inside the external walls but excluding circulation, stairs,
+      plant and wall thickness. It is the number estates use for space per person.
+    owner: estates-planning
+    source_of_truth: space register (synthetic dim_space.nia_m2)
+    refresh: on_change
+    dataset: spaces
+    classification: internal
+    notes: Summed to a building or an estate; do not add NIA across duplicate space records.
+
+  - id: fte
+    term: FTE (Full-Time Equivalent)
+    definition: >
+      A headcount expressed as a fraction of a full post, so 0.5 FTE is half a
+      full-time person. Used as the denominator for space-per-person metrics.
+    owner: estates-planning
+    source_of_truth: department register (synthetic dim_department.staff_fte, student_fte)
+    refresh: annual
+    dataset: ""
+    classification: internal
+    notes: >
+      A student FTE is not a headcount: a part-time or international student
+      counts for less than one.
+
+  - id: space_per_fte
+    term: Space per FTE
+    definition: Net internal area divided by FTE, for a department or the estate.
+    owner: estates-planning
+    source_of_truth: derived from dim_space and dim_department
+    refresh: monthly
+    dataset: spaces
+    classification: internal
+    notes: >
+      Excludes space not tagged to a department, so the estate figure is lower
+      than a floor-by-floor sum.
+
+  - id: releasable_area
+    term: Releasable area
+    definition: >
+      Area that would be in excess if every space were used at least to a chosen
+      target utilisation. A planning what-if, not a saving.
+    owner: estates-planning
+    source_of_truth: mart_space_utilisation (synthetic)
+    refresh: monthly
+    dataset: timetable
+    classification: internal
+    notes: Ignores decant cost, shared space and teaching quality.
+
+  - id: available_hours
+    term: Available hours
+    definition: Teaching hours a space could have been booked for in the period.
+    owner: estates-planning
+    source_of_truth: academic calendar (dim_date) x mart_space_utilisation
+    refresh: per_release
+    dataset: timetable
+    classification: internal
+    notes: Teaching days times a 9-hour day; evenings and holidays are not counted.
+
+  - id: booked_hours
+    term: Booked hours
+    definition: Hours a space was booked by timetable events in the period.
+    owner: estates-planning
+    source_of_truth: fct_timetable_event via mart_space_utilisation
+    refresh: monthly
+    dataset: timetable
+    classification: internal
+    notes: Double bookings count twice.
+
+  - id: frequency_pct
+    term: Frequency percentage
+    definition: Share of available hours in which the space was booked at least once.
+    owner: estates-planning
+    source_of_truth: mart_space_utilisation (synthetic)
+    refresh: monthly
+    dataset: timetable
+    classification: internal
+    notes: A single booking in a rarely opened room scores almost zero.
+
+  - id: occupancy_rate
+    term: Occupancy rate
+    definition: Average fill of a booked space, as average group size over seat capacity.
+    owner: estates-planning
+    source_of_truth: mart_space_utilisation (synthetic)
+    refresh: monthly
+    dataset: timetable
+    classification: internal
+    notes: >
+      Timetable-based. Sensor-observed headcounts live in a separate fact
+      (fct_space_observed_occupancy) and will not match.
+
+  - id: utilisation
+    term: Utilisation
+    definition: How much a space is used, combining booking frequency with fill when booked.
+    owner: estates-planning
+    source_of_truth: mart_space_utilisation (synthetic)
+    refresh: monthly
+    dataset: timetable
+    classification: internal
+    notes: >
+      Defined here as frequency x occupancy. Other teams define it differently, so
+      always quote the definition with the number.
+
+  - id: no_show
+    term: No-show
+    definition: A timetable event where sensors saw nobody in the space during the event window.
+    owner: estates-planning
+    source_of_truth: fct_timetable_event joined to fct_space_observed_occupancy (synthetic)
+    refresh: daily
+    dataset: sensors
+    classification: internal
+    notes: >
+      Only defined for events with sensor coverage. Uncovered events are blank, not
+      counted as no-shows.
+
+  # ------------------------------------------------------------- assets
+  - id: ppm
+    term: PPM (Planned Preventive Maintenance)
+    definition: Maintenance carried out to a planned schedule rather than in response to a failure.
+    owner: estates-operations
+    source_of_truth: CAFM work orders (synthetic fct_work_order)
+    refresh: daily
+    dataset: work_orders
+    classification: internal
+    notes: A closed PPM job counts as complete whether or not evidence was attached.
+
+  - id: reactive
+    term: Reactive work
+    definition: Work raised because something has broken or failed a check.
+    owner: estates-operations
+    source_of_truth: CAFM work orders (synthetic fct_work_order)
+    refresh: daily
+    dataset: work_orders
+    classification: internal
+    notes: >
+      The opposite of planned work. A reactive job that was forecast still counts
+      as reactive in this data.
+
+  - id: mttr
+    term: MTTR (Mean Time To Repair)
+    definition: Average days from raising a reactive job to completing it.
+    owner: estates-operations
+    source_of_truth: fct_work_order (synthetic)
+    refresh: daily
+    dataset: work_orders
+    classification: internal
+    notes: Open jobs are excluded, so a growing backlog does not show up in MTTR.
+
+  - id: mtbf
+    term: MTBF (Mean Time Between Failures)
+    definition: Average gap in days between consecutive failures of the same asset.
+    owner: estates-operations
+    source_of_truth: fct_work_order, dim_asset (synthetic)
+    refresh: monthly
+    dataset: work_orders
+    classification: internal
+    notes: Needs at least two failures per asset; other assets are excluded.
+
+  - id: repeat_failure
+    term: Repeat failure
+    definition: An asset with three or more reactive jobs in twelve months.
+    owner: estates-operations
+    source_of_truth: mart_asset_health (synthetic)
+    refresh: monthly
+    dataset: work_orders
+    classification: internal
+    notes: Counts jobs, not root causes.
+
+  - id: remaining_life
+    term: Remaining life
+    definition: Share of an asset's expected design life still to run.
+    owner: estates-operations
+    source_of_truth: mart_asset_health (synthetic)
+    refresh: monthly
+    dataset: assets
+    classification: internal
+    notes: Negative when an asset is past its expected life.
+
+  - id: renewal_year
+    term: Renewal year
+    definition: The year an asset is expected to need replacing.
+    owner: estates-operations
+    source_of_truth: dim_asset (synthetic)
+    refresh: monthly
+    dataset: assets
+    classification: internal
+    notes: Install year plus expected life; unknown when either field is missing.
+
+  - id: renewal_forecast
+    term: Renewal forecast
+    definition: Replacement cost expected in each future year.
+    owner: estates-operations
+    source_of_truth: dim_asset (synthetic)
+    refresh: annual
+    dataset: assets
+    classification: internal
+    notes: "A floor, not a total: undated assets are dropped."
+
+  - id: cost_per_m2
+    term: Cost per square metre
+    definition: Work-order cost divided by gross internal area.
+    owner: estates-operations
+    source_of_truth: fct_work_order, dim_building (synthetic)
+    refresh: monthly
+    dataset: work_orders
+    classification: internal
+    notes: Labour and materials only, on GIA not NIA.
+
+  - id: sla
+    term: SLA target
+    definition: The agreed number of days to finish a job, by priority.
+    owner: estates-operations
+    source_of_truth: configuration in methodology.md (illustrative, not a contract)
+    refresh: on_change
+    dataset: work_orders
+    classification: internal
+    notes: Targets here are P1 1 day, P2 5, P3 10, P4 20. Illustrative only.
+
+  - id: backlog_age
+    term: Backlog age
+    definition: How long an open job has been open, banded as 0-30, 31-90, 91-180, 180+ days.
+    owner: estates-operations
+    source_of_truth: fct_work_order (synthetic)
+    refresh: daily
+    dataset: work_orders
+    classification: internal
+    notes: Missing raise date gives an "unknown" band, never zero.
+
+  - id: risk_band
+    term: Asset risk band
+    definition: High, medium or low priority band from criticality and condition grade.
+    owner: estates-operations
+    source_of_truth: dim_asset (synthetic)
+    refresh: monthly
+    dataset: assets
+    classification: internal
+    notes: A convention, not a calibrated risk model.
+
+  - id: open_work_order
+    term: Open work order
+    definition: A work order not yet completed at the reporting date.
+    owner: estates-operations
+    source_of_truth: fct_work_order (synthetic)
+    refresh: daily
+    dataset: work_orders
+    classification: internal
+    notes: Includes jobs waiting on parts or access.
+
+  # ------------------------------------------------------- energy and carbon
+  - id: energy_kwh
+    term: kWh (kilowatt hour)
+    definition: "A unit of energy: the amount used by one kilowatt for one hour."
+    owner: estates-energy
+    source_of_truth: half-hourly meter files (synthetic fct_meter_hh, fct_energy_daily)
+    refresh: daily
+    dataset: meters_a
+    classification: internal
+    notes: Electricity and gas kWh are not interchangeable when comparing demand.
+
+  - id: emissions_kgco2e
+    term: kgCO2e
+    definition: >
+      Kilograms of carbon dioxide equivalent: the effect of a gas expressed as
+      the equivalent mass of CO2, so methane counts more than CO2.
+    owner: estates-energy
+    source_of_truth: mart_carbon_monthly with DESNZ 2025 factors (synthetic energy)
+    refresh: monthly
+    dataset: meters_b
+    classification: public
+    notes: Factors are refetched each year and change retroactively in principle.
+
+  - id: scope_1
+    term: Scope 1 emissions
+    definition: Emissions from fuel burned inside the estate boundary, here gas combustion.
+    owner: estates-energy
+    source_of_truth: mart_carbon_monthly (GHG Protocol, awareness-level reference)
+    refresh: monthly
+    dataset: meters_b
+    classification: public
+    notes: Only fuels in the register are counted.
+
+  - id: scope_2
+    term: Scope 2 emissions
+    definition: Indirect emissions from purchased electricity, location-based.
+    owner: estates-energy
+    source_of_truth: mart_carbon_monthly (GHG Protocol, awareness-level reference)
+    refresh: monthly
+    dataset: meters_a
+    classification: public
+    notes: Market-based figures would need contractual instruments this pipeline does not hold.
+
+  - id: energy_intensity
+    term: Energy intensity
+    definition: Energy used per square metre of gross internal area.
+    owner: estates-energy
+    source_of_truth: fct_energy_daily, dim_building (synthetic)
+    refresh: monthly
+    dataset: meters_a
+    classification: public
+    notes: Not weather-normalised; degree days are available if you need them.
+
+  - id: emissions_intensity
+    term: Emissions intensity
+    definition: Emissions per square metre of gross internal area.
+    owner: estates-energy
+    source_of_truth: mart_carbon_monthly, dim_building (synthetic)
+    refresh: monthly
+    dataset: meters_b
+    classification: public
+    notes: Buildings with missing GIA are excluded from the ratio but counted in totals.
+
+  - id: baseload
+    term: Baseload
+    definition: The demand that never drops below a floor, usually overnight plant and servers.
+    owner: estates-energy
+    source_of_truth: derived from fct_meter_hh (no gold column yet)
+    refresh: monthly
+    dataset: bms
+    classification: internal
+    notes: >
+      Reported as a percentage of daily peak; the overnight window is a convention
+      stated in the P08 measures.
+
+  - id: variance_to_pathway
+    term: Variance to pathway
+    definition: How far actual emissions sit above or below a straight line to the net zero year.
+    owner: estates-energy
+    source_of_truth: mart_carbon_monthly (synthetic)
+    refresh: quarterly
+    dataset: meters_b
+    classification: public
+    notes: The straight line is a planning convention, not an official pathway.
+
+  - id: rolling_12m
+    term: Rolling 12-month total
+    definition: A total over the twelve months to the end of each month.
+    owner: estates-energy
+    source_of_truth: mart_carbon_monthly (synthetic)
+    refresh: monthly
+    dataset: meters_b
+    classification: public
+    notes: The first eleven months are partial and should be excluded.
+
+  # ------------------------------------------------------------- compliance
+  - id: inspection
+    term: Statutory inspection
+    definition: A recorded check with a due date and an outcome (pass, fail or advisory).
+    owner: estates-hs
+    source_of_truth: inspection register (synthetic fct_inspection)
+    refresh: daily
+    dataset: inspections
+    classification: internal
+    notes: Frequencies in the register are illustrative and are not a statement of legal duty.
+
+  - id: overdue
+    term: Overdue
+    definition: Past its due date with no recorded completion, measured against the as-of date.
+    owner: estates-hs
+    source_of_truth: mart_compliance_status (synthetic)
+    refresh: daily
+    dataset: inspections
+    classification: internal
+    notes: Always read the as-of date on the dashboard before quoting this.
+
+  - id: due_within_30_days
+    term: Due within 30 days
+    definition: Inspections falling due in the next 30 days from the as-of date.
+    owner: estates-hs
+    source_of_truth: mart_compliance_status (synthetic)
+    refresh: daily
+    dataset: inspections
+    classification: internal
+    notes: A workload signal, not a capacity forecast.
+
+  - id: remedial_action
+    term: Remedial action
+    definition: The work agreed after a failed inspection, tracked to closure.
+    owner: estates-hs
+    source_of_truth: inspection register remedial records (synthetic)
+    refresh: daily
+    dataset: inspections
+    classification: internal
+    notes: Closed in the tracker means closed in the tracker, not verified on site.
+
+  - id: days_overdue
+    term: Days overdue
+    definition: Days between the due date and completion, or between due date and as-of date if open.
+    owner: estates-hs
+    source_of_truth: mart_compliance_status (synthetic)
+    refresh: daily
+    dataset: inspections
+    classification: internal
+    notes: Negative means completed early.
+
+  - id: risk_score
+    term: Compliance risk score
+    definition: A 0-4 score used to order the compliance action list.
+    owner: estates-hs
+    source_of_truth: mart_compliance_status (synthetic)
+    refresh: daily
+    dataset: inspections
+    classification: internal
+    notes: A triage ordering, not a legal risk assessment.
+
+  - id: rag_status
+    term: RAG status
+    definition: Red, amber or green label summarising a compliance position.
+    owner: estates-hs
+    source_of_truth: mart_compliance_status (synthetic)
+    refresh: daily
+    dataset: inspections
+    classification: internal
+    notes: >
+      Green can mean "nothing recorded", which is the most misread cell on the
+      compliance dashboard.
+
+  - id: remedial_ageing
+    term: Remedial ageing
+    definition: Days an open remedial action has been open.
+    owner: estates-hs
+    source_of_truth: inspection register remedial records (synthetic)
+    refresh: daily
+    dataset: inspections
+    classification: internal
+    notes: Open actions only, so closing old items improves the average.
+
+  # -------------------------------------------------------------------- BIM
+  - id: ifc_element
+    term: IFC element
+    definition: A single building object exported from an IFC model, for example a wall or a valve.
+    owner: estates-bim
+    source_of_truth: IFC export tables (synthetic, written by the P11 extractor)
+    refresh: per_release
+    dataset: ""
+    classification: internal
+    notes: An element the extractor cannot read is invisible to every BIM metric here.
+
+  - id: ifc_classification
+    term: IFC classification
+    definition: A code attached to an element that says what it is, so other systems can group it.
+    owner: estates-bim
+    source_of_truth: IFC property sets (synthetic sample model)
+    refresh: per_release
+    dataset: ""
+    classification: internal
+    notes: >
+      The Uniclass mapper (P13) is a development placeholder in this repository,
+      so no official code list is applied.
+
+  - id: area_completeness
+    term: Area source completeness
+    definition: Share of model area that can be attributed to a space in the register.
+    owner: estates-bim
+    source_of_truth: IFC space and element tables (synthetic)
+    refresh: per_release
+    dataset: ""
+    classification: internal
+    notes: Measures space assignment, not geometry quality.
+
+  - id: room_match
+    term: Room match
+    definition: The pairing of a register room with a room in an IFC model.
+    owner: estates-bim
+    source_of_truth: P11 reconcile output (synthetic)
+    refresh: per_release
+    dataset: ""
+    classification: internal
+    notes: Fuzzy matching can be confidently wrong; matches are reviewed, not verified.
+
+  - id: area_mismatch
+    term: Area mismatch
+    definition: A matched room where model area and register area differ by more than ten per cent.
+    owner: estates-bim
+    source_of_truth: P11 reconcile output (synthetic)
+    refresh: per_release
+    dataset: ""
+    classification: internal
+    notes: The 10% threshold is a triage convention.
+
+  - id: ifc_globid
+    term: IFC GlobalId
+    definition: The 22-character identifier an IFC model gives each object, stable across file versions.
+    owner: estates-bim
+    source_of_truth: P18 entity crosswalk (synthetic IFC export)
+    refresh: per_release
+    dataset: ""
+    classification: internal
+    notes: >
+      A GlobalId match proves an identifier was carried, not that the geometry or
+      classification is right.
+
+  # ------------------------------------------------------- data quality itself
+  - id: dq_score
+    term: Data quality score
+    definition: Weighted pass rate across the quality checks defined for a dataset.
+    owner: estates-analytics
+    source_of_truth: P03 dq_scores output (synthetic run r7)
+    refresh: daily
+    dataset: ""
+    classification: internal
+    notes: "Measures the checks as much as the data: more checks can lower the score."
+
+  - id: dq_failed_rows
+    term: Quarantined row
+    definition: A row that failed a check and was held back from the analysis layer.
+    owner: estates-analytics
+    source_of_truth: P03 dq_failed_rows output
+    refresh: daily
+    dataset: ""
+    classification: internal
+    notes: A quarantined row is not a deleted row; it is kept with a reason.
+
+  # ---------------------------------------------------- standards vocabulary
+  - id: cobie
+    term: COBie
+    definition: >
+      A standard set of spreadsheets for handing over building information, one
+      table per topic such as components, spaces and systems.
+    owner: estates-bim
+    source_of_truth: buildingSMART / UK BIM Framework structure, encoded in P12 rules
+    refresh: annual
+    dataset: ""
+    classification: public
+    notes: Referenced for structure only; no COBie text is reproduced here.
+
+  - id: air
+    term: AIR (Asset Information Requirements)
+    definition: >
+      The employer's list of what must be delivered with a project so the building
+      can be operated: data, documents, training and spares.
+    owner: estates-bim
+    source_of_truth: project brief (template in the P20 handover guide)
+    refresh: per_release
+    dataset: ""
+    classification: internal
+    notes: >
+      An estates organisation normally holds one AIR template plus per-project
+      addenda; the template here is a portfolio-level draft.
+
+  - id: uniclass
+    term: Uniclass
+    definition: A classification of construction products and spaces that lets systems group like with like.
+    owner: estates-bim
+    source_of_truth: "NBS Uniclass tables (not fetched: dev placeholder in P13)"
+    refresh: annual
+    dataset: ""
+    classification: public
+    notes: >
+      Status in this repository is mock, not implemented. See the standards register.
+
+  - id: iso_19650
+    term: ISO 19650
+    definition: >
+      An international standard for managing information over the life of a built
+      asset, covering containers, naming, statuses and who is allowed to do what.
+    owner: estates-bim
+    source_of_truth: UK National Annex encoded in P14 conventions (structure and code lists)
+    refresh: annual
+    dataset: ""
+    classification: public
+    notes: Referenced for workflow and identifier conventions, not reproduced.
+
+  - id: cde
+    term: CDE (Common Data Environment)
+    definition: The shared, controlled place where project information is approved and issued.
+    owner: estates-bim
+    source_of_truth: UK BIM Framework Part C states (encoded in P14)
+    refresh: annual
+    dataset: ""
+    classification: public
+    notes: State transitions WIP, Shared, Published, Archive are implemented in P14 checks.
+
+  - id: sfg20
+    term: SFG20
+    definition: A UK benchmarking scheme that sets standard energy and carbon values for building services.
+    owner: estates-energy
+    source_of_truth: "SFG20 publications (not fetched: awareness only)"
+    refresh: annual
+    dataset: ""
+    classification: public
+    notes: No SFG20 values are stored in this repository.
+
+  - id: hesa_emr
+    term: HESA EMR
+    definition: A UK sector-specific data return that institutions submit about their estate.
+    owner: estates-finance
+    source_of_truth: "HESA guidance (not fetched: awareness only)"
+    refresh: annual
+    dataset: ""
+    classification: public
+    notes: P10 is a mock return, not an official HESA submission.
+
+  - id: trac
+    term: TRAC
+    definition: The UK research funding council's sustainability reporting guidance.
+    owner: estates-energy
+    source_of_truth: "UKRI guidance (not fetched: awareness only)"
+    refresh: annual
+    dataset: ""
+    classification: public
+    notes: No TRAC categories are encoded here.
+
+  - id: ghg_protocol
+    term: GHG Protocol
+    definition: The international standard used to classify emissions into scopes.
+    owner: estates-energy
+    source_of_truth: GHG Protocol Corporate Standard (referenced, not reproduced)
+    refresh: annual
+    dataset: ""
+    classification: public
+    notes: Used for scope definitions only in P08 methodology.
+
+  - id: half_hourly
+    term: Half-hourly data
+    definition: Meter readings taken every 30 minutes, the standard settlement format for electricity and gas.
+    owner: estates-energy
+    source_of_truth: meter supplier files (synthetic fct_meter_hh)
+    refresh: daily
+    dataset: meters_a
+    classification: internal
+    notes: Two suppliers use different formats; P01 normalises them.
+
+  - id: degree_day
+    term: Degree day
+    definition: A count of how far the outside temperature was below a reference, used to explain heating demand.
+    owner: estates-energy
+    source_of_truth: weather-derived (synthetic fct_energy_daily.hdd)
+    refresh: daily
+    dataset: bms
+    classification: internal
+    notes: Useful for comparing a cold month with a mild one; not a weather correction.
+
+  - id: utc_storage
+    term: UTC storage, UK display
+    definition: All timestamps are stored in UTC and shown in UK local time in reports.
+    owner: estates-analytics
+    source_of_truth: platform convention (naming and modelling standards)
+    refresh: static
+    dataset: ""
+    classification: internal
+    notes: Mixing local and UTC timestamps is the most common cause of a wrong daily total.
+
+# ------------------------------------------------------------- work orders
+  - id: work_order
+    term: Work order
+    definition: A single job raised in the maintenance system, with a type, priority, dates and cost.
+    owner: estates-operations
+    source_of_truth: CAFM work orders (synthetic fct_work_order)
+    refresh: daily
+    dataset: work_orders
+    classification: internal
+    notes: "A work order is not a task: one job can cover several visits."
+
+  - id: wo_cost
+    term: Work-order cost
+    definition: The labour and materials cost recorded against a work order, in pounds.
+    owner: estates-operations
+    source_of_truth: CAFM work orders (synthetic fct_work_order)
+    refresh: daily
+    dataset: work_orders
+    classification: internal
+    notes: Excludes overheads and capital spend.
+
+  - id: reactive_12m
+    term: Reactive jobs in 12 months
+    definition: The number of breakdown jobs raised against one asset in the last twelve months.
+    owner: estates-operations
+    source_of_truth: mart_asset_health (synthetic)
+    refresh: monthly
+    dataset: work_orders
+    classification: internal
+    notes: The repeat-failure flag uses this count with a threshold of three.
+
+# ------------------------------------------------------------------- spaces
+  - id: space
+    term: Space
+    definition: A room or area in the space register, with a building, a category and a net internal area.
+    owner: estates-planning
+    source_of_truth: space register (synthetic dim_space)
+    refresh: on_change
+    dataset: spaces
+    classification: internal
+    notes: A space in an IFC model is a different thing; the room-match measures compare the two.
+
+  - id: zero_area_space
+    term: Zero-area space
+    definition: A space in an IFC model with no area or a non-positive area, found by QA.
+    owner: estates-bim
+    source_of_truth: IFC space table (synthetic)
+    refresh: per_release
+    dataset: ""
+    classification: internal
+    notes: A modelling defect, not a data-quality bug in this pipeline.
+
+# Every KPI name used by a dashboard must appear here exactly once.
+kpi_aliases:
+  # P06 space utilisation
+  Available Hours: available_hours
+  Timetabled Hours: booked_hours
+  Frequency %: frequency_pct
+  Avg Occupancy %: occupancy_rate
+  Utilisation %: utilisation
+  No-show %: no_show
+  NIA m2: nia
+  m2 per Staff FTE: fte
+  m2 per Student FTE: fte
+  Variance to Median: space_per_fte
+  Releasable m2 (what-if): releasable_area
+  Utilisation vs Target: utilisation
+  # P07 assets and maintenance
+  Total WOs: work_order
+  PPM Completion %: ppm
+  "Planned : Reactive": reactive
+  MTTR Days: mttr
+  Total Cost £: wo_cost
+  Cost per m2 £: cost_per_m2
+  Backlog Count: open_work_order
+  SLA Met %: sla
+  Repeat Failure Assets: repeat_failure
+  Reactive 12m: reactive_12m
+  Remaining Life %: remaining_life
+  Renewal Forecast £: renewal_forecast
+  ppm_completion: ppm
+  planned_reactive_ratio: reactive
+  age_band: backlog_age
+  sla_met: sla
+  mttr: mttr
+  mtbf: mtbf
+  is_repeat_failure: repeat_failure
+  remaining_life_pct: remaining_life
+  renewal_year: renewal_year
+  renewal_forecast: renewal_forecast
+  cost_per_m2: cost_per_m2
+  risk_band: risk_band
+  # P08 carbon
+  Total Energy kWh: energy_kwh
+  Total Emissions kgCO2e: emissions_kgco2e
+  Scope 1 kgCO2e: scope_1
+  Scope 2 kgCO2e: scope_2
+  Energy Intensity kWh per m2: energy_intensity
+  Emissions Intensity kgCO2e per m2: emissions_intensity
+  Baseload Pct: baseload
+  Variance to Pathway Pct: variance_to_pathway
+  Rolling 12M kgCO2e: rolling_12m
+  # P09 compliance
+  Total Inspections: inspection
+  Overdue Count: overdue
+  Due Within 30 Days: due_within_30_days
+  Failed Remedial Open: remedial_action
+  Days Overdue: days_overdue
+  Risk Score: risk_score
+  RAG Status: rag_status
+  Remedial Ageing Days: remedial_ageing
+  Compliance Trend Overdue: overdue
+  # P11 IFC analytics
+  Space Count: space
+  Element Count: ifc_element
+  Zero Area Spaces: zero_area_space
+  Elements Without Type: ifc_element
+  Elements Without Classification: ifc_classification
+  Area Source Completeness: area_completeness
+  Rooms Matched: room_match
+  Rooms Missing From Model: room_match
+  Rooms Over 10pct Area Mismatch: area_mismatch
+
+# Terms the spec names explicitly; tests/test_glossary.py requires all of these.
+required_terms:
+  - gia
+  - nia
+  - fte
+  - ppm
+  - reactive
+  - mttr
+  - mtbf
+  - utilisation
+  - scope_1
+  - scope_2
+  - baseload
+  - cobie
+  - air
+  - uniclass
+  - iso_19650
+  - ghg_protocol
+  - hesa_emr
+  - trac
+  - sfg20

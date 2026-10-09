@@ -1,0 +1,94 @@
+# P20 MkDocs site: governance framework, data dictionary and literacy pack.
+#
+# Built and published separately from the portfolio-level site (root mkdocs.yml),
+# because this site has its own nav, its own generated pages and its own gates.
+#
+#   mkdocs build --strict -f projects/p20-governance-literacy/mkdocs.yml
+
+site_name: Estates data governance and literacy (synthetic)
+site_description: >-
+  Governance, dictionary, registry and literacy pack for the synthetic estates
+  data portfolio.
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - content.code.copy
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+# Mermaid diagrams in the generated lineage page are rendered with the same
+# superfences configuration the portfolio site uses, so no extra plugin or
+# network download is needed at build time.
+markdown_extensions:
+  - admonition
+  - tables
+  - attr_list
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Home: index.md
+  - Governance:
+      - Framework and decision rights: governance/framework.md
+      - Roles and cadence: governance/roles.md
+      - RACI (generated): generated/raci.md
+  - Data:
+      - Dictionary and glossary guide: data/dictionary.md
+      - Data dictionary (generated): generated/data-dictionary.md
+      - Business glossary (generated): generated/glossary.md
+      - Metric registry (generated): generated/metric-registry.md
+      - Data quality scores (generated): generated/dq-scores.md
+      - Lineage (generated): generated/lineage.md
+      - Quality policy: data/quality-policy.md
+      - Naming and modelling standards: data/naming-standards.md
+      - Classification and handling: data/classification.md
+  - Standards:
+      - Overview: standards/index.md
+      - Standards register (generated): generated/standards-register.md
+      - Information handover guide: standards/handover.md
+  - Dashboards:
+      - How to read our dashboards: dashboards/index.md
+      - Space utilisation: dashboards/p06-space-utilisation.md
+      - Assets and maintenance: dashboards/p07-assets-and-maintenance.md
+      - Energy and carbon: dashboards/p08-energy-and-carbon.md
+      - Compliance: dashboards/p09-compliance.md
+      - Institutional return: dashboards/p10-institutional-return.md
+      - Data quality scorecard: dashboards/data-quality-scorecard.md
+  - Process:
+      - Data request and change: process/data-request.md
+      - Metric change log: process/metric-change-log.md
+      - Runbooks: runbooks.md
+  - Training:
+      - 10-minute demo script: training/ten-minute-demo.md
+      - 45-minute workshop: training/workshop.md
+      - Exercises: training/exercises.md
+      - Quiz: training/quiz.md
+      - Answer key: training/answer-key.md
+      - Feedback form: training/feedback-form.md
+      - Slide outline: training/slide-outline.md
+      - Facilitator notes: training/facilitator-notes.md
+  - Decisions and reference:
+      - ADR and decision index: adr-index.md
+      - Reference index: reference-index.md

@@ -1,0 +1,220 @@
+# Governance: roles, RACI per domain, decision rights and escalation (P20)
+#
+# Source of truth for docs/generated/raci.md. Tests assert every domain has a
+# full RACI row set (exactly one Accountable per activity) and that every owner
+# named here exists in metrics.yml `owners`.
+#
+# Roles are the four in the spec. "Accountable" is the person answerable for the
+# outcome; "Responsible" does the work; "Consulted" must be asked before the
+# decision; "Informed" is told afterwards.
+
+roles:
+  - id: owner
+    name: Data owner
+    accountable_for: The business outcome the data supports, and the decision to change a definition.
+    typical_person: estates role manager (planning, operations, energy, H&S, BIM)
+    escalation_to: estates director
+  - id: steward
+    name: Data steward
+    accountable_for: Day-to-day definitions, quality expectations and answering questions from users.
+    typical_person: team leader or analyst working with the owner
+    escalation_to: data owner
+  - id: custodian
+    name: Data custodian
+    accountable_for: "The technical pipeline: loading, tests, documentation and access control."
+    typical_person: data engineer or analytics colleague
+    escalation_to: estates analytics lead
+  - id: consumer
+    name: Data consumer
+    accountable_for: Using the data honestly, quoting definitions and reporting problems found.
+    typical_person: anyone using a dashboard, report or extract
+    escalation_to: data steward for the domain
+
+raci_letters:
+  R: Responsible - does the work
+  A: Accountable - one name, answerable for the result
+  C: Consulted - asked before the decision is made
+  I: Informed - told after the decision
+
+domains:
+  - id: space
+    name: Space and estate planning
+    accountable: estates-planning
+    steward: estates-analytics
+    custodian: estates-analytics
+    activities:
+      - activity: Define what counts as a room and its net internal area
+        owner: A
+        steward: R
+        custodian: C
+        consumer: I
+      - activity: Approve a change to a space record (merge, split, re-code)
+        owner: A
+        steward: C
+        custodian: R
+        consumer: I
+      - activity: Publish space utilisation metrics
+        owner: A
+        steward: R
+        custodian: R
+        consumer: C
+      - activity: Decide the utilisation target used for release scenarios
+        owner: A
+        steward: C
+        custodian: I
+        consumer: C
+    decision_rights:
+      - Space definitions and area rules are the owner's decision on the steward's advice.
+      - The analytics lead may not change a published metric definition alone; that is an owner decision.
+      - Targets and thresholds are policy choices by the owner, not analytics choices.
+    escalation:
+      - Disputed area or room count -> steward -> owner -> estates director if unresolved in 10 working days.
+      - A dashboard number that disagrees with a room sheet -> steward, then custodian for a data fix.
+
+  - id: assets
+    name: Assets and maintenance
+    accountable: estates-operations
+    steward: estates-analytics
+    custodian: estates-analytics
+    activities:
+      - activity: Maintain the asset register and criticality ratings
+        owner: A
+        steward: C
+        custodian: R
+        consumer: I
+      - activity: Set SLA targets by priority
+        owner: A
+        steward: C
+        custodian: I
+        consumer: I
+      - activity: Define expected design life per asset type
+        owner: A
+        steward: R
+        custodian: C
+        consumer: I
+      - activity: Publish MTTR, PPM completion and backlog measures
+        owner: A
+        steward: R
+        custodian: R
+        consumer: C
+      - activity: Decide when a data point needs contractor verification
+        owner: A
+        steward: R
+        custodian: C
+        consumer: C
+    decision_rights:
+      - Priority and SLA settings belong to operations; analytics cannot change them to improve a score.
+      - Expected life values are engineering judgements recorded in the register, with the owner accountable.
+      - Risk bands are conventions; changing them is an owner decision recorded in the change log.
+    escalation:
+      - Condition data looks wrong for a specific asset -> steward -> operations manager.
+      - Missing or duplicated assets blocking a renewal plan -> steward -> custodian as an error-severity data issue.
+
+  - id: energy_carbon
+    name: Energy and carbon
+    accountable: estates-energy
+    steward: estates-analytics
+    custodian: estates-analytics
+    activities:
+      - activity: Adopt emission factors and their vintage
+        owner: A
+        steward: R
+        custodian: C
+        consumer: I
+      - activity: Choose location-based or market-based reporting
+        owner: A
+        steward: C
+        custodian: I
+        consumer: I
+      - activity: Publish carbon and intensity metrics
+        owner: A
+        steward: R
+        custodian: R
+        consumer: C
+      - activity: Approve the net zero baseline and target year
+        owner: A
+        steward: C
+        custodian: I
+        consumer: C
+    decision_rights:
+      - Factors are fetched from the official source each year; the owner approves adopting them.
+      - Any external claim (public reporting, funder returns) is an owner decision, not a pipeline default.
+      - Baseline and target years are parameters with an owner decision recorded in the change log.
+    escalation:
+      - Meter outage or suspicious readings -> custodian as a data incident, then energy manager.
+      - A factor change that moves the carbon number by more than 1% -> steward notifies the owner before publishing.
+
+  - id: compliance
+    name: Compliance and safety
+    accountable: estates-hs
+    steward: estates-analytics
+    custodian: estates-analytics
+    activities:
+      - activity: Maintain inspection frequencies in the register
+        owner: A
+        steward: I
+        custodian: R
+        consumer: I
+      - activity: Record remediation of a failed inspection
+        owner: A
+        steward: C
+        custodian: C
+        consumer: I
+      - activity: Publish the compliance status view
+        owner: A
+        steward: R
+        custodian: R
+        consumer: C
+      - activity: Escalate a failed inspection with no remedial action
+        owner: A
+        steward: R
+        custodian: I
+        consumer: I
+    decision_rights:
+      - Frequencies are legally driven; this repository encodes illustrative values only and the owner must confirm every real one.
+      - Nothing in the pipeline may mark an inspection compliant: only a recorded completion can.
+      - Publication can be paused by the owner for safety, with the reason logged.
+    escalation:
+      - Failed inspection with an open action over 90 days -> owner -> estates director (as the P09 page 4 path describes).
+      - Suspected data loss in inspection records -> custodian immediately, error-severity incident.
+
+  - id: bim
+    name: BIM, projects and information handover
+    accountable: estates-bim
+    steward: estates-analytics
+    custodian: estates-analytics
+    activities:
+      - activity: Maintain the asset information requirements (AIR) template
+        owner: A
+        steward: C
+        custodian: I
+        consumer: I
+      - activity: Validate a project handover against the AIR
+        owner: A
+        steward: R
+        custodian: C
+        consumer: I
+      - activity: Enforce information naming and container conventions
+        owner: A
+        steward: C
+        custodian: R
+        consumer: I
+      - activity: Accept register records from a completed project
+        owner: A
+        steward: C
+        custodian: C
+        consumer: I
+    decision_rights:
+      - The AIR is a contractual instrument: the owner signs it, the custodian checks compliance with it.
+      - Classification code lists are adopted or not adopted by the owner; a placeholder is never silently promoted.
+      - Handover acceptance is the owner's decision even when the automated checks pass.
+    escalation:
+      - Project deliverable missing an AIR item -> project manager first, then owner.
+      - Check results and register disagree after handover -> steward -> custodian for identity and crosswalk work (see P18).
+
+decision_rights_global:
+  - Who can change a definition: only the accountable owner for that domain, on the steward's advice, recorded in the metric change log.
+  - Who can change a threshold or target: the accountable owner. Analytics proposes; it does not decide.
+  - Who can publish: the analytics lead on the owner's approval, once CI is green.
+  - Who can change data classification: the owner, with the data protection contact consulted (awareness-level advice here, not legal advice).
+  - What breaks CI: any error-severity data quality failure, a stale generated page, a broken link, or a registry mismatch.
