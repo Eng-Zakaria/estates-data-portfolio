@@ -112,7 +112,7 @@ Wrote projects/p15-bms-iot/docs/fault_detection.csv
 ```
 
 Per-window detail, including the evidence string the engineer sees, is in
-[`fault_detection.csv`](fault_detection.csv).
+`projects/p15-bms-iot/docs/fault_detection.csv`.
 
 Two figures that look odd and are correct:
 
@@ -302,7 +302,7 @@ Per AGENTS.md rule 9, the weak numbers too:
 
 ## 9. Spec deviations
 
-Full table in [`../SPEC.md`](../SPEC.md). The substantive ones:
+Full table in `projects/p15-bms-iot/SPEC.md`. The substantive ones:
 
 1. Topic taxonomy includes the equipment segment. The spec's shape is not
    unique per point and silently loses two thirds of the data.
@@ -312,6 +312,6 @@ Full table in [`../SPEC.md`](../SPEC.md). The substantive ones:
    separately in the truth file so ingestion loss is never conflated with fault
    detection.
 4. `docs/security.md` is folded into
-   [`mapping-to-real-systems.md`](mapping-to-real-systems.md).
+   `projects/p15-bms-iot/docs/mapping-to-real-systems.md`.
 5. The BACpypes3 simulated BACnet/IP device (a stretch goal in the spec) was
    not built.

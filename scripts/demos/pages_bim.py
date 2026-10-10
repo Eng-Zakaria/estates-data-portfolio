@@ -419,18 +419,8 @@ def uniclass_mapper():
 
 def iso19650_checker():
     base = D.REPO / "projects" / "p14-iso19650-checker"
-    report_dir = D.REPO / "data" / "iso19650"
     conventions = sorted((base / "conventions").glob("*.yml"))
-    accept = D.json_file(base / "docs" / "ACCEPTANCE_P14.md") or None
-
-    summaries = []
-    for name in ["report", "report_clean", "report_variant"]:
-        for ext in (".json", ".csv", ".html"):
-            p = report_dir / f"{name}{ext}"
-            if p.exists():
-                summaries.append(p)
-    jsons = [p for p in summaries if p.suffix == ".json"]
-    csvs = [p for p in summaries if p.suffix == ".csv"]
+    report_dir = D.REPO / "data" / "iso19650"
 
     body = [
         note(
@@ -467,30 +457,52 @@ def iso19650_checker():
                       caption="Sources are recorded in <code>docs/SOURCES.md</code> — the UK National "
                               "Annex guidance and UK BIM Framework Part C, quoted rather than reproduced."))
 
-    body.append("<h2>Compliance summary</h2>")
-    parsed = []
-    for p in jsons:
-        doc = D.json_file(p)
-        if isinstance(doc, dict):
-            parsed.append((p.name, doc))
-    for p in csvs:
-        df = D.csv(p)
-        if df is not None and len(df):
-            parsed.append((p.name, {"rows": len(df), "columns": list(df.columns)}))
-
-    if parsed:
-        rows = []
-        for name, doc in parsed:
-            summary = doc.get("summary", doc)
-            rows.append([
-                name,
-                _fmt(summary.get("files_checked", summary.get("rows", 0))),
-                _fmt(summary.get("compliant", "—")),
-                _fmt(summary.get("issues", summary.get("violations", 0))),
-                _fmt(summary.get("compliance_pct", "—"), 1),
-            ])
-        body.append(table("p14-reports", ["report", "files", "compliant", "issues", "compliance %"], rows))
-    else:
+    body.append("<h2>Compliance results</h2>")
+    report_dir = D.REPO / "data" / "iso19650"
+    variants = [
+        ("report", "sample project (seeded issues)"),
+        ("report_clean", "clean sample"),
+        ("report_variant", "alternative convention"),
+    ]
+    found = False
+    for name, label in variants:
+        d = report_dir / name
+        summary = D.csv(d / "compliance_summary.csv")
+        register = D.csv(d / "container_register.csv")
+        if summary is None and register is None:
+            continue
+        found = True
+        body.append(f"<h3>{label}</h3>")
+        overall = None
+        if summary is not None and len(summary):
+            ov = summary[summary["dimension"] == "overall"] if "dimension" in summary.columns else summary
+            if len(ov):
+                overall = ov.iloc[0]
+                body.append('<div class="grid g4">')
+                body.append(kpi(_fmt(overall.get("files")), "Files checked"))
+                body.append(kpi(_fmt(overall.get("errors")), "Errors", "seeded issues detected"))
+                body.append(kpi(_fmt(overall.get("warnings")), "Warnings"))
+                body.append(kpi(_fmt(overall.get("compliance_pct"), 1) + "%", "Compliance",
+                                "weighted by file count"))
+                body.append("</div>")
+            field = summary[summary["dimension"] == "field"] if "dimension" in summary.columns else summary
+            if len(field) and {"key", "compliance_pct"} <= set(field.columns):
+                body.append(chart(
+                    f"p14-fields-{name}",
+                    bar(list(field["key"]), [round(float(v), 1) for v in field["compliance_pct"]],
+                        title=f"Compliance % by field — {label}", y_title="%", horizontal=True),
+                    tall=True))
+            dims = [c for c in ["dimension", "key", "files", "errors", "warnings",
+                                "compliance_pct"] if c in summary.columns]
+            body.append(table(f"p14-sum-{name}", dims, [list(r) for _, r in summary.iterrows()]))
+        if register is not None and len(register):
+            body.append(f"<h3>Container register — {label}</h3>")
+            body.append(note("One row per file, with the parsed identification fields. "
+                             "This is what a CDE register would ingest."))
+            rcols = [c for c in register.columns][:9]
+            body.append(table(f"p14-reg-{name}", rcols,
+                              [list(r) for _, r in register.head(80).iterrows()]))
+    if not found:
         body.append(note("Checker reports not found. Run `make p14-run`."))
 
     body.append("<h2>Acceptance evidence</h2>")

@@ -31,6 +31,7 @@ nav:
       - P11 IFC: ACCEPTANCE_P11.md
       - P12 COBie: ACCEPTANCE_P12.md
       - P13 Uniclass: ACCEPTANCE_P13.md
+      - P15 BMS ingestion: ACCEPTANCE_P15.md
       - P17 air quality: ACCEPTANCE_P17.md
   - Sources and standards: SOURCES.md
   - CI demo: ci-demo.md

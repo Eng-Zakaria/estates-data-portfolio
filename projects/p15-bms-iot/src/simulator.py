@@ -414,7 +414,7 @@ def main() -> None:
     parser.add_argument(
         "--start",
         default=None,
-        help="ISO start timestamp (default: now, UTC); fault windows are minutes from this",
+        help="ISO start timestamp (default: midnight local today); fault windows are minutes from this",
     )
     parser.add_argument(
         "--faults",
@@ -427,8 +427,18 @@ def main() -> None:
     parser.add_argument("--truth-out", type=Path, default=Path("data/p15/truth.json"))
     args = parser.parse_args()
 
+    # fault windows are minutes from the run start, and the FAULT_WINDOWS
+    # comments name clock times, so the default start is midnight local. Starting
+    # at "now" instead would put the planted windows wherever the wall clock
+    # happens to be, which changes the detection metrics run to run.
+    if args.start:
+        start = datetime.fromisoformat(args.start)
+    else:
+        local = datetime.now(UTC).astimezone(ZoneInfo(LOCAL_TZ))
+        start = local.replace(hour=0, minute=0, second=0, microsecond=0)
+
     sim = Simulator(
-        datetime.fromisoformat(args.start) if args.start else datetime.now(UTC).replace(microsecond=0, second=0),
+        start,
         seed=args.seed,
         interval_minutes=args.interval_minutes,
         faults=args.faults,
