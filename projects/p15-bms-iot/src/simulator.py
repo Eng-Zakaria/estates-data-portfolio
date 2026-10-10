@@ -24,7 +24,7 @@ import argparse
 import json
 import random
 from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -102,11 +102,18 @@ class TruthFault:
 class Simulator:
     """Deterministic (seeded) BMS telemetry generator."""
 
-    def __init__(self, start: datetime, *, seed: int = 42, interval_minutes: int = 5, faults: list[str] | None = None) -> None:
+    def __init__(
+        self,
+        start: datetime,
+        *,
+        seed: int = 42,
+        interval_minutes: int = 5,
+        faults: list[str] | None = None,
+    ) -> None:
         self.start = start
-        self.interval = interval_minutes
         self.seed = seed
         self.rng = random.Random(seed)
+        self.interval_minutes = interval_minutes
         self.points = build_registry()
         self._point_index = {row["point_id"]: i for i, row in enumerate(self.points)}
         self.steps = 0
@@ -139,11 +146,13 @@ class Simulator:
                 # part of the same planted window, so set peer_point_id to it.
                 # Use the AHUs the stuck-valve fault did not touch, so neither
                 # fault can be credited with the other's detection.
-                candidates = [
+                spare = {t.point_id for t in plan if t.fault == "stuck_valve"}
+                pairs: list[tuple[str, str | None]] = [
                     (pid, pid.replace("heating_valve", "cooling_valve"))
                     for pid in by_kind_class.get(("ahu", "heating_valve"), [])
-                    if pid not in {t.point_id for t in plan if t.fault == "stuck_valve"}
-                ][:FAULTS_PER_TYPE]
+                    if pid not in spare
+                ]
+                candidates = pairs[:FAULTS_PER_TYPE]
             elif fault == "out_of_hours":
                 candidates = [(pid, None) for pid in by_class.get("fan_speed", [])[:FAULTS_PER_TYPE]]
             for pid, peer in candidates[:FAULTS_PER_TYPE]:
@@ -197,8 +206,6 @@ class Simulator:
         if point_id not in self.noise:
             self.noise[point_id] = random.Random(f"{self.seed}:{point_id}")
         return self.noise[point_id]
-
-    
 
     def value_for(self, row: dict[str, str], ts: datetime, minute: int) -> float:
         """Baseline plausible value for a point at a simulated timestamp."""
@@ -256,7 +263,6 @@ class Simulator:
         if fault is not None:
             kind, truth = fault
             injected = truth
-            cls = row["point_class"]
             if kind == "stuck_valve":
                 value = self._stuck_value(row["point_id"])
                 quality = "suspect"
@@ -287,13 +293,13 @@ class Simulator:
 
     # --- main loop -----------------------------------------------------------
     def generate(self, duration_hours: float) -> tuple[pd.DataFrame, dict[str, Any]]:
-        steps = int(duration_hours * 60 / self.interval)
+        steps = int(duration_hours * 60 / self.interval_minutes)
         self.steps = steps
         records: list[dict[str, Any]] = []
-        truth = {
+        truth: dict[str, Any] = {
             "seed": self.seed,
             "start": self.start.isoformat(),
-            "interval_minutes": self.interval,
+            "interval_minutes": self.interval_minutes,
             "duration_hours": duration_hours,
             "points": len(self.points),
             "faults": [asdict(f) for f in self.plan],
@@ -302,8 +308,8 @@ class Simulator:
             "messages_malformed": 0,
         }
         for step in range(steps):
-            ts = self.start + timedelta(minutes=step * self.interval)
-            minute = step * self.interval
+            ts = self.start + timedelta(minutes=step * self.interval_minutes)
+            minute = step * self.interval_minutes
             for row in self.points:
                 payload, injected = self.message(row, ts, minute)
                 if injected is not None and injected.fault == "comms_dropout":
@@ -351,10 +357,19 @@ def _unit_for(point_class: str) -> str:
 
 
 def _to_mqtt_frame(frame: pd.DataFrame) -> list[tuple[str, str]]:
-    return [(row.topic, json.dumps({"ts": row.ts, "value": row.value, "unit": row.unit, "quality": row.quality})) for row in frame.itertuples()]
+    """(topic, wire payload) pairs in timestamp order."""
+    return [
+        (
+            str(row.topic),
+            json.dumps({"ts": row.ts, "value": row.value, "unit": row.unit, "quality": row.quality}),
+        )
+        for row in frame.itertuples()
+    ]
 
 
-def publish(frame: pd.DataFrame, *, host: str, port: int, username: str, password: str, speedup: int, interval_minutes: int) -> int:
+def publish(
+    frame: pd.DataFrame, *, host: str, port: int, username: str, password: str, speedup: int, interval_minutes: int
+) -> int:
     """Publish frame to MQTT in timestamp order, sleeping interval/speedup between steps."""
     import paho.mqtt.client as mqtt
 
@@ -389,11 +404,18 @@ def main() -> None:
     parser.add_argument("--broker", default="localhost")
     parser.add_argument("--port", type=int, default=1883)
     parser.add_argument("--username", default="bms_user")
-    parser.add_argument("--password", default="bms_pass", help="DEMO ONLY default; use BMS_MQTT_PASSWORD in a real deployment")
+    parser.add_argument(
+        "--password", default="bms_pass", help="DEMO ONLY default; use BMS_MQTT_PASSWORD in a real deployment"
+    )
     parser.add_argument("--speedup", type=int, default=144, help="144x => 24 simulated hours in ~10 min")
     parser.add_argument("--duration-hours", type=float, default=24.0)
     parser.add_argument("--interval-minutes", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--start",
+        default=None,
+        help="ISO start timestamp (default: now, UTC); fault windows are minutes from this",
+    )
     parser.add_argument(
         "--faults",
         nargs="*",
@@ -405,7 +427,12 @@ def main() -> None:
     parser.add_argument("--truth-out", type=Path, default=Path("data/p15/truth.json"))
     args = parser.parse_args()
 
-    sim = Simulator(datetime.now(timezone.utc).replace(microsecond=0), seed=args.seed, interval_minutes=args.interval_minutes, faults=args.faults)
+    sim = Simulator(
+        datetime.fromisoformat(args.start) if args.start else datetime.now(UTC).replace(microsecond=0, second=0),
+        seed=args.seed,
+        interval_minutes=args.interval_minutes,
+        faults=args.faults,
+    )
     frame, truth = sim.generate(args.duration_hours)
     truth["seed"] = args.seed
 
@@ -416,9 +443,7 @@ def main() -> None:
         args.out.mkdir(parents=True, exist_ok=True)
         # malformed rows carry a non-numeric value on purpose; keep the value
         # column as a string so the dry-run file mirrors what hits the broker
-        frame.assign(value=frame["value"].astype(str)).to_parquet(
-            args.out / "bms_readings_sim.parquet", index=False
-        )
+        frame.assign(value=frame["value"].astype(str)).to_parquet(args.out / "bms_readings_sim.parquet", index=False)
         print(f"[dry-run] {len(frame)} messages -> {args.out / 'bms_readings_sim.parquet'}")
     else:
         sent = publish(

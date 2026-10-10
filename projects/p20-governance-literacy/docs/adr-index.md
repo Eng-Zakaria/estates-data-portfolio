@@ -1,5 +1,7 @@
 # ADR and decision index
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 Architecture decision records are short documents: the context, the choice, and what it costs you. This page indexes the ones in this repository and the decisions that were made inside the governance pack.
 
 The full ADR text lives in the repository's `docs/adr/` folder. This page says what each decision was for and where to look for the trade-off.

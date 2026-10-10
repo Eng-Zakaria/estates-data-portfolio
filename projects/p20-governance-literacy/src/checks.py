@@ -139,9 +139,14 @@ def write_pages(pages: dict[str, str], docs_dir: Path) -> list[str]:
     return written
 
 
-def stale_problems(pages: dict[str, str], docs_dir: Path) -> list[str]:
+def stale_problems(pages: dict[str, str], docs_dir: Path, expected: tuple[str, ...] | None = None) -> list[str]:
+    """Compare freshly rendered pages against what is committed.
+
+    ``expected`` defaults to the declared generated pages; tests pass a smaller
+    list to exercise the logic without touching the whole site.
+    """
     problems: list[str] = []
-    for rel in GENERATED_PAGES:
+    for rel in expected or GENERATED_PAGES:
         target = docs_dir / rel
         if rel not in pages:
             problems.append(f"{rel}: no renderer produced this page")
@@ -153,8 +158,34 @@ def stale_problems(pages: dict[str, str], docs_dir: Path) -> list[str]:
     return problems
 
 
-def _gate_metrics(registry: metrics_mod.Registry, gloss: glossary_mod.Glossary) -> GateResult:
-    problems = metrics_mod.validate(registry, gloss.ids, known_consumers())
+def owner_usage(glossary_yml: Path, raci_yml: Path, standards_yml: Path) -> set[str]:
+    """Owner ids that carry glossary, RACI or standards entries."""
+    gloss = glossary_mod.load_glossary(glossary_yml)
+    raci = yaml.safe_load(raci_yml.read_text(encoding="utf-8"))
+    standards = yaml.safe_load(standards_yml.read_text(encoding="utf-8"))
+    owners = {t.owner for t in gloss.terms}
+    for domain in raci["domains"]:
+        owners.add(str(domain["accountable"]))
+    owners.update(str(r)["owner"] for r in raci["roles"] if isinstance(r, dict) and "owner" in r)
+    owners.update(str(s["owner"]) for s in standards["standards"])
+    return owners
+
+
+def _gate_metrics(
+    registry: metrics_mod.Registry,
+    gloss: glossary_mod.Glossary,
+    project_dir: Path,
+) -> GateResult:
+    problems = metrics_mod.validate(
+        registry,
+        gloss.ids,
+        known_consumers(),
+        owner_usage(
+            project_dir / GLOSSARY_YML.name,
+            project_dir / RACI_YML.name,
+            project_dir / STANDARDS_YML.name,
+        ),
+    )
     problems += metrics_mod.source_model_problems(registry, DBT_MODELS_DIR)
     return GateResult(
         name="metric registry schema",
@@ -164,7 +195,9 @@ def _gate_metrics(registry: metrics_mod.Registry, gloss: glossary_mod.Glossary) 
     )
 
 
-def _gate_coverage(registry: metrics_mod.Registry, kpis: list[dashboards.DashboardKpi], gloss: glossary_mod.Glossary) -> GateResult:
+def _gate_coverage(
+    registry: metrics_mod.Registry, kpis: list[dashboards.DashboardKpi], gloss: glossary_mod.Glossary
+) -> GateResult:
     problems = metrics_mod.coverage_problems(registry, kpis)
     problems += glossary_mod.coverage_problems(gloss, kpis)
     return GateResult(
@@ -222,7 +255,9 @@ def _gate_links(docs_dir: Path) -> GateResult:
     )
 
 
-def _gate_readability(scores: list[readability_mod.ReadabilityScore]) -> tuple[GateResult, list[readability_mod.ReadabilityScore]]:
+def _gate_readability(
+    scores: list[readability_mod.ReadabilityScore],
+) -> tuple[GateResult, list[readability_mod.ReadabilityScore]]:
     summary = readability_mod.summarise(scores)
     problems: list[str] = []
     for score in scores:
@@ -263,7 +298,7 @@ def run_all(project_dir: Path | None = None, write: bool = False) -> CheckRun:
     readability_gate, scores = _gate_readability(readability_mod.score_literacy_pages(project_dir, LITERACY_PAGES))
 
     gates = [
-        _gate_metrics(registry, gloss),
+        _gate_metrics(registry, gloss, project_dir),
         _gate_glossary(gloss, registry),
         _gate_scan_scope(handoffs),
         _gate_coverage(registry, kpis, gloss),

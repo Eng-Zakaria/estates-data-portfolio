@@ -84,3 +84,12 @@ jobs:
 
       - name: MkDocs strict build
         run: mkdocs build --strict
+
+      - name: P20 governance gates (registry, glossary, staleness, links, readability)
+        run: python projects/p20-governance-literacy/src/cli.py check
+
+      - name: P20 tests (fixtures + repository)
+        run: python -m pytest projects/p20-governance-literacy/tests -q -p no:cacheprovider --no-cov
+
+      - name: P20 site strict build
+        run: mkdocs build --strict -f projects/p20-governance-literacy/mkdocs.yml

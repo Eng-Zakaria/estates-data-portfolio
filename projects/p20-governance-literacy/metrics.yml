@@ -461,8 +461,9 @@ metrics:
     caveats:
       - Meter-read kWh, not primary energy; gas and electricity are not interchangeable units of demand.
       - Missing half-hours reduce the total; check fct_energy_daily.n_periods before comparing months.
+      - Published by two reports: the carbon dashboard (mart) and the mock return pack (its own energy table). Same quantity, different filters.
     version: 1.0.0
-    dashboards: [p08]
+    dashboards: [p08, p10]
     glossary_term: energy_kwh
     classification: internal
 
@@ -1204,4 +1205,109 @@ metrics:
     version: 1.0.0
     dashboards: [p11]
     glossary_term: zero_area_space
+    classification: internal
+
+  # ------------------------------------- P10 mock return measures (model.md)
+  - id: p10_total_nia
+    name: Total NIA
+    kind: metric
+    status: live
+    definition: Net internal area summed over the buildings and return categories in the return pack.
+    formula: "sum(building_areas[nia_m2])"
+    grain: return pack, building x return category
+    owner: estates-finance
+    source_model: ["file:data/p10_output/building_areas_<date>.csv"]
+    caveats:
+      - The return pack is a mock; the categories are illustrative, not official HESA or funder codes.
+      - Totals depend on the category mapping, so a mapping change moves this number without any physical change.
+    version: 1.0.0
+    dashboards: [p10]
+    glossary_term: nia
+    classification: internal
+
+  - id: p10_total_gia
+    name: Total GIA
+    kind: metric
+    status: live
+    definition: >
+      Gross internal area summed once per building: each building's area is counted a single
+      time, then added across buildings.
+    formula: "sumx(VALUES(building_areas[building_id]), CALCULATE(MAX(building_areas[gia_m2])))"
+    grain: return pack, building
+    owner: estates-finance
+    source_model: ["file:data/p10_output/building_areas_<date>.csv"]
+    caveats:
+      - Deliberately de-duplicated per building: a building with several return categories has one area, not one per category.
+      - Takes the maximum area per building, so a building with two area rows uses the larger one. Say so rather than fixing it silently.
+    version: 1.0.0
+    dashboards: [p10]
+    glossary_term: gia
+    classification: internal
+
+  - id: p10_total_co2e
+    name: Total CO2e
+    kind: metric
+    status: live
+    definition: Emissions in the return pack, summed from the pack's emissions table.
+    formula: "sum(emissions[kgco2e])"
+    grain: return pack, month, building x fuel
+    owner: estates-energy
+    source_model: ["file:data/p10_output/emissions_<date>.csv"]
+    caveats:
+      - Same location-based basis as the carbon mart, so it must agree with it; a difference means a filter or a refresh mismatch.
+      - Labelled CO2e in the return pack and kgCO2e in the mart: the same quantity, two labels.
+    version: 1.0.0
+    dashboards: [p10]
+    glossary_term: emissions_kgco2e
+    classification: public
+
+  - id: p10_pool_total
+    name: Pool Total
+    kind: metric
+    status: live
+    definition: Total cost allocated across activity pools in the return pack.
+    formula: "sum(cost_allocation[allocated_gbp])"
+    grain: return pack, pool x activity
+    owner: estates-finance
+    source_model: ["file:data/p10_output/cost_allocation_<date>.csv"]
+    caveats:
+      - Allocated cost, not measured cost: it is a share of a pool chosen by a driver such as floor area or staff numbers.
+      - Driver totals sit beside the allocation so the split can be checked by hand.
+    version: 1.0.0
+    dashboards: [p10]
+    glossary_term: cost_allocation
+    classification: internal
+
+  - id: p10_validation_blocking
+    name: Validation Blocking
+    kind: metric
+    status: live
+    definition: Number of validation breaches in the return pack that block the pack being issued.
+    formula: "countrows(FILTER(validation_report, validation_report[severity] = 'blocking'))"
+    grain: return pack, rule
+    owner: estates-finance
+    source_model: ["file:data/p10_output/validation_<date>.yaml"]
+    caveats:
+      - A count of rules that fired, not a severity ranking: one breach is one breach.
+      - A clean validation file means the internal checks passed; it is not an assurance opinion.
+    version: 1.0.0
+    dashboards: [p10]
+    glossary_term: validation_rule
+    classification: internal
+
+  - id: p10_validation_query
+    name: Validation Query
+    kind: metric
+    status: live
+    definition: Number of validation findings in the return pack that ask a question rather than block it.
+    formula: "countrows(FILTER(validation_report, validation_report[severity] = 'query'))"
+    grain: return pack, rule
+    owner: estates-finance
+    source_model: ["file:data/p10_output/validation_<date>.yaml"]
+    caveats:
+      - Findings labelled "query" need a human answer before the pack is issued; they are not automatic failures.
+      - Counts findings, not the size of the problem behind each one.
+    version: 1.0.0
+    dashboards: [p10]
+    glossary_term: validation_rule
     classification: internal

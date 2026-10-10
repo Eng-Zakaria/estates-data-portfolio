@@ -1,11 +1,14 @@
 """Find the KPI names a dashboard actually publishes.
 
-Two sources, both first-party artefacts of the dashboard projects:
+Three sources, all first-party artefacts of the dashboard projects:
 
 * ``projects/pNN-*/powerbi/measures.dax`` - a measure is a line whose last token
   is ``=``: either a bracket measure ``[Total Energy kWh] =`` or a bare
   ``Total Energy kWh =``. DAX keywords (``VAR``, ``RETURN``, ...) are skipped so
   local variables are not mistaken for measures.
+* ``projects/pNN-*/powerbi/model.md`` - some hand-offs keep their DAX in a
+  ``dax``-tagged fence inside the model document instead of a separate file
+  (P10 does). Only fenced DAX blocks are read, and the same measure rules apply.
 * ``projects/pNN-*/src/kpis.py`` - every public function is a KPI helper; it is
   named on a dashboard or in a validation script, so it needs a definition too.
 
@@ -47,6 +50,7 @@ _COMMENT_MEASURE = re.compile(r"^\s*(?://|--)\s+(?P<name>[^\n=]+?)\s*=\s*$")
 #: A definition starts in column 0 and contains `=`. Indented lines are skipped: they
 #: are inside a measure body (a `VAR` binding, an argument), not a new measure.
 _BARE_MEASURE = re.compile(r"^(?P<name>[A-Za-z][^=\n]*?)\s*=(?:\s*(?P<expr>\S.*))?$")
+_DAX_FENCE = re.compile(r"^```(?:dax|DAX)[ \t]*\n(?P<body>.*?)^```", re.MULTILINE | re.DOTALL)
 
 
 @dataclass(frozen=True)
@@ -83,15 +87,43 @@ def measure_names(text: str) -> list[str]:
 def kpi_function_names(source: str) -> list[str]:
     """Return public top-level function names defined in a Python module."""
     tree = ast.parse(source)
-    return [n.name for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and not n.name.startswith("_")]
+    return [
+        n.name
+        for n in tree.body
+        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and not n.name.startswith("_")
+    ]
+
+
+def dax_blocks(text: str) -> list[str]:
+    """Bodies of ```dax fenced blocks in a Markdown document."""
+    return [body for body in _DAX_FENCE.findall(text)]
+
+
+def model_md_measures(text: str) -> list[str]:
+    """Measure names declared in the DAX fences of a ``powerbi/model.md``."""
+    found: list[str] = []
+    for body in dax_blocks(text):
+        for name in measure_names(body):
+            if name not in found:
+                found.append(name)
+    return found
 
 
 def handoff_files(project_dir: Path, repo_root: Path) -> list[tuple[str, Path]]:
-    """KPI-bearing files for one project: (kind, path) for ``measures.dax`` and ``src/kpis.py``."""
+    """KPI-bearing files for one project.
+
+    Returns ``(kind, path)`` pairs where kind is ``measures.dax``,
+    ``model.md`` or ``kpis.py``. ``model.md`` only counts when it actually
+    contains a fenced DAX block, so the scan does not grow a phantom hand-off
+    for every project that documents its model.
+    """
     out: list[tuple[str, Path]] = []
     dax = project_dir / "powerbi" / "measures.dax"
     if dax.is_file():
         out.append(("measures.dax", dax))
+    model = project_dir / "powerbi" / "model.md"
+    if model.is_file() and dax_blocks(model.read_text(encoding="utf-8", errors="replace")):
+        out.append(("model.md", model))
     kpis = project_dir / "src" / "kpis.py"
     if kpis.is_file():
         out.append(("kpis.py", kpis))
@@ -117,7 +149,12 @@ def scan_projects(
             continue
         for kind, path in handoff_files(project_dir, repo_root):
             text = path.read_text(encoding="utf-8", errors="replace")
-            names = measure_names(text) if kind == "measures.dax" else kpi_function_names(text)
+            if kind == "kpis.py":
+                names = kpi_function_names(text)
+            elif kind == "model.md":
+                names = model_md_measures(text)
+            else:
+                names = measure_names(text)
             rel = path.relative_to(repo_root).as_posix()
             out.extend(DashboardKpi(name=n, project=project_id, source=rel) for n in names)
     return out

@@ -113,27 +113,27 @@ def test_sem02_does_not_fire_across_a_dropout():
 # ---------------------------------------------------------------- SEM-03
 def test_sem03_fires_outside_working_hours():
     # 00:00-04:00 local, fan well above the running threshold
-    rows = [(f"B001.ahu_01.fan_speed", 60.0)] * 60
+    rows = [("B001.ahu_01.fan_speed", 60.0)] * 60
     hits = detect(frame(rows), REGISTRY_CSV, CFG)
     assert (hits["rule_id"] == "SEM-03").sum() == 1
 
 
 def test_sem03_quiet_during_working_hours():
     noon = pd.Timestamp("2026-10-07T12:00:00+00:00")
-    rows = [(f"B001.ahu_01.fan_speed", 60.0)] * 12
+    rows = [("B001.ahu_01.fan_speed", 60.0)] * 12
     assert (detect(frame(rows, start=noon), REGISTRY_CSV, CFG)["rule_id"] == "SEM-03").sum() == 0
 
 
 def test_sem03_quiet_below_the_running_threshold():
     """A trickle of ventilation overnight is not the fault being looked for."""
-    rows = [(f"B001.ahu_01.fan_speed", 18.0)] * 60
+    rows = [("B001.ahu_01.fan_speed", 18.0)] * 60
     assert (detect(frame(rows), REGISTRY_CSV, CFG)["rule_id"] == "SEM-03").sum() == 0
 
 
 def test_sem03_quiet_at_the_weekend():
     saturday = pd.Timestamp("2026-10-10T10:00:00+00:00")
     assert saturday.day_name() == "Saturday"
-    rows = [(f"B001.ahu_01.fan_speed", 60.0)] * 24
+    rows = [("B001.ahu_01.fan_speed", 60.0)] * 24
     assert (detect(frame(rows, start=saturday), REGISTRY_CSV, CFG)["rule_id"] == "SEM-03").sum() == 0
 
 
@@ -201,11 +201,15 @@ def test_sem05_works_for_falling_drift():
 # ---------------------------------------------------------------- staleness
 def test_staleness_fires_on_a_gap():
     base = pd.Timestamp(START)
-    rows = [("B001.room_01.room_temp", 21.0)] * 3 + [("B001.room_01.room_temp", 21.0)] * 3
     f = pd.DataFrame(
         {
-            "ts": [base, base + pd.Timedelta(minutes=5), base + pd.Timedelta(minutes=10),
-                   base + pd.Timedelta(minutes=125), base + pd.Timedelta(minutes=130)],
+            "ts": [
+                base,
+                base + pd.Timedelta(minutes=5),
+                base + pd.Timedelta(minutes=10),
+                base + pd.Timedelta(minutes=125),
+                base + pd.Timedelta(minutes=130),
+            ],
             "point_id": ["B001.room_01.room_temp"] * 5,
             "value": [21.0] * 5,
             "unit": ["C"] * 5,

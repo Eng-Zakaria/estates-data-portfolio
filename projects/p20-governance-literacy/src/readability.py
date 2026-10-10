@@ -14,17 +14,17 @@ literacy guides; the measured value for every page is printed, pass or fail.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
 import textstat
-
 from config import LITERACY_PAGES, READABILITY_TARGET
 
 _FENCE = "~~~P20FENCE~~~"
 _TABLE_ROW_START = ("|", "|-", "|:", "- ", ":-")
 _HEADING = "#"
-_LINK = "[]("
+_LINK_TARGET = re.compile(r"!?\[([^\]]*)\]\([^)]*\)")
 
 
 @dataclass(frozen=True)
@@ -56,18 +56,8 @@ def prose_only(text: str) -> str:
             continue
         if stripped.startswith(_HEADING):
             continue
-        if _LINK in line:
-            # Keep the visible words, drop the target and the bracket syntax.
-            cleaned = []
-            depth = 0
-            for char in line:
-                if char == "[":
-                    depth += 1
-                elif char == "]":
-                    depth = max(0, depth - 1)
-                elif depth == 0:
-                    cleaned.append(char)
-            line = "".join(cleaned).split("(")[0]
+        # Keep the words a reader sees, drop the link target and its syntax.
+        line = _LINK_TARGET.sub(r"\1", line)
         line = line.replace("**", "").replace("`", "").replace("*", "")
         out.append(line)
     return "\n".join(out)

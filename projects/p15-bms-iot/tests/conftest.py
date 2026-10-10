@@ -8,7 +8,7 @@ number someone can check by eye.
 from __future__ import annotations
 
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -26,7 +26,7 @@ FLOW_MERGED = PROJECT / "flows" / "p15_bms.json"
 # A Wednesday, so weekday rules (SEM-03) are exercised and the 24 h window
 # covers a full teaching day. Local midnight in UTC terms is 23:00 the day
 # before during BST, which is what the simulator expects.
-START = datetime(2026, 10, 7, 23, 0, tzinfo=timezone.utc)
+START = datetime(2026, 10, 7, 23, 0, tzinfo=UTC)
 
 
 @pytest.fixture(scope="session")

@@ -4,7 +4,7 @@
 
 Every published number: what it means, how it is built, what it cannot tell you.
 
-53 entries: 48 published on a dashboard, 5 planned. This page is generated from `metrics.yml`, which is the source of truth.
+74 entries: 69 published on a dashboard, 5 planned. This page is generated from `metrics.yml`, which is the source of truth.
 
 | Metric | Id | Kind | Status | Grain | Owner | Version | Dashboards |
 |---|---|---|---|---|---|---|---|
@@ -12,12 +12,15 @@ Every published number: what it means, how it is built, what it cannot tell you.
 | Asset IFC Coverage % | asset_ifc_coverage_pct | metric | planned | building, asset type | estates-bim | 0.1.0 | p18 |
 | Available Hours | available_hours | metric | live | estate x academic year | estates-planning | 1.0.0 | p06 |
 | Avg Occupancy % | avg_occupancy_pct | metric | live | space, building, category | estates-planning | 1.0.0 | p06 |
+| Backlog Count | p07_backlog_count | metric | live | building, trade, priority, age band | estates-operations | 1.0.0 | p07 |
 | Baseload Pct | baseload_pct | metric | live | meter, building, month | estates-energy | 1.0.0 | p08 |
 | Compliance Trend Overdue | compliance_trend_overdue | helper | live | month, building, inspection type | estates-hs | 1.0.0 | p09 |
+| Cost per m2 £ | p07_cost_per_m2_gbp | metric | live | building, trade, month | estates-operations | 1.0.0 | p07 |
 | DQ Failed Rows | dq_failed_rows | metric | planned | dataset, reason, day | estates-analytics | 0.1.0 | p03 |
 | DQ Score | dq_score | metric | planned | dataset, dataset x dimension, building | estates-analytics | 0.1.0 | p03 |
 | Days Overdue | compliance_days_overdue | metric | live | inspection | estates-hs | 1.0.0 | p09 |
 | Due Within 30 Days | due_within_30_days | metric | live | building, inspection type, month | estates-hs | 1.0.0 | p09 |
+| Element Count | p11_element_count | metric | live | IFC model, building | estates-bim | 1.0.0 | p11 |
 | Elements Without Classification | elements_without_classification | metric | live | IFC model, building | estates-bim | 1.0.0 | p11 |
 | Elements Without Type | elements_without_type | metric | live | IFC model, building | estates-bim | 1.0.0 | p11 |
 | Emissions Intensity kgCO2e per m2 | emissions_intensity_kgco2e_m2 | metric | live | month, building, estate | estates-energy | 1.0.0 | p08 |
@@ -25,28 +28,46 @@ Every published number: what it means, how it is built, what it cannot tell you.
 | Failed Remedial Open | failed_remedial_open | metric | live | building, inspection type, month | estates-hs | 1.0.0 | p09 |
 | Failing Error Checks | failing_error_checks | metric | planned | run, dataset | estates-analytics | 0.1.0 | p03 |
 | Frequency % | frequency_pct | metric | live | space, building, category | estates-planning | 1.0.0 | p06 |
+| MTTR Days | p07_mttr_days | metric | live | estate, building, trade, month | estates-operations | 1.0.0 | p07 |
 | NIA m2 | nia_m2 | metric | live | space, building | estates-planning | 1.0.0 | p06 |
 | No-show % | no_show_pct | metric | live | space, building, date | estates-planning | 1.0.0 | p06 |
 | Open Work Orders | open_work_orders | metric | planned | building, trade, priority, age band | estates-operations | 0.1.0 | p07 |
 | Overdue Count | overdue_count | metric | live | building, inspection type, month | estates-hs | 1.0.0 | p09 |
+| PPM Completion % | p07_ppm_completion_dax | metric | live | estate, building, trade, month | estates-operations | 1.0.0 | p07 |
+| Planned : Reactive | p07_planned_reactive | metric | live | estate, building, trade, month | estates-operations | 1.0.0 | p07 |
+| Pool Total | p10_pool_total | metric | live | return pack, pool x activity | estates-finance | 1.0.0 | p10 |
 | RAG Status | rag_status | helper | live | building, inspection type | estates-hs | 1.0.0 | p09 |
+| Reactive 12m | p07_reactive_12m | metric | live | asset, building, asset type | estates-operations | 1.0.0 | p07 |
 | Releasable m2 (what-if) | releasable_m2 | metric | live | space, building, estate | estates-planning | 1.0.0 | p06 |
+| Remaining Life % | p07_remaining_life | metric | live | building, asset type | estates-operations | 1.0.0 | p07 |
 | Remedial Ageing Days | remedial_ageing_days | metric | live | remedial action, inspection | estates-hs | 1.0.0 | p09 |
+| Renewal Forecast £ | p07_renewal_forecast_gbp | metric | live | year, asset type, building | estates-operations | 1.0.0 | p07 |
+| Repeat Failure Assets | p07_repeat_failure_assets_dax | metric | live | building, asset type | estates-operations | 1.0.0 | p07 |
 | Risk Score | compliance_risk_score | metric | live | building, inspection type | estates-hs | 1.0.0 | p09 |
 | Rolling 12M kgCO2e | rolling_12m_kgco2e | metric | live | month, fuel, estate | estates-energy | 1.0.0 | p08 |
 | Rooms Matched | rooms_matched | helper | live | building, room | estates-bim | 1.0.0 | p11 |
 | Rooms Missing From Model | rooms_missing_from_model | metric | live | building, room | estates-bim | 1.0.0 | p11 |
 | Rooms Over 10pct Area Mismatch | rooms_over_10pct_area_mismatch | metric | live | building, room | estates-bim | 1.0.0 | p11 |
+| SLA Met % | p07_sla_met | metric | live | priority, trade, building, month | estates-operations | 1.0.0 | p07 |
 | Scope 1 kgCO2e | scope_1_kgco2e | metric | live | month, fuel, building | estates-energy | 1.0.0 | p08 |
 | Scope 2 kgCO2e | scope_2_kgco2e | metric | live | month, fuel, building | estates-energy | 1.0.0 | p08 |
+| Space Count | p11_space_count | metric | live | IFC model, building | estates-bim | 1.0.0 | p11 |
 | Timetabled Hours | timetabled_hours | metric | live | space (aggregable to building, estate) | estates-planning | 1.0.0 | p06 |
+| Total CO2e | p10_total_co2e | metric | live | return pack, month, building x fuel | estates-energy | 1.0.0 | p10 |
+| Total Cost £ | p07_total_cost | metric | live | estate, building, trade, month | estates-operations | 1.0.0 | p07 |
 | Total Emissions kgCO2e | total_emissions_kgco2e | metric | live | month, fuel, building | estates-energy | 1.0.0 | p08 |
-| Total Energy kWh | total_energy_kwh | metric | live | date, building, fuel, meter | estates-energy | 1.0.0 | p08 |
+| Total Energy kWh | total_energy_kwh | metric | live | date, building, fuel, meter | estates-energy | 1.0.0 | p08, p10 |
+| Total GIA | p10_total_gia | metric | live | return pack, building | estates-finance | 1.0.0 | p10 |
 | Total Inspections | total_inspections | metric | live | building, inspection type, month | estates-hs | 1.0.0 | p09 |
+| Total NIA | p10_total_nia | metric | live | return pack, building x return category | estates-finance | 1.0.0 | p10 |
+| Total WOs | p07_total_wos | metric | live | estate, building, trade, month | estates-operations | 1.0.0 | p07 |
 | Utilisation % | utilisation_pct | metric | live | space, building, category | estates-planning | 1.0.0 | p06 |
 | Utilisation vs Target | utilisation_vs_target | metric | live | space, building, estate | estates-planning | 1.0.0 | p06 |
+| Validation Blocking | p10_validation_blocking | metric | live | return pack, rule | estates-finance | 1.0.0 | p10 |
+| Validation Query | p10_validation_query | metric | live | return pack, rule | estates-finance | 1.0.0 | p10 |
 | Variance to Median | variance_to_median | metric | live | department | estates-planning | 1.0.0 | p06 |
 | Variance to Pathway Pct | variance_to_pathway_pct | metric | live | year, fuel, estate | estates-energy | 1.0.0 | p08 |
+| Zero Area Spaces | p11_zero_area_spaces | metric | live | IFC model, building | estates-bim | 1.0.0 | p11 |
 | age_band | backlog_age_band | helper | live | work order | estates-operations | 1.0.0 | p07 |
 | cost_per_m2 | cost_per_m2 | metric | live | building, trade, month | estates-operations | 1.0.0 | p07 |
 | is_repeat_failure | repeat_failure_assets | metric | live | asset | estates-operations | 1.0.0 | p07 |
@@ -525,6 +546,349 @@ Every published number: what it means, how it is built, what it cannot tell you.
     - Overdue against a synthetic as-of date; use the as-of slicer, not today's date.
     - Excludes failed inspections with remedial actions, which have their own measure.
 
+## Backlog Count
+
+- **Definition**: Work orders not yet completed at the reporting date.
+- **Formula**: `countrows(fct_work_order where is_open)`
+- **Grain**: building, trade, priority, age band
+- **Owner**: `estates-operations`
+- **Source model**: `fct_work_order`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: Open work order - A work order not yet completed at the reporting date.
+- **Caveats**:
+    - Open includes jobs awaiting parts or access, not only jobs not started.
+    - {'A count, not a cost': 'a backlog of small jobs can look worse than one large one.'}
+
+## Cost per m2 £
+
+- **Definition**: Work-order cost per square metre of gross internal area.
+- **Formula**: `sum(fct_work_order.cost_gbp) / sum(dim_building.gia_m2)`
+- **Grain**: building, trade, month
+- **Owner**: `estates-operations`
+- **Source model**: `fct_work_order`, `dim_building`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: Cost per square metre - Work-order cost divided by gross internal area.
+- **Caveats**:
+    - Same definition as the Python helper cost_per_m2.
+    - Uses GIA (the building envelope) deliberately, unlike P06 which uses NIA.
+    - Labour and materials only; excludes overheads and capital spend.
+
+## MTTR Days
+
+- **Definition**: Mean time to repair: average days from raising to completing a reactive job.
+- **Formula**: `average(fct_work_order.days_to_complete where wo_type = 'Reactive' and status = 'Complete')`
+- **Grain**: estate, building, trade, month
+- **Owner**: `estates-operations`
+- **Source model**: `fct_work_order`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: MTTR (Mean Time To Repair) - Average days from raising a reactive job to completing it.
+- **Caveats**:
+    - Same definition as the Python helper mttr.
+    - Open jobs are excluded, so a long backlog is invisible in MTTR; pair with backlog age band.
+    - Calendar days, not working hours; waits on parts or access count.
+
+## Planned : Reactive
+
+- **Definition**: Planned work per reactive job: how much of the workload was scheduled rather than called out.
+- **Formula**: `countrows(fct_work_order where plan_category in ('planned','other_planned')) / countrows(fct_work_order where wo_type = 'Reactive')`
+- **Grain**: estate, building, trade, month
+- **Owner**: `estates-operations`
+- **Source model**: `fct_work_order`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: Reactive work - Work raised because something has broken or failed a check.
+- **Caveats**:
+    - Same definition as the Python helper planned_reactive_ratio.
+    - None when there are no reactive jobs in scope.
+    - A high ratio can also mean under-reporting of breakdowns, so read with MTTR and repeat failures.
+
+## PPM Completion %
+
+- **Definition**: Planned preventive maintenance jobs completed in the period, over planned jobs due in the period.
+- **Formula**: `countrows(fct_work_order where wo_type = 'PPM' and status = 'Complete') / countrows(fct_work_order where wo_type = 'PPM')`
+- **Grain**: estate, building, trade, month
+- **Owner**: `estates-operations`
+- **Source model**: `fct_work_order`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: PPM (Planned Preventive Maintenance) - Maintenance carried out to a planned schedule rather than in response to a failure.
+- **Caveats**:
+    - Same definition as the Python helper ppm_completion; the two artefacts are kept in step by the coverage test.
+    - {'Counts closure, not quality': 'a job closed with no evidence still counts.'}
+
+## Reactive 12m
+
+- **Definition**: Reactive jobs per asset in the last twelve months, at asset grain.
+- **Formula**: `sum(mart_asset_health.reactive_12m)`
+- **Grain**: asset, building, asset type
+- **Owner**: `estates-operations`
+- **Source model**: `mart_asset_health`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: Reactive jobs in 12 months - The number of breakdown jobs raised against one asset in the last twelve months.
+- **Caveats**:
+    - A sum of per-asset counts, so it is a workload total, not a distinct-job count.
+    - Assets with no reactive jobs contribute zero, which is the point.
+
+## Remaining Life %
+
+- **Definition**: Average share of expected design life still to run across assets.
+- **Formula**: `average(mart_asset_health.remaining_life_pct)`
+- **Grain**: building, asset type
+- **Owner**: `estates-operations`
+- **Source model**: `mart_asset_health`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: Remaining life - Share of an asset's expected design life still to run.
+- **Caveats**:
+    - Same definition as the Python helper remaining_life_pct, averaged.
+    - Negative for assets past design life; report as-is.
+    - Design life is a single number per type and ignores condition survey evidence.
+
+## Renewal Forecast £
+
+- **Definition**: Replacement cost expected in each future year from assets reaching end of life.
+- **Formula**: `sum(dim_asset.replacement_cost_gbp) grouped by renewal_year`
+- **Grain**: year, asset type, building
+- **Owner**: `estates-operations`
+- **Source model**: `dim_asset`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: Renewal forecast - Replacement cost expected in each future year.
+- **Caveats**:
+    - Same definition as the Python helper renewal_forecast.
+    - Undated assets are dropped, so the forecast is a floor, not a total.
+    - Replacement cost is a register figure, not a quotation; no inflation applied.
+
+## Repeat Failure Assets
+
+- **Definition**: Count of assets flagged as repeat failures: three or more reactive jobs in twelve months.
+- **Formula**: `countrows(mart_asset_health where is_repeat_failure)`
+- **Grain**: building, asset type
+- **Owner**: `estates-operations`
+- **Source model**: `mart_asset_health`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: Repeat failure - An asset with three or more reactive jobs in twelve months.
+- **Caveats**:
+    - Same definition as the Python helper is_repeat_failure, applied as a count.
+    - Threshold of three is a portfolio convention, not a standard; change it and the count changes.
+    - {'Counts jobs, not root causes': 'one fault fixed four times looks like four different failures.'}
+
+## SLA Met %
+
+- **Definition**: Share of completed jobs finished inside the priority's response target.
+- **Formula**: `count(completed jobs where days_to_complete <= target) / count(completed jobs with a target)`
+- **Grain**: priority, trade, building, month
+- **Owner**: `estates-operations`
+- **Source model**: `fct_work_order`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: SLA target - The agreed number of days to finish a job, by priority.
+- **Caveats**:
+    - Same definition as the Python helper sla_met.
+    - Targets are illustrative (P1 1d, P2 5d, P3 10d, P4 20d), set in methodology.md, not by contract.
+    - {'Open jobs are excluded': 'the percentage can look healthy while the backlog grows.'}
+
+## Total Cost £
+
+- **Definition**: Total work-order cost in pounds over the selected period.
+- **Formula**: `sum(fct_work_order.cost_gbp)`
+- **Grain**: estate, building, trade, month
+- **Owner**: `estates-operations`
+- **Source model**: `fct_work_order`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: Work-order cost - The labour and materials cost recorded against a work order, in pounds.
+- **Caveats**:
+    - Labour and materials only; excludes overheads and capital spend.
+    - Includes open jobs, so a period with a large unfinished job looks expensive.
+
+## Total WOs
+
+- **Definition**: Total work orders raised in the selected period, whatever their type or status.
+- **Formula**: `countrows(fct_work_order)`
+- **Grain**: estate, building, trade, month
+- **Owner**: `estates-operations`
+- **Source model**: `fct_work_order`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p07`
+- **Glossary**: Work order - A single job raised in the maintenance system, with a type, priority, dates and cost.
+- **Caveats**:
+    - {'Counts jobs, not value': 'one small job counts the same as a large one.'}
+    - Includes open jobs, so it is a workload measure, not a completed-work measure.
+
+## Pool Total
+
+- **Definition**: Total cost allocated across activity pools in the return pack.
+- **Formula**: `sum(cost_allocation[allocated_gbp])`
+- **Grain**: return pack, pool x activity
+- **Owner**: `estates-finance`
+- **Source model**: `file:data/p10_output/cost_allocation_<date>.csv`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p10`
+- **Glossary**: Cost allocation - Sharing a pool of cost across activities using a chosen driver, such as floor area or staff numbers.
+- **Caveats**:
+    - {'Allocated cost, not measured cost': 'it is a share of a pool chosen by a driver such as floor area or staff numbers.'}
+    - Driver totals sit beside the allocation so the split can be checked by hand.
+
+## Total CO2e
+
+- **Definition**: Emissions in the return pack, summed from the pack's emissions table.
+- **Formula**: `sum(emissions[kgco2e])`
+- **Grain**: return pack, month, building x fuel
+- **Owner**: `estates-energy`
+- **Source model**: `file:data/p10_output/emissions_<date>.csv`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: public
+- **Dashboards**: `p10`
+- **Glossary**: kgCO2e - Kilograms of carbon dioxide equivalent: the effect of a gas expressed as the equivalent mass of CO2, so methane counts more than CO2.
+- **Caveats**:
+    - Same location-based basis as the carbon mart, so it must agree with it; a difference means a filter or a refresh mismatch.
+    - {'Labelled CO2e in the return pack and kgCO2e in the mart': 'the same quantity, two labels.'}
+
+## Total GIA
+
+- **Definition**: Gross internal area summed once per building: each building's area is counted a single time, then added across buildings.
+- **Formula**: `sumx(VALUES(building_areas[building_id]), CALCULATE(MAX(building_areas[gia_m2])))`
+- **Grain**: return pack, building
+- **Owner**: `estates-finance`
+- **Source model**: `file:data/p10_output/building_areas_<date>.csv`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p10`
+- **Glossary**: GIA (Gross Internal Area) - Floor area measured to the inside face of external walls, including corridors, stairs and plant rooms. It is the denominator used for energy and carbon intensity.
+- **Caveats**:
+    - {'Deliberately de-duplicated per building': 'a building with several return categories has one area, not one per category.'}
+    - Takes the maximum area per building, so a building with two area rows uses the larger one. Say so rather than fixing it silently.
+
+## Total NIA
+
+- **Definition**: Net internal area summed over the buildings and return categories in the return pack.
+- **Formula**: `sum(building_areas[nia_m2])`
+- **Grain**: return pack, building x return category
+- **Owner**: `estates-finance`
+- **Source model**: `file:data/p10_output/building_areas_<date>.csv`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p10`
+- **Glossary**: NIA (Net Internal Area) - Floor area inside the external walls but excluding circulation, stairs, plant and wall thickness. It is the number estates use for space per person.
+- **Caveats**:
+    - The return pack is a mock; the categories are illustrative, not official HESA or funder codes.
+    - Totals depend on the category mapping, so a mapping change moves this number without any physical change.
+
+## Validation Blocking
+
+- **Definition**: Number of validation breaches in the return pack that block the pack being issued.
+- **Formula**: `countrows(FILTER(validation_report, validation_report[severity] = 'blocking'))`
+- **Grain**: return pack, rule
+- **Owner**: `estates-finance`
+- **Source model**: `file:data/p10_output/validation_<date>.yaml`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p10`
+- **Glossary**: Validation rule - A check run inside a pack that either blocks the pack being issued or raises a question about it.
+- **Caveats**:
+    - {'A count of rules that fired, not a severity ranking': 'one breach is one breach.'}
+    - A clean validation file means the internal checks passed; it is not an assurance opinion.
+
+## Validation Query
+
+- **Definition**: Number of validation findings in the return pack that ask a question rather than block it.
+- **Formula**: `countrows(FILTER(validation_report, validation_report[severity] = 'query'))`
+- **Grain**: return pack, rule
+- **Owner**: `estates-finance`
+- **Source model**: `file:data/p10_output/validation_<date>.yaml`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p10`
+- **Glossary**: Validation rule - A check run inside a pack that either blocks the pack being issued or raises a question about it.
+- **Caveats**:
+    - Findings labelled "query" need a human answer before the pack is issued; they are not automatic failures.
+    - Counts findings, not the size of the problem behind each one.
+
+## Element Count
+
+- **Definition**: Number of building elements extracted from the IFC model, such as AHUs, boilers, pumps and fan coil units.
+- **Formula**: `countrows(ifc_elements)`
+- **Grain**: IFC model, building
+- **Owner**: `estates-bim`
+- **Source model**: `file:data/gold/ifc/ifc_element.csv`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p11`
+- **Glossary**: IFC element - A single building object exported from an IFC model, for example a wall or a valve.
+- **Caveats**:
+    - Counts elements the extractor could read; elements missing from the export are invisible here.
+    - {'A count of model elements, not of register assets': 'the two are compared by the reconciliation.'}
+
+## Space Count
+
+- **Definition**: Number of spaces extracted from the IFC model.
+- **Formula**: `countrows(ifc_spaces)`
+- **Grain**: IFC model, building
+- **Owner**: `estates-bim`
+- **Source model**: `file:data/gold/ifc/ifc_space.csv`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p11`
+- **Glossary**: Space - A room or area in the space register, with a building, a category and a net internal area.
+- **Caveats**:
+    - Counts spaces the extractor could read; spaces missing from the export are invisible here.
+    - {'A count of model spaces, not of register rooms': 'the two are compared by the room-match measures.'}
+
+## Zero Area Spaces
+
+- **Definition**: Spaces in the IFC model with no area or a non-positive area, found by QA.
+- **Formula**: `countrows(ifc_spaces where area_m2 <= 0)`
+- **Grain**: IFC model, building
+- **Owner**: `estates-bim`
+- **Source model**: `file:data/gold/ifc/ifc_space.csv`
+- **Version**: 1.0.0
+- **Status**: live (kind: metric)
+- **Classification**: internal
+- **Dashboards**: `p11`
+- **Glossary**: Zero-area space - A space in an IFC model with no area or a non-positive area, found by QA.
+- **Caveats**:
+    - A modelling defect, not a data-quality bug in this pipeline.
+    - In the demo model the planted defect count is one; a different count means the model changed.
+
 ## planned_reactive_ratio
 
 - **Definition**: Planned work (planned, statutory, project) per reactive job: how much of the workload was scheduled rather than called out.
@@ -821,11 +1185,12 @@ Every published number: what it means, how it is built, what it cannot tell you.
 - **Version**: 1.0.0
 - **Status**: live (kind: metric)
 - **Classification**: internal
-- **Dashboards**: `p08`
+- **Dashboards**: `p08`, `p10`
 - **Glossary**: kWh (kilowatt hour) - A unit of energy: the amount used by one kilowatt for one hour.
 - **Caveats**:
     - Meter-read kWh, not primary energy; gas and electricity are not interchangeable units of demand.
     - Missing half-hours reduce the total; check fct_energy_daily.n_periods before comparing months.
+    - {'Published by two reports': 'the carbon dashboard (mart) and the mock return pack (its own energy table). Same quantity, different filters.'}
 
 ## Total Inspections
 

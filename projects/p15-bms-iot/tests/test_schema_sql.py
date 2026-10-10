@@ -38,7 +38,13 @@ def test_readings_has_the_documented_columns(sql):
     block = re.search(r"CREATE TABLE IF NOT EXISTS bms\.readings \((.*?)\);", sql, re.S)
     assert block
     columns = block.group(1)
-    for column, dtype in [("ts", "TIMESTAMPTZ"), ("point_id", "TEXT"), ("value", "DOUBLE PRECISION"), ("unit", "TEXT"), ("quality", "TEXT")]:
+    for column, dtype in [
+        ("ts", "TIMESTAMPTZ"),
+        ("point_id", "TEXT"),
+        ("value", "DOUBLE PRECISION"),
+        ("unit", "TEXT"),
+        ("quality", "TEXT"),
+    ]:
         assert re.search(rf"\b{column}\s+{dtype}", columns), column
 
 
@@ -47,7 +53,16 @@ def test_points_registry_matches_the_csv_columns(sql):
     a point_id the database cannot key on."""
     block = re.search(r"CREATE TABLE IF NOT EXISTS bms\.points \((.*?)\);", sql, re.S)
     assert block
-    for column in ("point_id", "building", "system", "equipment", "equipment_kind", "point_class", "unit", "source_address"):
+    for column in (
+        "point_id",
+        "building",
+        "system",
+        "equipment",
+        "equipment_kind",
+        "point_class",
+        "unit",
+        "source_address",
+    ):
         assert re.search(rf"\b{column}\s", block.group(1)), column
 
 
@@ -100,8 +115,12 @@ def test_aggregates_are_created_without_data_then_backfilled_by_policy(sql):
 
 
 def test_aggregate_refresh_windows_are_wider_than_the_source_interval(sql):
-    assert re.search(r"add_continuous_aggregate_policy\(\s*'bms\.readings_15min'.*?end_offset => INTERVAL '15 minutes'", sql, re.S)
-    assert re.search(r"add_continuous_aggregate_policy\(\s*'bms\.readings_hourly'.*?end_offset => INTERVAL '1 hour'", sql, re.S)
+    assert re.search(
+        r"add_continuous_aggregate_policy\(\s*'bms\.readings_15min'.*?end_offset => INTERVAL '15 minutes'", sql, re.S
+    )
+    assert re.search(
+        r"add_continuous_aggregate_policy\(\s*'bms\.readings_hourly'.*?end_offset => INTERVAL '1 hour'", sql, re.S
+    )
 
 
 # ---------------------------------------------------------------- views
@@ -133,7 +152,12 @@ def test_every_statement_is_re_runnable(sql):
 
 
 def test_policy_functions_are_all_idempotent_guarded(sql):
-    for call in ("create_hypertable", "add_compression_policy", "add_retention_policy", "add_continuous_aggregate_policy"):
+    for call in (
+        "create_hypertable",
+        "add_compression_policy",
+        "add_retention_policy",
+        "add_continuous_aggregate_policy",
+    ):
         for match in re.finditer(rf"{call}\(.*?\);", sql, re.S):
             assert "if_not_exists => TRUE" in match.group(0), call
 

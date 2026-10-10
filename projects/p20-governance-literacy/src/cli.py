@@ -1,15 +1,13 @@
 """Command line for the P20 governance and literacy pack.
 
-    python -m src.cli build        # regenerate the generated pages
-    python -m src.cli check        # every gate; non-zero exit on failure
-    python -m src.cli readability  # Flesch reading ease per literacy page
-    python -m src.cli coverage     # registry and glossary coverage of dashboard KPIs
-    python -m src.cli links        # in-site link report
+python -m src.cli build        # regenerate the generated pages
+python -m src.cli check        # every gate; non-zero exit on failure
+python -m src.cli readability  # Flesch reading ease per literacy page
+python -m src.cli coverage     # registry and glossary coverage of dashboard KPIs
+python -m src.cli links        # in-site link report
 """
 
 from __future__ import annotations
-
-import typer
 
 import checks
 import dashboards
@@ -17,6 +15,7 @@ import glossary as glossary_mod
 import links as links_mod
 import metrics as metrics_mod
 import readability as readability_mod
+import typer
 from config import (
     GENERATED_PAGES,
     GLOSSARY_YML,

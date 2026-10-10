@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
 from dashboards import DashboardKpi
 
 REQUIRED_FIELDS = (
@@ -109,8 +108,17 @@ def load_registry(path: Path) -> Registry:
     return Registry(metrics=metrics, owner_ids=owners, path=path)
 
 
-def validate(registry: Registry, glossary_term_ids: set[str], known_consumers: set[str]) -> list[str]:
-    """Return a list of problems. Empty list means the registry is well formed."""
+def validate(
+    registry: Registry,
+    glossary_term_ids: set[str],
+    known_consumers: set[str],
+    other_owners: set[str] | None = None,
+) -> list[str]:
+    """Return a list of problems. Empty list means the registry is well formed.
+
+    ``other_owners`` are owner ids that also carry glossary, RACI or standards
+    entries, so a domain owner who owns no metric is not reported as unused.
+    """
     problems: list[str] = []
     seen_ids: set[str] = set()
     seen_names: set[str] = set()
@@ -142,9 +150,14 @@ def validate(registry: Registry, glossary_term_ids: set[str], known_consumers: s
             problems.append(f"{m.id}: a live metric must name at least one consumer, or be status planned")
         if m.status == "planned" and not m.caveats:
             problems.append(f"{m.id}: a planned metric must say why it is not published yet")
+    used_elsewhere = other_owners or set()
     for owner_id in registry.owner_ids:
-        if not any(m.owner == owner_id for m in registry.metrics):
-            problems.append(f"owner {owner_id!r} owns no metric; remove it or document the domain")
+        owns_metric = any(m.owner == owner_id for m in registry.metrics)
+        if not owns_metric and owner_id not in used_elsewhere:
+            problems.append(
+                f"owner {owner_id!r} owns no metric, glossary term, domain or standard; "
+                "remove it or document the domain"
+            )
     return problems
 
 

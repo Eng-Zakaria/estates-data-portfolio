@@ -1,0 +1,68 @@
+[project]
+name = "p15-bms-iot"
+version = "0.1.0"
+description = "Simulated BMS/sensor ingestion: MQTT -> Node-RED -> TimescaleDB -> Grafana"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.2",
+  "pyarrow>=15",
+  "paho-mqtt>=2.1",
+  "psycopg[binary]>=3.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-cov>=5", "ruff>=0.4", "mypy>=1.10"]
+
+[project.scripts]
+p15-simulator = "simulator:main"
+p15-pipeline = "run_pipeline:main"
+p15-load-db = "load_db:main"
+p15-dashboards = "grafana_dashboards:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B905"]
+
+[tool.ruff.lint.per-file-ignores]
+# The dashboard SQL lives in triple-quoted strings: wrapping it at 120 columns
+# would put a newline in the middle of a WHERE clause and make the query harder
+# to review than the line-length warning helps.
+"src/grafana_dashboards.py" = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+# Not strict, unlike the shared packages in the root pyproject.toml. Most of
+# this project is pandas reshaping, and pandas-stubs types a row attribute as a
+# union of every scalar it can hold, so strict mode reports a hundred
+# `Unsupported operand` errors that say nothing about correctness. What is
+# enforced here: every function is annotated and checked, no implicit Any in
+# signatures, and the modules that compute something (validate, health,
+# simulator, export) are fully typed.
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+
+[[tool.mypy.overrides]]
+module = ["simulator", "ingest_contract", "health", "export_bms_trends", "export_sql", "grafana_dashboards", "load_db", "run_pipeline", "make_registry", "validate"]
+disallow_any_generics = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]
+addopts = "--cov=src --cov-report=term-missing --cov-report=xml"

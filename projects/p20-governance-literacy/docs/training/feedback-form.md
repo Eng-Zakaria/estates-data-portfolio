@@ -1,5 +1,7 @@
 # Feedback form
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 Two minutes at the end of the workshop. Print it, or paste it into a form. Anonymous is better: people are honest about the part that did not work.
 
 ```

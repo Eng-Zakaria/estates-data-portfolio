@@ -12,8 +12,9 @@ from __future__ import annotations
 import argparse
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -21,7 +22,7 @@ import pandas as pd
 from export_bms_trends import LOCAL_TZ, write_bms_trends
 from health import DetectionConfig, detect, health_summary
 from ingest_contract import apply_contract
-from simulator import FAULTS, Simulator
+from simulator import Simulator
 from validate import Validator
 
 REPO = Path(__file__).resolve().parent.parent
@@ -34,13 +35,15 @@ class PipelineResult:
     dead_letter: pd.DataFrame
     findings: pd.DataFrame
     health: pd.DataFrame
-    truth: dict[str, object]
+    # the truth file mixes counts, strings and nested fault records
+    truth: dict[str, Any]
     export_path: Path | None
 
     @property
     def valid_messages(self) -> int:
         """Messages that were well formed, i.e. what a lossless link must deliver."""
-        return len(self.raw) - int(self.truth["messages_malformed"])
+        malformed = self.truth.get("messages_malformed", 0)
+        return len(self.raw) - (malformed if isinstance(malformed, int) else 0)
 
     @property
     def acceptance_rate(self) -> float:
@@ -121,15 +124,11 @@ def main() -> None:
     parser.add_argument("--start", default=None, help="ISO start timestamp (default: now, UTC)")
     args = parser.parse_args()
 
-    start = (
-        datetime.fromisoformat(args.start)
-        if args.start
-        else datetime.now(timezone.utc).replace(microsecond=0, second=0)
-    )
+    start = datetime.fromisoformat(args.start) if args.start else datetime.now(UTC).replace(microsecond=0, second=0)
     if args.start is None:
         # fault windows are minutes from the run start and the comments in
         # FAULT_WINDOWS name clock times, so default to midnight local time
-        local_now = datetime.now(timezone.utc).astimezone(ZoneInfo(LOCAL_TZ))
+        local_now = datetime.now(UTC).astimezone(ZoneInfo(LOCAL_TZ))
         start = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
     result = run(
         start=start,

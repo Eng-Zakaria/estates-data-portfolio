@@ -30,6 +30,10 @@ dev = [
   "dbt-duckdb==1.10.1",
   "sqlfluff==4.4.0",
   "mkdocs-material>=9.5",
+  # P20: readability gate. Pinned to 0.7.3 on purpose: 0.7.7+ pulls NLTK and
+  # needs a downloadable cmudict corpus at runtime, which breaks offline CI.
+  # 0.7.3 counts syllables with pyphen and needs no corpus.
+  "textstat==0.7.3",
   "pip-audit>=2.7",
 ]
 

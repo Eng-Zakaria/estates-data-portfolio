@@ -24,7 +24,10 @@ BUILDINGS = ["B001", "B003", "B007"]
 
 # equipment kind -> (system topic segment, point classes)
 EQUIPMENT_TEMPLATE: dict[str, tuple[str, list[str]]] = {
-    "ahu": ("ahu", ["supply_temp", "return_temp", "damper_pos", "fan_speed", "heating_valve", "cooling_valve", "sub_meter_kwh"]),
+    "ahu": (
+        "ahu",
+        ["supply_temp", "return_temp", "damper_pos", "fan_speed", "heating_valve", "cooling_valve", "sub_meter_kwh"],
+    ),
     "boiler": ("boiler", ["supply_temp", "heating_valve", "sub_meter_kwh"]),
     "pump": ("pump", ["sub_meter_kwh"]),
 }

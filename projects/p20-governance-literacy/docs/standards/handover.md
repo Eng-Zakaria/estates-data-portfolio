@@ -1,5 +1,7 @@
 # Information handover guide: project to operations
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 A building is handed over twice: once with keys, and once with information. The second handover is the one estates inherits, often long after the project team has gone. This checklist is the version used by this portfolio: a generic AIR (Asset Information Requirements) list plus the checks that can be automated.
 
 A real estate keeps one organisation-level AIR template and per-project addenda. What follows is a portfolio-level draft.

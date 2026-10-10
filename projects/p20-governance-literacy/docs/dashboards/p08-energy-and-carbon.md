@@ -1,5 +1,7 @@
 # Energy and carbon
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 **Question it answers:** where do our emissions come from, which buildings drive them, and are we on the path we said we would be?
 
 **Refresh:** monthly, from half-hourly meter files. Emissions use the government's conversion factors for that year, fetched by script.

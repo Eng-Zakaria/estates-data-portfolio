@@ -14,6 +14,7 @@ back to what an operator would see on screen.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -104,7 +105,9 @@ def _numeric(readings: pd.DataFrame) -> pd.DataFrame:
     return frame.dropna(subset=["ts", "value"])
 
 
-def detect(readings: pd.DataFrame, registry_path: str | Path | None = None, config: DetectionConfig | None = None) -> pd.DataFrame:
+def detect(
+    readings: pd.DataFrame, registry_path: str | Path | None = None, config: DetectionConfig | None = None
+) -> pd.DataFrame:
     """Return findings rows: rule_id, point_id, start_ts, end_ts, samples, detail."""
     cfg = config or DetectionConfig()
     registry = load_registry(str(registry_path or Path(__file__).resolve().parent / "point_registry.csv"))
@@ -131,6 +134,12 @@ def detect(readings: pd.DataFrame, registry_path: str | Path | None = None, conf
     return out.sort_values(["rule_id", "point_id", "start_ts"]).reset_index(drop=True)
 
 
+def _ts(value: object) -> pd.Timestamp:
+    """Narrow a finding's timestamp field, which is typed as `object` because
+    findings carry mixed value types."""
+    return pd.Timestamp(value)  # type: ignore[arg-type]
+
+
 def _dedupe_symptoms(findings: list[dict[str, object]]) -> list[dict[str, object]]:
     """Drop SEM-04 flat-lines fully covered by a SEM-02 stuck-valve finding."""
     stuck = [f for f in findings if f["rule_id"] == SEM02]
@@ -138,7 +147,9 @@ def _dedupe_symptoms(findings: list[dict[str, object]]) -> list[dict[str, object
     for finding in findings:
         if finding["rule_id"] == SEM04:
             covered = any(
-                f["point_id"] == finding["point_id"] and f["start_ts"] <= finding["start_ts"] and f["end_ts"] >= finding["end_ts"]
+                str(f["point_id"]) == str(finding["point_id"])
+                and _ts(f["start_ts"]) <= _ts(finding["start_ts"])
+                and _ts(f["end_ts"]) >= _ts(finding["end_ts"])
                 for f in stuck
             )
             if covered:
@@ -151,7 +162,8 @@ def _staleness(frame: pd.DataFrame, classes: dict[str, str], cfg: DetectionConfi
     """A point with a gap larger than the configured interval budget is stale."""
     out: list[dict[str, object]] = []
     gap_limit = pd.Timedelta(minutes=cfg.interval_minutes * (cfg.staleness_gap_intervals + 1))
-    for point_id, grp in frame.groupby("point_id"):
+    for raw_id, grp in frame.groupby("point_id"):
+        point_id = str(raw_id)
         grp = grp.sort_values("ts")
         deltas = grp["ts"].diff()
         for idx in grp.index[deltas > gap_limit]:
@@ -170,7 +182,9 @@ def _staleness(frame: pd.DataFrame, classes: dict[str, str], cfg: DetectionConfi
     return out
 
 
-def _simultaneous(frame: pd.DataFrame, classes: dict[str, str], equips: dict[str, str], cfg: DetectionConfig) -> list[dict[str, object]]:
+def _simultaneous(
+    frame: pd.DataFrame, classes: dict[str, str], equips: dict[str, str], cfg: DetectionConfig
+) -> list[dict[str, object]]:
     """SEM-01: heating and cooling valves both open on the same equipment."""
     valves = frame[frame["point_id"].map(classes).isin(["heating_valve", "cooling_valve"])]
     if valves.empty:
@@ -178,7 +192,10 @@ def _simultaneous(frame: pd.DataFrame, classes: dict[str, str], equips: dict[str
     piv = valves.assign(cls=valves["point_id"].map(classes), equip=valves["point_id"].map(equips))
     wide = piv.pivot_table(index="ts", columns=["equip", "cls"], values="value", aggfunc="last")
     out: list[dict[str, object]] = []
-    for equip in sorted({e for e, _ in wide.columns}):
+    # pivot_table gives a MultiIndex column; build the equipment list from the
+    # frames rather than unpacking the index, which pandas-stubs types as str
+    equip_names = sorted({str(name) for name in valves["point_id"].map(equips).dropna().unique()})
+    for equip in equip_names:
         heat, cool = (equip, "heating_valve"), (equip, "cooling_valve")
         if heat not in wide.columns or cool not in wide.columns:
             continue
@@ -197,24 +214,32 @@ def _simultaneous(frame: pd.DataFrame, classes: dict[str, str], equips: dict[str
     return out
 
 
-def _stuck(frame: pd.DataFrame, classes: dict[str, str], equips: dict[str, str], cfg: DetectionConfig) -> list[dict[str, object]]:
+def _stuck(
+    frame: pd.DataFrame, classes: dict[str, str], equips: dict[str, str], cfg: DetectionConfig
+) -> list[dict[str, object]]:
     """SEM-02: valve frozen while its paired valve moves."""
     valves = frame[frame["point_id"].map(classes).isin(["heating_valve", "cooling_valve"])]
     if valves.empty:
         return []
     out: list[dict[str, object]] = []
-    for point_id, grp in valves.groupby("point_id"):
+    for raw_id, grp in valves.groupby("point_id"):
+        # a groupby key is typed as any scalar the column could hold; the
+        # registry column is text, so narrow it once here
+        point_id = str(raw_id)
         grp = grp.sort_values("ts")
         equip = equips.get(point_id, point_id)
-        paired_cls = "cooling_valve" if classes.get(point_id) == "heating_valve" else "heating_valve"
-        paired = valves[valves["point_id"] == point_id.replace(classes[point_id], paired_cls)]
+        point_class = classes[point_id]
+        paired_cls = "cooling_valve" if point_class == "heating_valve" else "heating_valve"
+        paired = valves[valves["point_id"] == point_id.replace(point_class, paired_cls)]
         if paired.empty:
             continue
         for start, end, n, held in _constant_runs(grp, cfg.stuck_min_samples):
             window = paired[(paired["ts"] >= start) & (paired["ts"] <= end)]
             # the paired valve counts as moving if it spans more than the noise
             # band anywhere inside the window
-            moving = not window.empty and float(window["value"].max() - window["value"].min()) > cfg.peer_moving_min_range
+            moving = (
+                not window.empty and float(window["value"].max() - window["value"].min()) > cfg.peer_moving_min_range
+            )
             if moving:
                 out.append(
                     {
@@ -263,8 +288,7 @@ def _out_of_hours(frame: pd.DataFrame, classes: dict[str, str], cfg: DetectionCo
                     "end_ts": end_ts,
                     "samples": int(window["ts"].nunique()),
                     "detail": (
-                        f"fan at {mean_fan:.0f}% at {local_start:%a %H:%M} local, "
-                        f"outside the {schedule} schedule"
+                        f"fan at {mean_fan:.0f}% at {local_start:%a %H:%M} local, outside the {schedule} schedule"
                     ),
                 }
             )
@@ -284,7 +308,8 @@ def _drift_and_flatline(frame: pd.DataFrame, classes: dict[str, str], cfg: Detec
     """
     out: list[dict[str, object]] = []
     skip = {"occupancy", "setpoint"}  # legitimately steppy / constant by design
-    for point_id, grp in frame.groupby("point_id"):
+    for raw_id, grp in frame.groupby("point_id"):
+        point_id = str(raw_id)
         if classes.get(point_id) in skip:
             continue
         grp = grp.sort_values("ts")
@@ -299,7 +324,7 @@ def _drift_and_flatline(frame: pd.DataFrame, classes: dict[str, str], cfg: Detec
                     "detail": f"flat-line: no change for {n} samples (value {held:.1f})",
                 }
             )
-        for start, chunk in _rolling_windows(grp, cfg.drift_window_samples):
+        for _, chunk in _rolling_windows(grp, cfg.drift_window_samples):
             if len(chunk) < cfg.drift_window_samples:
                 continue
             values = chunk["value"].to_numpy()
@@ -387,8 +412,9 @@ def _runs_on(index: pd.Series, cfg: DetectionConfig) -> list[tuple[pd.Timestamp,
     out: list[tuple[pd.Timestamp, pd.Timestamp]] = []
     start: pd.Timestamp | None = None
     prev: pd.Timestamp | None = None
-    for ts in index:
-        if start is None:
+    for raw_ts in index:
+        ts = pd.Timestamp(raw_ts)
+        if start is None or prev is None:
             start = prev = ts
         elif ts - prev > tolerance:
             out.append((start, prev))
@@ -400,9 +426,7 @@ def _runs_on(index: pd.Series, cfg: DetectionConfig) -> list[tuple[pd.Timestamp,
     return out
 
 
-def _constant_runs(
-    grp: pd.DataFrame, min_samples: int
-) -> list[tuple[pd.Timestamp, pd.Timestamp, int, float]]:
+def _constant_runs(grp: pd.DataFrame, min_samples: int) -> list[tuple[pd.Timestamp, pd.Timestamp, int, float]]:
     """Constant-value runs of at least min_samples, as (start, end, n, held_value).
 
     A timestamp gap also ends a run: samples on either side of a dropout were
@@ -413,18 +437,20 @@ def _constant_runs(
     out: list[tuple[pd.Timestamp, pd.Timestamp, int, float]] = []
     for _, chunk in grp.groupby(changed.cumsum()):
         if len(chunk) >= min_samples:
-            out.append(
-                (chunk["ts"].iloc[0], chunk["ts"].iloc[-1], len(chunk), float(chunk["value"].iloc[0]))
-            )
+            out.append((chunk["ts"].iloc[0], chunk["ts"].iloc[-1], len(chunk), float(chunk["value"].iloc[0])))
     return out
 
 
-def _rolling_windows(grp: pd.DataFrame, window: int):
+def _rolling_windows(grp: pd.DataFrame, window: int) -> Iterator[tuple[int, pd.DataFrame]]:
+    """Non-overlapping windows from the top. Non-overlapping on purpose: a
+    drift that runs for hours should be reported once, not once per window."""
     for start in range(0, len(grp), window):
         yield start, grp.iloc[start : start + window]
 
 
-def health_summary(readings: pd.DataFrame, registry_path: str | Path | None = None, config: DetectionConfig | None = None) -> pd.DataFrame:
+def health_summary(
+    readings: pd.DataFrame, registry_path: str | Path | None = None, config: DetectionConfig | None = None
+) -> pd.DataFrame:
     """Per-point health: last seen, sample count, gap, expected vs actual completeness."""
     cfg = config or DetectionConfig()
     registry = load_registry(str(registry_path or Path(__file__).resolve().parent / "point_registry.csv"))

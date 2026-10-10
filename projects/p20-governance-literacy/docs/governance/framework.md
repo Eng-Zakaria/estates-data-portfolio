@@ -24,7 +24,7 @@ Four roles, defined in full on the [roles page](roles.md). In one line each:
 - **Custodian**: the person who keeps the pipeline honest: loading, tests, documentation and access.
 - **Consumer**: everyone who uses a dashboard, report or extract, and who quotes the definition when they use a number.
 
-The generated [RACI](generated/raci.md) shows who fills each role for space, assets, energy and carbon, compliance, and BIM.
+The generated [RACI](../generated/raci.md) shows who fills each role for space, assets, energy and carbon, compliance, and BIM.
 
 ## Decision rights
 
@@ -34,7 +34,7 @@ The generated [RACI](generated/raci.md) shows who fills each role for space, ass
 | Set a target or threshold (SLA, utilisation target, baseline year) | Owner for the domain | Steward | Recorded in the change log with the reason |
 | Publish or withdraw a dashboard | Analytics lead, on the owner's approval | Owner, steward | CI green, page carries DQ score and refresh time |
 | Change a data classification | Owner | Data protection contact (awareness-level advice here, not legal advice) | Classification page updated |
-| Adopt or retire a standard | Owner for the domain | Steward | [Standards register](generated/standards-register.md) status updated with the source |
+| Adopt or retire a standard | Owner for the domain | Steward | [Standards register](../generated/standards-register.md) status updated with the source |
 | Accept a project's information handover | Owner for BIM | Project manager, custodian | Register updated, crosswalk rebuilt, diff archived |
 | Stop a publication for safety reasons | Owner for the domain | Nobody needs to be asked first | Reason logged; publication resumes when cleared |
 

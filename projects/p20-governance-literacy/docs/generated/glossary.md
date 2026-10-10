@@ -4,7 +4,7 @@
 
 The words estates people use, with owner, source and current quality.
 
-61 terms. Definitions are hand-written in `glossary.yml`; the DQ score column is joined from the P03 run when one exists in this checkout.
+68 terms. Definitions are hand-written in `glossary.yml`; the DQ score column is joined from the P03 run when one exists in this checkout.
 
 | Term | Definition | Owner | Source of truth | Refresh | DQ score | Classification |
 |---|---|---|---|---|---|---|
@@ -19,6 +19,7 @@ The words estates people use, with owner, source and current quality.
 | CDE (Common Data Environment) | The shared, controlled place where project information is approved and issued. | estates-bim | UK BIM Framework Part C states (encoded in P14) | annual | concept, not dataset-scored | public |
 | COBie | A standard set of spreadsheets for handing over building information, one table per topic such as components, spaces and systems. | estates-bim | buildingSMART / UK BIM Framework structure, encoded in P12 rules | annual | concept, not dataset-scored | public |
 | Compliance risk score | A 0-4 score used to order the compliance action list. | estates-hs | mart_compliance_status (synthetic) | daily | 99.4/100 (inspections, run output) | internal |
+| Cost allocation | Sharing a pool of cost across activities using a chosen driver, such as floor area or staff numbers. | estates-finance | mock return pack cost allocation (P10 output) | monthly | concept, not dataset-scored | internal |
 | Cost per square metre | Work-order cost divided by gross internal area. | estates-operations | fct_work_order, dim_building (synthetic) | monthly | 95.3/100 (work_orders, run output) | internal |
 | Data quality score | Weighted pass rate across the quality checks defined for a dataset. | estates-analytics | P03 dq_scores output (synthetic run r7) | daily | concept, not dataset-scored | internal |
 | Days overdue | Days between the due date and completion, or between due date and as-of date if open. | estates-hs | mart_compliance_status (synthetic) | daily | 99.4/100 (inspections, run output) | internal |
@@ -48,6 +49,7 @@ The words estates people use, with owner, source and current quality.
 | PPM (Planned Preventive Maintenance) | Maintenance carried out to a planned schedule rather than in response to a failure. | estates-operations | CAFM work orders (synthetic fct_work_order) | daily | 95.3/100 (work_orders, run output) | internal |
 | Quarantined row | A row that failed a check and was held back from the analysis layer. | estates-analytics | P03 dq_failed_rows output | daily | concept, not dataset-scored | internal |
 | RAG status | Red, amber or green label summarising a compliance position. | estates-hs | mart_compliance_status (synthetic) | daily | 99.4/100 (inspections, run output) | internal |
+| Reactive jobs in 12 months | The number of breakdown jobs raised against one asset in the last twelve months. | estates-operations | mart_asset_health (synthetic) | monthly | 95.3/100 (work_orders, run output) | internal |
 | Reactive work | Work raised because something has broken or failed a check. | estates-operations | CAFM work orders (synthetic fct_work_order) | daily | 95.3/100 (work_orders, run output) | internal |
 | Releasable area | Area that would be in excess if every space were used at least to a chosen target utilisation. A planning what-if, not a saving. | estates-planning | mart_space_utilisation (synthetic) | monthly | 93.0/100 (timetable, run output) | internal |
 | Remaining life | Share of an asset's expected design life still to run. | estates-operations | mart_asset_health (synthetic) | monthly | 99.7/100 (assets, run output) | internal |
@@ -62,13 +64,18 @@ The words estates people use, with owner, source and current quality.
 | Scope 2 emissions | Indirect emissions from purchased electricity, location-based. | estates-energy | mart_carbon_monthly (GHG Protocol, awareness-level reference) | monthly | 85.8/100 (meters_a, run output) | public |
 | SFG20 | A UK benchmarking scheme that sets standard energy and carbon values for building services. | estates-energy | SFG20 publications (not fetched: awareness only) | annual | concept, not dataset-scored | public |
 | SLA target | The agreed number of days to finish a job, by priority. | estates-operations | configuration in methodology.md (illustrative, not a contract) | on_change | 95.3/100 (work_orders, run output) | internal |
+| Space | A room or area in the space register, with a building, a category and a net internal area. | estates-planning | space register (synthetic dim_space) | on_change | 99.9/100 (spaces, run output) | internal |
 | Space per FTE | Net internal area divided by FTE, for a department or the estate. | estates-planning | derived from dim_space and dim_department | monthly | 99.9/100 (spaces, run output) | internal |
 | Statutory inspection | A recorded check with a due date and an outcome (pass, fail or advisory). | estates-hs | inspection register (synthetic fct_inspection) | daily | 99.4/100 (inspections, run output) | internal |
 | TRAC | The UK research funding council's sustainability reporting guidance. | estates-energy | UKRI guidance (not fetched: awareness only) | annual | concept, not dataset-scored | public |
 | Uniclass | A classification of construction products and spaces that lets systems group like with like. | estates-bim | NBS Uniclass tables (not fetched: dev placeholder in P13) | annual | concept, not dataset-scored | public |
 | UTC storage, UK display | All timestamps are stored in UTC and shown in UK local time in reports. | estates-analytics | platform convention (naming and modelling standards) | static | concept, not dataset-scored | internal |
 | Utilisation | How much a space is used, combining booking frequency with fill when booked. | estates-planning | mart_space_utilisation (synthetic) | monthly | 93.0/100 (timetable, run output) | internal |
+| Validation rule | A check run inside a pack that either blocks the pack being issued or raises a question about it. | estates-finance | mock return pack validation output (P10) | monthly | concept, not dataset-scored | internal |
 | Variance to pathway | How far actual emissions sit above or below a straight line to the net zero year. | estates-energy | mart_carbon_monthly (synthetic) | quarterly | 82.9/100 (meters_b, run output) | public |
+| Work order | A single job raised in the maintenance system, with a type, priority, dates and cost. | estates-operations | CAFM work orders (synthetic fct_work_order) | daily | 95.3/100 (work_orders, run output) | internal |
+| Work-order cost | The labour and materials cost recorded against a work order, in pounds. | estates-operations | CAFM work orders (synthetic fct_work_order) | daily | 95.3/100 (work_orders, run output) | internal |
+| Zero-area space | A space in an IFC model with no area or a non-positive area, found by QA. | estates-bim | IFC space table (synthetic) | per_release | concept, not dataset-scored | internal |
 
 ## Notes and misreadings
 
@@ -83,6 +90,7 @@ The words estates people use, with owner, source and current quality.
 - **CDE (Common Data Environment)**: State transitions WIP, Shared, Published, Archive are implemented in P14 checks.
 - **COBie**: Referenced for structure only; no COBie text is reproduced here.
 - **Compliance risk score**: A triage ordering, not a legal risk assessment.
+- **Cost allocation**: Allocated cost is not measured cost. The driver is a choice, so state it with the number.
 - **Cost per square metre**: Labour and materials only, on GIA not NIA.
 - **Data quality score**: Measures the checks as much as the data: more checks can lower the score.
 - **Days overdue**: Negative means completed early.
@@ -112,6 +120,7 @@ The words estates people use, with owner, source and current quality.
 - **PPM (Planned Preventive Maintenance)**: A closed PPM job counts as complete whether or not evidence was attached.
 - **Quarantined row**: A quarantined row is not a deleted row; it is kept with a reason.
 - **RAG status**: Green can mean "nothing recorded", which is the most misread cell on the compliance dashboard.
+- **Reactive jobs in 12 months**: The repeat-failure flag uses this count with a threshold of three.
 - **Reactive work**: The opposite of planned work. A reactive job that was forecast still counts as reactive in this data.
 - **Releasable area**: Ignores decant cost, shared space and teaching quality.
 - **Remaining life**: Negative when an asset is past its expected life.
@@ -126,13 +135,18 @@ The words estates people use, with owner, source and current quality.
 - **Scope 2 emissions**: Market-based figures would need contractual instruments this pipeline does not hold.
 - **SFG20**: No SFG20 values are stored in this repository.
 - **SLA target**: Targets here are P1 1 day, P2 5, P3 10, P4 20. Illustrative only.
+- **Space**: A space in an IFC model is a different thing; the room-match measures compare the two.
 - **Space per FTE**: Excludes space not tagged to a department, so the estate figure is lower than a floor-by-floor sum.
 - **Statutory inspection**: Frequencies in the register are illustrative and are not a statement of legal duty.
 - **TRAC**: No TRAC categories are encoded here.
 - **Uniclass**: Status in this repository is mock, not implemented. See the standards register.
 - **UTC storage, UK display**: Mixing local and UTC timestamps is the most common cause of a wrong daily total.
 - **Utilisation**: Defined here as frequency x occupancy. Other teams define it differently, so always quote the definition with the number.
+- **Validation rule**: A clean validation file means the internal checks passed, not that the pack is right.
 - **Variance to pathway**: The straight line is a planning convention, not an official pathway.
+- **Work order**: A work order is not a task: one job can cover several visits.
+- **Work-order cost**: Excludes overheads and capital spend.
+- **Zero-area space**: A modelling defect, not a data-quality bug in this pipeline.
 
 ## Dashboard KPI coverage
 
@@ -141,37 +155,58 @@ The words estates people use, with owner, source and current quality.
 | Area Source Completeness | Area source completeness |
 | Available Hours | Available hours |
 | Avg Occupancy % | Occupancy rate |
+| Backlog Count | Open work order |
 | Baseload Pct | Baseload |
 | Compliance Trend Overdue | Overdue |
+| Cost per m2 £ | Cost per square metre |
 | Days Overdue | Days overdue |
 | Due Within 30 Days | Due within 30 days |
+| Element Count | IFC element |
 | Elements Without Classification | IFC classification |
 | Elements Without Type | IFC element |
 | Emissions Intensity kgCO2e per m2 | Emissions intensity |
 | Energy Intensity kWh per m2 | Energy intensity |
 | Failed Remedial Open | Remedial action |
 | Frequency % | Frequency percentage |
+| MTTR Days | MTTR (Mean Time To Repair) |
 | NIA m2 | NIA (Net Internal Area) |
 | No-show % | No-show |
 | Overdue Count | Overdue |
+| PPM Completion % | PPM (Planned Preventive Maintenance) |
+| Planned : Reactive | Reactive work |
+| Pool Total | Cost allocation |
 | RAG Status | RAG status |
+| Reactive 12m | Reactive jobs in 12 months |
 | Releasable m2 (what-if) | Releasable area |
+| Remaining Life % | Remaining life |
 | Remedial Ageing Days | Remedial ageing |
+| Renewal Forecast £ | Renewal forecast |
+| Repeat Failure Assets | Repeat failure |
 | Risk Score | Compliance risk score |
 | Rolling 12M kgCO2e | Rolling 12-month total |
 | Rooms Matched | Room match |
 | Rooms Missing From Model | Room match |
 | Rooms Over 10pct Area Mismatch | Area mismatch |
+| SLA Met % | SLA target |
 | Scope 1 kgCO2e | Scope 1 emissions |
 | Scope 2 kgCO2e | Scope 2 emissions |
+| Space Count | Space |
 | Timetabled Hours | Booked hours |
+| Total CO2e | kgCO2e |
+| Total Cost £ | Work-order cost |
 | Total Emissions kgCO2e | kgCO2e |
 | Total Energy kWh | kWh (kilowatt hour) |
+| Total GIA | GIA (Gross Internal Area) |
 | Total Inspections | Statutory inspection |
+| Total NIA | NIA (Net Internal Area) |
+| Total WOs | Work order |
 | Utilisation % | Utilisation |
 | Utilisation vs Target | Utilisation |
+| Validation Blocking | Validation rule |
+| Validation Query | Validation rule |
 | Variance to Median | Space per FTE |
 | Variance to Pathway Pct | Variance to pathway |
+| Zero Area Spaces | Zero-area space |
 | age_band | Backlog age |
 | cost_per_m2 | Cost per square metre |
 | is_repeat_failure | Repeat failure |

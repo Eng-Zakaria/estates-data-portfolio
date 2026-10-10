@@ -526,6 +526,26 @@ terms:
       classification is right.
 
   # ------------------------------------------------------- data quality itself
+  - id: cost_allocation
+    term: Cost allocation
+    definition: Sharing a pool of cost across activities using a chosen driver, such as floor area or staff numbers.
+    owner: estates-finance
+    source_of_truth: mock return pack cost allocation (P10 output)
+    refresh: monthly
+    dataset: ""
+    classification: internal
+    notes: Allocated cost is not measured cost. The driver is a choice, so state it with the number.
+
+  - id: validation_rule
+    term: Validation rule
+    definition: A check run inside a pack that either blocks the pack being issued or raises a question about it.
+    owner: estates-finance
+    source_of_truth: mock return pack validation output (P10)
+    refresh: monthly
+    dataset: ""
+    classification: internal
+    notes: A clean validation file means the internal checks passed, not that the pack is right.
+
   - id: dq_score
     term: Data quality score
     definition: Weighted pass rate across the quality checks defined for a dataset.
@@ -798,6 +818,14 @@ kpi_aliases:
   Rooms Matched: room_match
   Rooms Missing From Model: room_match
   Rooms Over 10pct Area Mismatch: area_mismatch
+  # P10 mock institutional return (measures declared in powerbi/model.md)
+  Total NIA: nia
+  Total GIA: gia
+  Total Energy kWh: energy_kwh
+  Total CO2e: emissions_kgco2e
+  Pool Total: cost_allocation
+  Validation Blocking: validation_rule
+  Validation Query: validation_rule
 
 # Terms the spec names explicitly; tests/test_glossary.py requires all of these.
 required_terms:

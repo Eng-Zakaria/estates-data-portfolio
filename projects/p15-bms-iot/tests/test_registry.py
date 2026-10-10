@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from conftest import REGISTRY_CSV
+
 from make_registry import BUILDINGS, PLANT_ITEMS, ROOMS_PER_BUILDING, build_registry
 
 
@@ -46,7 +47,6 @@ def test_topic_matches_the_contract_pattern(registry, rules):
 
 def test_committed_registry_matches_the_generator():
     """src/point_registry.csv is committed, so it must not drift from the code."""
-    import csv
 
     from validate import load_registry
 

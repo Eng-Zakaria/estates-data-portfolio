@@ -1,5 +1,7 @@
 # Standards
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 Estates data touches several standards. This section explains which, where each one bites, and how far we have honestly got.
 
 The generated [standards register](../generated/standards-register.md) holds the authoritative table, one page per standard, with its official source URL. Read that for detail; this page is the orientation.

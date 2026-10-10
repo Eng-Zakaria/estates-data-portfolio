@@ -1,5 +1,7 @@
 # Roles
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 Four roles, one per person where possible. A person can hold more than one role, but the accountable owner for a domain must be able to say no to a change.
 
 ## Owner
@@ -11,7 +13,7 @@ The estates manager answerable for the outcome the data supports.
 - Signs off publication and can stop it.
 - Is the escalation point when two teams disagree.
 
-In this repository the owner ids map to estates roles, not to names: `estates-planning`, `estates-operations`, `estates-energy`, `estates-hs`, `estates-bim`, `estates-finance`. The [RACI](generated/raci.md) names the accountable owner per activity.
+In this repository the owner ids map to estates roles, not to names: `estates-planning`, `estates-operations`, `estates-energy`, `estates-hs`, `estates-bim`, `estates-finance`. The [RACI](../generated/raci.md) names the accountable owner per activity.
 
 ## Steward
 

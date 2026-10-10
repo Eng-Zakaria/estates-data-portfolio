@@ -39,7 +39,17 @@ def test_valid_messages_all_reach_readings(validator, registry):
 
 def test_malformed_payloads_are_dead_lettered_with_a_reason(validator, registry):
     row = next(r for r in registry.values() if r["point_class"] == "supply_temp")
-    raw = _raw([{"ts": START.isoformat(), "topic": row["topic"], "value": "not_a_number", "unit": row["unit"], "quality": None}])
+    raw = _raw(
+        [
+            {
+                "ts": START.isoformat(),
+                "topic": row["topic"],
+                "value": "not_a_number",
+                "unit": row["unit"],
+                "quality": None,
+            }
+        ]
+    )
     accepted, dead = apply_contract(raw, validator, now=NOW)
     assert accepted.empty
     assert len(dead) == 1

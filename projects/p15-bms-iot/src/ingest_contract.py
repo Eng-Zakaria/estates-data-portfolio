@@ -21,18 +21,37 @@ from validate import Validator
 REPO = Path(__file__).resolve().parent.parent
 
 
-def apply_contract(readings: pd.DataFrame, validator: Validator | None = None, *, now: pd.Timestamp | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
+def _text(value: object) -> str | None:
+    """A row attribute as text, or None when the column is absent or null.
+
+    itertuples types an attribute as whatever the column can hold, so this
+    narrows the two identifier columns once per row.
+    """
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return None
+    return str(value)
+
+
+def apply_contract(
+    readings: pd.DataFrame, validator: Validator | None = None, *, now: pd.Timestamp | None = None
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Split raw messages into accepted readings and dead-letter rows.
 
-    `readings` needs columns ts, topic, value, unit, quality.
+    `readings` needs ts, value, unit, quality and a point identifier. The
+    identifier may be a wire `topic` or a canonical `point_id`: a replay from
+    the lakehouse export carries the latter, so both are accepted.
     Returns (accepted, dead_letter) where dead_letter has topic, payload, reason.
     """
     validator = validator or Validator.from_repo(REPO)
     now_ts = pd.Timestamp(now) if now is not None else None
+    id_to_topic = {row["point_id"]: row["topic"] for row in validator.registry.values()}
 
     accepted: list[dict[str, object]] = []
     dead: list[dict[str, object]] = []
     for row in readings.itertuples():
+        topic = _text(getattr(row, "topic", None))
+        if topic is None:
+            topic = id_to_topic.get(_text(getattr(row, "point_id", None)) or "")
         quality = getattr(row, "quality", None)
         unit = getattr(row, "unit", None)
         # the dry-run file stores values as strings (malformed payloads are
@@ -50,7 +69,7 @@ def apply_contract(readings: pd.DataFrame, validator: Validator | None = None, *
             payload["unit"] = unit
         # simulate the wire payload: malformed rows genuinely lack `quality`
         raw = json.dumps(payload)
-        result = validator.check(row.topic, raw, now=now_ts.to_pydatetime() if now_ts is not None else None)
+        result = validator.check(topic or "", raw, now=now_ts.to_pydatetime() if now_ts is not None else None)
         if result.ok and result.ts is not None and result.value is not None:
             accepted.append(
                 {
@@ -62,7 +81,7 @@ def apply_contract(readings: pd.DataFrame, validator: Validator | None = None, *
                 }
             )
         else:
-            dead.append({"topic": row.topic, "payload": raw, "reason": result.reason or "UNKNOWN", "ts": row.ts})
+            dead.append({"topic": topic, "payload": raw, "reason": result.reason or "UNKNOWN", "ts": row.ts})
     return pd.DataFrame(accepted), pd.DataFrame(dead)
 
 

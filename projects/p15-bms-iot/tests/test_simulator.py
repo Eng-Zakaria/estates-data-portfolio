@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import json
-from datetime import timedelta
+from datetime import UTC, timedelta
 
 import pandas as pd
 import pytest
 from conftest import START
 
-from simulator import FAULTS, FAULT_WINDOWS, Simulator, occupancy_people
+from simulator import FAULT_WINDOWS, FAULTS, Simulator, occupancy_people
 
 
 def test_registry_backed_point_count(sim):
@@ -179,18 +179,18 @@ def test_faulty_rows_are_marked_suspect_quality(sim):
 
 
 def test_occupancy_is_empty_overnight_and_at_weekends():
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    wednesday_03 = datetime(2026, 10, 7, 3, tzinfo=timezone.utc)
-    saturday_noon = datetime(2026, 10, 10, 12, tzinfo=timezone.utc)
+    wednesday_03 = datetime(2026, 10, 7, 3, tzinfo=UTC)
+    saturday_noon = datetime(2026, 10, 10, 12, tzinfo=UTC)
     assert occupancy_people(wednesday_03, 40) == 0
     assert occupancy_people(saturday_noon, 40) == 0
 
 
 def test_occupancy_peaks_in_the_working_day():
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    peak = max(occupancy_people(datetime(2026, 10, 7, h, tzinfo=timezone.utc), 40) for h in range(24))
+    peak = max(occupancy_people(datetime(2026, 10, 7, h, tzinfo=UTC), 40) for h in range(24))
     assert peak > 20
 
 
@@ -200,7 +200,15 @@ def test_truth_file_records_everything_needed_to_score_detection(sim):
     assert truth["interval_minutes"] == 5
     assert truth["points"] == 294
     for fault in truth["faults"]:
-        assert set(fault) == {"fault", "point_id", "peer_point_id", "start_minute", "end_minute", "detection_rule", "detail"}
+        assert set(fault) == {
+            "fault",
+            "point_id",
+            "peer_point_id",
+            "start_minute",
+            "end_minute",
+            "detection_rule",
+            "detail",
+        }
         assert fault["detection_rule"] in {"SEM-01", "SEM-02", "SEM-03", "SEM-04", "SEM-05", "STALENESS"}
         assert fault["end_minute"] > fault["start_minute"]
 

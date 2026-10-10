@@ -16,7 +16,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -113,7 +113,7 @@ class Validator:
     # --- payload -------------------------------------------------------------
     def check(self, topic: str, payload: str | bytes, *, now: datetime | None = None) -> CheckResult:
         """Validate one MQTT message. Returns a CheckResult; never raises."""
-        now = now or datetime.now(timezone.utc)
+        now = now or datetime.now(UTC)
         parsed = self.parse_topic(topic)
         if parsed is None:
             return CheckResult(ok=False, reason=R_TOPIC)
@@ -185,7 +185,7 @@ def _parse_ts(raw: object) -> datetime | None:
         parsed = datetime.fromisoformat(text)
     except ValueError:
         return None
-    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)
 
 
 @lru_cache(maxsize=4)

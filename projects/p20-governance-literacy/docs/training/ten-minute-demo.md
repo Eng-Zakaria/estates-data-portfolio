@@ -1,5 +1,7 @@
 # 10-minute demo script
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 For someone who has never opened the dashboards. Ten minutes, one screen, one story.
 
 **Before you start:** have the space utilisation report and the data quality scorecard open in two tabs. Know your as-of date. Have the glossary open in a third tab.

@@ -1,5 +1,7 @@
 # Data quality scorecard
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 **Question it answers:** how much should I trust the other reports today?
 
 **Refresh:** every pipeline run. The measured numbers are on the generated [DQ scores page](../generated/dq-scores.md).

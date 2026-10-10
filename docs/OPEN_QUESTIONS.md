@@ -78,3 +78,24 @@
   contracted rates before publishing any saving.
 - **BDG2 review pass takes ~40 min** for 50 buildings, dominated by the GBM baseline fit whose output is only used
   for the CV comparison table (detection uses the fast regression). Cut or parallelise it if this runs on a schedule.
+
+## P20 follow-ups (2026-10-09 — human ratification needed)
+- **Governance roles, owners and service levels are a proposal, not an institution's policy.** The pack proposes
+  owner/steward/custodian/consumer roles, a RACI per domain, decision rights and service levels
+  (`projects/p20-governance-literacy/docs/governance/`, `raci.yml`). Nothing has been ratified, no names are attached,
+  and the UK GDPR content is awareness only, explicitly not legal advice. A real deployment needs the data protection
+  contact, a records retention schedule and a signed-off escalation route.
+- **Standards register status changes need real sources.** Three entries cannot move forward without procurement or a
+  subscription: Uniclass 2015 (`mock`, see §2), HESA EMR and TRAC (`mock` / `awareness-only`, see §6), SFG20
+  (`not-obtained`, see §7). The register
+  (`projects/p20-governance-literacy/standards.yml`) is where the status changes once the documents are held, and each
+  change needs a `DATA.md` provenance entry with licence and version before the codes are encoded.
+- **P10 has no source or Power BI hand-off in this checkout**, so the P20 dashboard guide describes the mock return
+  pack from the outputs in `data/p10_output/` rather than from code, and P10 contributes no KPI names to the metric
+  registry scan. Restore or rebuild `projects/p10-institutional-return/src/` (only `__pycache__` remains) and the
+  guide page and registry should be re-verified.
+- **P16 excluded from the KPI scan** while it is mid-build: `SCAN_EXCLUSIONS` in
+  `projects/p20-governance-literacy/src/config.py` lists it with the reason, and a test fails if a project ships a
+  `powerbi/measures.dax` without being scanned or explicitly excluded. Add P16's measures to the registry when it lands.
+- **External links are never fetched** (CI must stay offline), so the link checker counts them and finds none broken.
+  Standards URLs are written as plain text for the same reason. A nightly job with network access should check them.

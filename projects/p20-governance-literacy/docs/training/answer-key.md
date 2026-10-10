@@ -1,5 +1,7 @@
 # Answer key
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 Mark it in pairs, out loud. The wrong answers are more useful than the right ones: they show which misreading is live in your team.
 
 | # | Answer | Look for |

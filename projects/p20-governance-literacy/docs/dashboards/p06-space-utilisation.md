@@ -1,5 +1,7 @@
 # Space utilisation
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 **Question it answers:** which rooms are booked, which rooms are used, and what could we do differently?
 
 **Refresh:** monthly, from the academic calendar and the timetable feed. Booked hours come from the timetable; occupancy comes from group sizes on the booking.

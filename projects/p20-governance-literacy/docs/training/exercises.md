@@ -1,5 +1,7 @@
 # Workshop exercises
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 The three exercises for the 45-minute workshop. Each has the brief to read aloud, the task, and where the answers live. Answers for the facilitator are in the [answer key](answer-key.md).
 
 ## Exercise 1: three questions a number must answer

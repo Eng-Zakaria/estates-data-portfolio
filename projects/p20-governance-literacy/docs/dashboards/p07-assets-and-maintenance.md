@@ -1,5 +1,7 @@
 # Assets and maintenance
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 **Question it answers:** is planned work keeping up with breakdowns, what is ageing, and what will we have to replace soon?
 
 **Refresh:** daily, from the maintenance system. The reports are built from five saved queries so the numbers can be checked by hand.

@@ -21,10 +21,10 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections.abc import Callable
 from pathlib import Path
 
 from make_registry import BUILDINGS
-from validate import load_registry
 
 REPO = Path(__file__).resolve().parent.parent
 REGISTRY_CSV = Path(__file__).resolve().parent / "point_registry.csv"
@@ -48,8 +48,8 @@ def _panel(
     unit: str = "short",
     legend: str | None = None,
     description: str = "",
-) -> dict:
-    panel: dict = {
+) -> dict[str, object]:
+    panel: dict[str, object] = {
         "id": panel_id,
         "type": kind,
         "title": title,
@@ -64,12 +64,19 @@ def _panel(
     }
     if kind == "timeseries":
         panel["targets"] = [{"refId": "A", "format": "time_series", "rawSql": sql}]
-        panel["fieldConfig"]["custom"] = {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 5,
-            "showPoints": "never",
-            "spanNulls": False,
+        panel["fieldConfig"] = {
+            "defaults": {
+                "unit": unit,
+                "color": {"mode": "palette-classic"},
+                "custom": {
+                    "drawStyle": "line",
+                    "lineWidth": 1,
+                    "fillOpacity": 5,
+                    "showPoints": "never",
+                    "spanNulls": False,
+                },
+            },
+            "overrides": [],
         }
         panel["options"] = {"legend": {"displayMode": "list", "placement": "bottom", "calcs": ["mean", "max"]}}
         if legend:
@@ -90,7 +97,9 @@ def _panel(
     return panel
 
 
-def _dashboard(uid: str, title: str, description: str, panels: list[dict], tags: list[str], time_from: str = "now-24h") -> dict:
+def _dashboard(
+    uid: str, title: str, description: str, panels: list[dict[str, object]], tags: list[str], time_from: str = "now-24h"
+) -> dict[str, object]:
     return {
         "uid": uid,
         "title": title,
@@ -107,7 +116,7 @@ def _dashboard(uid: str, title: str, description: str, panels: list[dict], tags:
     }
 
 
-def plant_overview() -> dict:
+def plant_overview() -> dict[str, object]:
     buildings = ", ".join(f"'{b}'" for b in BUILDINGS)
     panels = [
         _panel(
@@ -223,7 +232,7 @@ def plant_overview() -> dict:
     )
 
 
-def point_health() -> dict:
+def point_health() -> dict[str, object]:
     panels = [
         _panel(
             1,
@@ -298,7 +307,7 @@ def point_health() -> dict:
     )
 
 
-def active_faults() -> dict:
+def active_faults() -> dict[str, object]:
     panels = [
         _panel(
             1,
@@ -399,7 +408,7 @@ def active_faults() -> dict:
     )
 
 
-def completeness() -> dict:
+def completeness() -> dict[str, object]:
     panels = [
         _panel(
             1,
@@ -457,7 +466,7 @@ def completeness() -> dict:
     )
 
 
-DASHBOARDS = {
+DASHBOARDS: dict[str, Callable[[], dict[str, object]]] = {
     "plant_overview.json": plant_overview,
     "point_health.json": point_health,
     "active_faults.json": active_faults,
@@ -480,7 +489,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, default=OUT_DIR)
     args = parser.parse_args()
-    registry = load_registry(str(REGISTRY_CSV))
+    # touching the registry here fails fast if it is missing, rather than
+    # leaving a half-written dashboard set
+    if not REGISTRY_CSV.exists():
+        parser.error(f"point registry not found: {REGISTRY_CSV} (run `python src/make_registry.py`)")
     for path in write_all(args.out):
         dashboard = json.loads(path.read_text(encoding="utf-8"))
         print(f"{path.name}: {len(dashboard['panels'])} panels -> {path}")

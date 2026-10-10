@@ -17,8 +17,21 @@ from datetime import timedelta
 import pytest
 from conftest import FLOW_MERGED, START, payload
 
-from validate import R_JSON, R_QUALITY, R_RANGE, R_SCHEMA, R_TOPIC, R_TS_FORMAT, R_TS_FUTURE, R_TS_OLD
-from validate import R_UNIT, R_UNKNOWN_POINT, R_VALUE, normalise_unit, to_celsius
+from validate import (
+    R_JSON,
+    R_QUALITY,
+    R_RANGE,
+    R_SCHEMA,
+    R_TOPIC,
+    R_TS_FORMAT,
+    R_TS_FUTURE,
+    R_TS_OLD,
+    R_UNIT,
+    R_UNKNOWN_POINT,
+    R_VALUE,
+    normalise_unit,
+    to_celsius,
+)
 
 
 def _check(validator, topic, body, **kwargs):
@@ -30,11 +43,7 @@ def test_reason_codes_exist_on_both_sides(registry, rules):
     """Every reason the Python validator can emit is a documented contract value."""
     import validate as v
 
-    python_codes = {
-        getattr(v, name)
-        for name in dir(v)
-        if name.startswith("R_") and isinstance(getattr(v, name), str)
-    }
+    python_codes = {getattr(v, name) for name in dir(v) if name.startswith("R_") and isinstance(getattr(v, name), str)}
     assert python_codes >= {
         R_TOPIC,
         R_JSON,
@@ -233,7 +242,9 @@ def test_small_clock_skew_is_tolerated(validator, registry):
 
 def test_timestamp_older_than_the_age_budget_is_rejected(validator, registry):
     row = next(r for r in registry.values() if r["point_class"] == "supply_temp")
-    assert validator.check(row["topic"], payload(ts=START - timedelta(days=8), value=13.0), now=START).reason == R_TS_OLD
+    assert (
+        validator.check(row["topic"], payload(ts=START - timedelta(days=8), value=13.0), now=START).reason == R_TS_OLD
+    )
 
 
 def test_unknown_point_id_is_rejected(validator):
@@ -249,7 +260,7 @@ def test_checker_never_raises_on_hostile_input(validator):
 
 def test_z_suffix_timestamps_are_accepted(validator, registry):
     row = next(r for r in registry.values() if r["point_class"] == "supply_temp")
-    body = payload(ts=START, value=13.0).replace('+00:00', 'Z')
+    body = payload(ts=START, value=13.0).replace("+00:00", "Z")
     assert validator.check(row["topic"], body, now=START).ok
 
 

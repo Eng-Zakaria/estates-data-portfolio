@@ -17,7 +17,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
 from dashboards import DashboardKpi
 
 REFRESH_VALUES = (

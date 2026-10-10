@@ -1,5 +1,7 @@
 # Compliance
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 **Question it answers:** which checks are late, which failed, and what needs doing this week?
 
 **Refresh:** daily, from the inspection register. The report compares due dates with an as-of date you choose.

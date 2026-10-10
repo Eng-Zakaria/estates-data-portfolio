@@ -1,5 +1,7 @@
 # Metric change log
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 Every change to a published number, with the reason. Newest first. Format: date, metric id, version, change, reason, owner, impact.
 
 The full list of current definitions and versions is the generated [metric registry](../generated/metric-registry.md).

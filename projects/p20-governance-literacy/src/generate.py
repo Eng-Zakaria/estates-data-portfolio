@@ -10,13 +10,13 @@ repository.
 from __future__ import annotations
 
 import csv
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import dbt_meta
 import glossary as glossary_mod
 from config import GENERATED_BANNER, SYNTHETIC_NOTE
-from metrics import Metric, Registry
+from metrics import Registry
 
 LAYER_TITLES = {
     "staging": "Staging (one model per source, renamed and typed)",
@@ -54,17 +54,19 @@ def render_dictionary(meta: dbt_meta.DbtMetadata) -> str:
         "the descriptions written there."
     )
     body.append("")
-    body.append(table(
-        ["Layer", "Models", "Columns"],
-        [
+    body.append(
+        table(
+            ["Layer", "Models", "Columns"],
             [
-                LAYER_TITLES.get(layer, layer),
-                str(sum(1 for m in meta.models if m.layer == layer)),
-                str(sum(len(m.columns) for m in meta.models if m.layer == layer)),
-            ]
-            for layer in sorted({m.layer for m in meta.models})
-        ],
-    ))
+                [
+                    LAYER_TITLES.get(layer, layer),
+                    str(sum(1 for m in meta.models if m.layer == layer)),
+                    str(sum(len(m.columns) for m in meta.models if m.layer == layer)),
+                ]
+                for layer in sorted({m.layer for m in meta.models})
+            ],
+        )
+    )
     for layer in sorted({m.layer for m in meta.models}):
         body.append("")
         body.append(f"## {LAYER_TITLES.get(layer, layer)}")
@@ -82,10 +84,12 @@ def render_dictionary(meta: dbt_meta.DbtMetadata) -> str:
                 body.append("Reads: " + ", ".join(f"`{d}`" for d in model.depends_on))
                 body.append("")
             if model.columns:
-                body.append(table(
-                    ["Column", "Type", "Description", "Tests"],
-                    [[c.name, c.data_type, c.description, ", ".join(c.tests)] for c in model.columns],
-                ))
+                body.append(
+                    table(
+                        ["Column", "Type", "Description", "Tests"],
+                        [[c.name, c.data_type, c.description, ", ".join(c.tests)] for c in model.columns],
+                    )
+                )
             else:
                 body.append("_No columns documented in the dbt YAML._")
     return page("Data dictionary (generated)", "Every table and column the analytics layer exposes.", "\n".join(body))
@@ -114,10 +118,15 @@ def render_lineage(meta: dbt_meta.DbtMetadata) -> str:
     body.append("")
     body.append("## Exposure (what the dashboards read)")
     body.append("")
-    body.append(table(
-        ["Exposure", "Type", "Owner", "Reads"],
-        [[e.name, e.type, e.owner, ", ".join(f"`{d}`" for d in e.depends_on)] for e in sorted(meta.exposures, key=lambda e: e.name)],
-    ))
+    body.append(
+        table(
+            ["Exposure", "Type", "Owner", "Reads"],
+            [
+                [e.name, e.type, e.owner, ", ".join(f"`{d}`" for d in e.depends_on)]
+                for e in sorted(meta.exposures, key=lambda e: e.name)
+            ],
+        )
+    )
     body.append("")
     body.append("## Edges")
     body.append("")
@@ -146,7 +155,11 @@ def render_dq_scores(scores_path: Path, results_path: Path, alerts_path: Path) -
             "```\nmake data && make dq-check\n```\n\n"
             "The DQ framework itself is described in the repository's `docs/dq-policy.md`."
         )
-        return page("Data quality scores (generated)", "Measured, not asserted: the numbers come from the P03 run.", "\n".join(body))
+        return page(
+            "Data quality scores (generated)",
+            "Measured, not asserted: the numbers come from the P03 run.",
+            "\n".join(body),
+        )
 
     latest = max(row["run_id"] for row in score_rows if row.get("run_id"))
     body.append(f"Run `{latest}`. Scores come from `data/quality/gold/dq_scores.csv`; nothing is recalculated here.")
@@ -157,42 +170,58 @@ def render_dq_scores(scores_path: Path, results_path: Path, alerts_path: Path) -
             by_dataset[row["dataset"]] = row
     body.append("## By dataset")
     body.append("")
-    body.append(table(
-        ["Dataset", "Score", "Checks", "Read"],
-        [
+    body.append(
+        table(
+            ["Dataset", "Score", "Checks", "Read"],
             [
-                name,
-                f"{float(row['score']):.1f}",
-                row.get("n_checks", "-"),
-                _score_read(float(row["score"])),
-            ]
-            for name, row in sorted(by_dataset.items())
-        ],
-    ))
+                [
+                    name,
+                    f"{float(row['score']):.1f}",
+                    row.get("n_checks", "-"),
+                    _score_read(float(row["score"])),
+                ]
+                for name, row in sorted(by_dataset.items())
+            ],
+        )
+    )
 
     dimension_rows = [r for r in score_rows if r.get("run_id") == latest and r.get("grain") == "dimension"]
     if dimension_rows:
         body.append("")
         body.append("## By dataset and dimension")
         body.append("")
-        body.append(table(
-            ["Dataset", "Dimension", "Score", "Checks"],
-            [[r.get("dataset", "-"), r.get("key", "-"), f"{float(r['score']):.1f}", r.get("n_checks", "-")] for r in sorted(dimension_rows, key=lambda r: (r.get("dataset", ""), r.get("key", "")))],
-        ))
+        body.append(
+            table(
+                ["Dataset", "Dimension", "Score", "Checks"],
+                [
+                    [r.get("dataset", "-"), r.get("key", "-"), f"{float(r['score']):.1f}", r.get("n_checks", "-")]
+                    for r in sorted(dimension_rows, key=lambda r: (r.get("dataset", ""), r.get("key", "")))
+                ],
+            )
+        )
 
     failing = [r for r in result_rows if r.get("run_id") == latest and r.get("status") == "fail"]
     body.append("")
     body.append("## Failing checks in this run")
     body.append("")
     if failing:
-        body.append(table(
-            ["Dataset", "Check", "Dimension", "Severity", "Rows failed", "Rows checked", "Threshold"],
-            [
-                [r.get("dataset", "-"), r.get("check_id", "-"), r.get("dimension", "-"), r.get("severity", "-"),
-                 r.get("rows_failed", "-"), r.get("rows_checked", "-"), r.get("threshold", "-")]
-                for r in sorted(failing, key=lambda r: (r.get("severity", ""), r.get("dataset", "")))
-            ],
-        ))
+        body.append(
+            table(
+                ["Dataset", "Check", "Dimension", "Severity", "Rows failed", "Rows checked", "Threshold"],
+                [
+                    [
+                        r.get("dataset", "-"),
+                        r.get("check_id", "-"),
+                        r.get("dimension", "-"),
+                        r.get("severity", "-"),
+                        r.get("rows_failed", "-"),
+                        r.get("rows_checked", "-"),
+                        r.get("threshold", "-"),
+                    ]
+                    for r in sorted(failing, key=lambda r: (r.get("severity", ""), r.get("dataset", "")))
+                ],
+            )
+        )
     else:
         body.append("_No failing checks in this run._")
 
@@ -200,13 +229,17 @@ def render_dq_scores(scores_path: Path, results_path: Path, alerts_path: Path) -
     body.append("## Alerts")
     body.append("")
     if alert_rows:
-        body.append(table(
-            ["Kind", "Dataset", "Detail"],
-            [[r.get("alert_kind", "-"), r.get("dataset", "-"), r.get("detail", "-")] for r in alert_rows],
-        ))
+        body.append(
+            table(
+                ["Kind", "Dataset", "Detail"],
+                [[r.get("alert_kind", "-"), r.get("dataset", "-"), r.get("detail", "-")] for r in alert_rows],
+            )
+        )
     else:
         body.append("_No alerts raised._")
-    return page("Data quality scores (generated)", "Measured, not asserted: the numbers come from the P03 run.", "\n".join(body))
+    return page(
+        "Data quality scores (generated)", "Measured, not asserted: the numbers come from the P03 run.", "\n".join(body)
+    )
 
 
 def _score_read(score: float) -> str:
@@ -228,21 +261,23 @@ def render_glossary(gloss: glossary_mod.Glossary, scores: dict[str, float]) -> s
         "joined from the P03 run when one exists in this checkout."
     )
     body.append("")
-    body.append(table(
-        ["Term", "Definition", "Owner", "Source of truth", "Refresh", "DQ score", "Classification"],
-        [
+    body.append(
+        table(
+            ["Term", "Definition", "Owner", "Source of truth", "Refresh", "DQ score", "Classification"],
             [
-                t.term,
-                t.definition,
-                t.owner,
-                t.source_of_truth,
-                t.refresh,
-                glossary_mod.dq_score_for(t, scores),
-                t.classification,
-            ]
-            for t in sorted(gloss.terms, key=lambda t: t.term.lower())
-        ],
-    ))
+                [
+                    t.term,
+                    t.definition,
+                    t.owner,
+                    t.source_of_truth,
+                    t.refresh,
+                    glossary_mod.dq_score_for(t, scores),
+                    t.classification,
+                ]
+                for t in sorted(gloss.terms, key=lambda t: t.term.lower())
+            ],
+        )
+    )
     notes = [t for t in gloss.terms if t.notes]
     if notes:
         body.append("")
@@ -261,7 +296,11 @@ def render_glossary(gloss: glossary_mod.Glossary, scores: dict[str, float]) -> s
         if by_id
         else "_No terms loaded._"
     )
-    return page("Business glossary (generated)", "The words estates people use, with owner, source and current quality.", "\n".join(body))
+    return page(
+        "Business glossary (generated)",
+        "The words estates people use, with owner, source and current quality.",
+        "\n".join(body),
+    )
 
 
 # ----------------------------------------------------------- metric registry
@@ -269,14 +308,20 @@ def render_metric_registry(registry: Registry, gloss: glossary_mod.Glossary | No
     by_id = gloss.by_id() if gloss else {}
     body: list[str] = []
     body.append(
-        f"{len(registry.metrics)} entries: {len(registry.live)} published on a dashboard, {len(registry.planned)} planned. "
+        f"{len(registry.metrics)} entries: {len(registry.live)} published on a dashboard, "
+        f"{len(registry.planned)} planned. "
         "This page is generated from `metrics.yml`, which is the source of truth."
     )
     body.append("")
-    body.append(table(
-        ["Metric", "Id", "Kind", "Status", "Grain", "Owner", "Version", "Dashboards"],
-        [[m.name, m.id, m.kind, m.status, m.grain, m.owner, m.version, ", ".join(m.dashboards)] for m in sorted(registry.metrics, key=lambda m: m.name)],
-    ))
+    body.append(
+        table(
+            ["Metric", "Id", "Kind", "Status", "Grain", "Owner", "Version", "Dashboards"],
+            [
+                [m.name, m.id, m.kind, m.status, m.grain, m.owner, m.version, ", ".join(m.dashboards)]
+                for m in sorted(registry.metrics, key=lambda m: m.name)
+            ],
+        )
+    )
     for metric in sorted(registry.metrics, key=lambda m: m.id):
         body.append("")
         body.append(f"## {metric.name}")
@@ -286,16 +331,20 @@ def render_metric_registry(registry: Registry, gloss: glossary_mod.Glossary | No
         body.append(f"- **Formula**: `{metric.formula}`")
         body.append(f"- **Grain**: {metric.grain}")
         body.append(f"- **Owner**: `{metric.owner}`")
-        body.append(f"- **Source model**: " + (", ".join(f"`{s}`" for s in metric.source_model) or "_none (helper)_"))
+        body.append("- **Source model**: " + (", ".join(f"`{s}`" for s in metric.source_model) or "_none (helper)_"))
         body.append(f"- **Version**: {metric.version}")
         body.append(f"- **Status**: {metric.status} ({'kind: ' + metric.kind})")
         body.append(f"- **Classification**: {metric.classification}")
-        body.append(f"- **Dashboards**: " + (", ".join(f"`{d}`" for d in metric.dashboards) or "_none_"))
+        body.append("- **Dashboards**: " + (", ".join(f"`{d}`" for d in metric.dashboards) or "_none_"))
         if term:
             body.append(f"- **Glossary**: {term.term} - {term.definition}")
         body.append("- **Caveats**:")
         body.extend(f"    - {c}" for c in metric.caveats)
-    return page("Metric registry (generated)", "Every published number: what it means, how it is built, what it cannot tell you.", "\n".join(body))
+    return page(
+        "Metric registry (generated)",
+        "Every published number: what it means, how it is built, what it cannot tell you.",
+        "\n".join(body),
+    )
 
 
 # ------------------------------------------------------- standards register
@@ -307,10 +356,22 @@ def render_standards(standards: list[dict]) -> str:
         "`awareness-only` means nothing is stored or applied; `not-obtained` means we wanted it and could not get it."
     )
     body.append("")
-    body.append(table(
-        ["Standard", "Status", "Where it touches the data", "Owner", "Project", "Source"],
-        [[s["name"], s["status"], "; ".join(s["where_it_touches_data"]), s["owner"], s.get("project") or "-", s["url"]] for s in sorted(standards, key=lambda s: s["name"])],
-    ))
+    body.append(
+        table(
+            ["Standard", "Status", "Where it touches the data", "Owner", "Project", "Source"],
+            [
+                [
+                    s["name"],
+                    s["status"],
+                    "; ".join(s["where_it_touches_data"]),
+                    s["owner"],
+                    s.get("project") or "-",
+                    s["url"],
+                ]
+                for s in sorted(standards, key=lambda s: s["name"])
+            ],
+        )
+    )
     for standard in sorted(standards, key=lambda s: s["name"]):
         body.append("")
         body.append(f"## {standard['name']}")
@@ -325,7 +386,11 @@ def render_standards(standards: list[dict]) -> str:
         body.append(f"- **Limitations**: {' '.join(str(standard['limitations']).split())}")
         if standard.get("provenance"):
             body.append(f"- **Provenance**: `{standard['provenance']}`")
-    return page("Standards register (generated)", "What each standard is, where it bites, and how far we have actually got.", "\n".join(body))
+    return page(
+        "Standards register (generated)",
+        "What each standard is, where it bites, and how far we have actually got.",
+        "\n".join(body),
+    )
 
 
 # ---------------------------------------------------------------------- RACI
@@ -338,20 +403,30 @@ def render_raci(raci: dict) -> str:
     body.append("")
     body.append("## Roles")
     body.append("")
-    body.append(table(
-        ["Role", "Accountable for", "Typical person", "Escalates to"],
-        [[r["name"], r["accountable_for"], r["typical_person"], r["escalation_to"]] for r in raci["roles"]],
-    ))
+    body.append(
+        table(
+            ["Role", "Accountable for", "Typical person", "Escalates to"],
+            [[r["name"], r["accountable_for"], r["typical_person"], r["escalation_to"]] for r in raci["roles"]],
+        )
+    )
     for domain in raci["domains"]:
         body.append("")
         body.append(f"## {domain['name']}")
         body.append("")
-        body.append(f"Accountable owner: `{domain['accountable']}`. Steward and custodian: `{domain['steward']}`, `{domain['custodian']}`.")
+        body.append(
+            f"Accountable owner: `{domain['accountable']}`. "
+            f"Steward: `{domain['steward']}`. Custodian: `{domain['custodian']}`."
+        )
         body.append("")
-        body.append(table(
-            ["Activity", "Owner", "Steward", "Custodian", "Consumer"],
-            [[a["activity"], a["owner"], a["steward"], a["custodian"], a["consumer"]] for a in domain["activities"]],
-        ))
+        body.append(
+            table(
+                ["Activity", "Owner", "Steward", "Custodian", "Consumer"],
+                [
+                    [a["activity"], a["owner"], a["steward"], a["custodian"], a["consumer"]]
+                    for a in domain["activities"]
+                ],
+            )
+        )
         body.append("")
         body.append("**Decision rights**")
         body.append("")

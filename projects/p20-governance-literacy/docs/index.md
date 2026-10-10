@@ -19,7 +19,7 @@ Estate data is spread across systems: a space register, a maintenance system, me
 | If you want to... | Read |
 |---|---|
 | know who decides what | [Governance framework](governance/framework.md) |
-| look up a word or a number | [Data dictionary](data/dictionary.md) and [business glossary](data/glossary.md) |
+| look up a word or a number | [Dictionary guide](data/dictionary.md) and [business glossary](generated/glossary.md) |
 | check a KPI is registered | [Metric registry](generated/metric-registry.md) |
 | see how good the data is | [Data quality scores](generated/dq-scores.md) |
 | see where a table comes from | [Lineage](generated/lineage.md) |

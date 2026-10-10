@@ -1,5 +1,7 @@
 # Runbooks
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 What to do when something breaks. Each runbook says the symptom, the first three checks, the fix, who to tell, and what to write down.
 
 Order of response, always: **stop the wrong number reaching people, then find the cause, then fix it.**
@@ -25,14 +27,14 @@ Two roles appear throughout: the **custodian** handles the pipeline, the **stewa
 **Symptom:** a dashboard or report number differs a lot from last period with no obvious cause.
 
 1. Check the DQ page: has a score dropped or an alert been raised?
-2. Check the metric version in the [registry](../generated/metric-registry.md): did a definition change?
+2. Check the metric version in the [registry](generated/metric-registry.md): did a definition change?
 3. Check the filter and the as-of date: is this the same scope as last time?
 
 **Fix:** if the cause is a definition change, follow the change process and publish both numbers side by side for one cycle. If it is a data gap, say so on the page rather than leaving the number to be misread.
 
 **Tell:** steward, then everyone who used the old number.
 
-**Write down:** an entry in the [metric change log](../process/metric-change-log.md) if the definition moved; an incident note otherwise.
+**Write down:** an entry in the [metric change log](process/metric-change-log.md) if the definition moved; an incident note otherwise.
 
 ## RB3: a dashboard and a source system disagree
 
@@ -40,7 +42,7 @@ Two roles appear throughout: the **custodian** handles the pipeline, the **stewa
 
 1. Reproduce it with the report's validation query. Same number or not?
 2. If yes, the disagreement is in meaning, not data: compare definitions, filters and the as-of date.
-3. If no, find the first layer where the two diverge, using the [lineage page](../generated/lineage.md).
+3. If no, find the first layer where the two diverge, using the [lineage page](generated/lineage.md).
 
 **Fix:** correct the load or the transformation, never the report, unless the report is the thing that is wrong.
 
@@ -87,7 +89,7 @@ Two roles appear throughout: the **custodian** handles the pipeline, the **stewa
 
 **Tell:** owner, data protection contact, and anyone who received the export.
 
-**Write down:** an incident note with the timeline. The [classification page](../data/classification.md) lists the estates cases.
+**Write down:** an incident note with the timeline. The [classification page](data/classification.md) lists the estates cases.
 
 ## RB7: a generated page is out of date
 
@@ -105,7 +107,7 @@ Two roles appear throughout: the **custodian** handles the pipeline, the **stewa
 
 **Symptom:** a question about a definition, not a defect.
 
-1. Look it up in the [registry](../generated/metric-registry.md), then the [glossary](../generated/glossary.md).
+1. Look it up in the [registry](generated/metric-registry.md), then the [glossary](generated/glossary.md).
 2. Give the definition, the caveats, the owner, the version and the as-of date.
 3. If it is not registered, that is a gap: log it as a request and say so.
 

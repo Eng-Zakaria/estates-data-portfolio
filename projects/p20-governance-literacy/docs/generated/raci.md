@@ -17,7 +17,7 @@ Generated from `raci.yml`. **A** is the single accountable role per activity. Le
 
 ## Space and estate planning
 
-Accountable owner: `estates-planning`. Steward and custodian: `estates-analytics`, `estates-analytics`.
+Accountable owner: `estates-planning`. Steward: `estates-analytics`. Custodian: `estates-analytics`.
 
 | Activity | Owner | Steward | Custodian | Consumer |
 |---|---|---|---|---|
@@ -39,7 +39,7 @@ Accountable owner: `estates-planning`. Steward and custodian: `estates-analytics
 
 ## Assets and maintenance
 
-Accountable owner: `estates-operations`. Steward and custodian: `estates-analytics`, `estates-analytics`.
+Accountable owner: `estates-operations`. Steward: `estates-analytics`. Custodian: `estates-analytics`.
 
 | Activity | Owner | Steward | Custodian | Consumer |
 |---|---|---|---|---|
@@ -62,7 +62,7 @@ Accountable owner: `estates-operations`. Steward and custodian: `estates-analyti
 
 ## Energy and carbon
 
-Accountable owner: `estates-energy`. Steward and custodian: `estates-analytics`, `estates-analytics`.
+Accountable owner: `estates-energy`. Steward: `estates-analytics`. Custodian: `estates-analytics`.
 
 | Activity | Owner | Steward | Custodian | Consumer |
 |---|---|---|---|---|
@@ -84,7 +84,7 @@ Accountable owner: `estates-energy`. Steward and custodian: `estates-analytics`,
 
 ## Compliance and safety
 
-Accountable owner: `estates-hs`. Steward and custodian: `estates-analytics`, `estates-analytics`.
+Accountable owner: `estates-hs`. Steward: `estates-analytics`. Custodian: `estates-analytics`.
 
 | Activity | Owner | Steward | Custodian | Consumer |
 |---|---|---|---|---|
@@ -106,7 +106,7 @@ Accountable owner: `estates-hs`. Steward and custodian: `estates-analytics`, `es
 
 ## BIM, projects and information handover
 
-Accountable owner: `estates-bim`. Steward and custodian: `estates-analytics`, `estates-analytics`.
+Accountable owner: `estates-bim`. Steward: `estates-analytics`. Custodian: `estates-analytics`.
 
 | Activity | Owner | Steward | Custodian | Consumer |
 |---|---|---|---|---|

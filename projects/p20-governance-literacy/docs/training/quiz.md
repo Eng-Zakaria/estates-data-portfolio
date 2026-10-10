@@ -1,5 +1,7 @@
 # Quiz: data literacy for estates
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 Ten questions. Five minutes. Answer in pairs. Answers are in the [answer key](answer-key.md).
 
 ## Questions

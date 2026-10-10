@@ -189,7 +189,7 @@ def test_generated_sql_uses_the_hourly_aggregate_and_n_a_fallback():
 def test_generated_sql_formats_timestamps_with_an_offset():
     sql = build_sql(points=["B001.ahu_01.supply_temp"])
     assert "'Europe/London'" in sql
-    assert 'HH24:MI:SSOF' in sql
+    assert "HH24:MI:SSOF" in sql
 
 
 def test_generated_sql_covers_the_last_24_hours_on_the_hour():

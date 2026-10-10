@@ -71,7 +71,7 @@ def to_wide(
     units: dict[str, str] = {}
     if "unit" in frame.columns:
         from_readings = frame.drop_duplicates("point_id").set_index("point_id")["unit"]
-        units.update({pid: (u or "") for pid, u in from_readings.items() if isinstance(u, str) and u})
+        units.update({str(pid): str(u) for pid, u in from_readings.items() if isinstance(u, str) and u})
     for pid, row in registry.items():
         units.setdefault(pid, row.get("unit") or "")
 
@@ -97,7 +97,10 @@ def write_bms_trends(
     wide = to_wide(readings, registry, tz=tz)
     if wide.empty or len(wide) == 1 and "timestamp" not in wide.columns:
         raise ValueError("no readings to export")
-    stamp = date_stamp or pd.to_datetime(wide["timestamp"].iloc[0], utc=True).tz_localize(None).date()
+    # the filename date follows the timestamps' own local date, so a run that
+    # starts at 23:00 UTC on the 7th lands in the 8th's file under BST
+    first = pd.Timestamp(wide["timestamp"].iloc[0])
+    stamp = date_stamp or (first.tz_localize(None).date() if first.tzinfo is None else first.date())
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"bms_trends_{stamp.strftime('%Y%m%d')}.csv"
     wide.to_csv(path, index=False)

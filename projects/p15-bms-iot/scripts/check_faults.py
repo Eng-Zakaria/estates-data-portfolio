@@ -71,13 +71,14 @@ def main() -> None:
     args.out.parent.mkdir(parents=True, exist_ok=True)
     table.to_csv(args.out, index=False)
 
-    print(f"| fault | rule | planted | detected | recall | mean delay (min) |")
+    print("| fault | rule | planted | detected | recall | mean delay (min) |")
     print("|---|---|---|---|---|---|")
     for fault, grp in table.groupby("fault", sort=True):
         detected = int(grp["detected"].sum())
         delays = grp.loc[grp["detected"], "delay_minutes"]
         mean_delay = round(float(delays.mean()), 1) if len(delays) else None
-        print(f"| {fault} | {grp['rule_id'].iloc[0]} | {len(grp)} | {detected} | {detected / len(grp):.0%} | {mean_delay} |")
+        recall = f"{detected / len(grp):.0%}"
+        print(f"| {fault} | {grp['rule_id'].iloc[0]} | {len(grp)} | {detected} | {recall} | {mean_delay} |")
     total_detected = int(table["detected"].sum())
     print(f"\nOverall recall: {total_detected}/{len(table)} = {total_detected / len(table):.0%}")
     print(f"Wrote {args.out}")

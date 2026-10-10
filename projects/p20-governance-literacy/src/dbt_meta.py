@@ -186,7 +186,7 @@ def from_manifest(manifest_path: Path) -> DbtMetadata:
         columns = [
             Column(
                 name=name,
-                data_type=str((info.get("type") or "")),
+                data_type=str(info.get("type") or ""),
                 description=" ".join(str(info.get("description") or "").split()),
             )
             for name, info in sorted((node.get("columns") or {}).items())
@@ -211,7 +211,9 @@ def from_manifest(manifest_path: Path) -> DbtMetadata:
         )
         for node in raw.get("exposures", {}).values()
     ]
-    return DbtMetadata(models=sorted(models, key=lambda m: m.name), exposures=exposures, source="manifest", manifest_found=True)
+    return DbtMetadata(
+        models=sorted(models, key=lambda m: m.name), exposures=exposures, source="manifest", manifest_found=True
+    )
 
 
 def load(models_dir: Path, manifest_path: Path | None = None) -> DbtMetadata:

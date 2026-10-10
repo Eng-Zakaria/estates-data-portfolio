@@ -1,5 +1,7 @@
 # Data request and change process
 
+*All data referenced here is synthetic: no real estate, building, person or compliance status is described.*
+
 Two queues, one inbox address. Requests for data and requests to change a published number follow different paths because the second one changes what people have already quoted.
 
 ## Queue 1: data requests
