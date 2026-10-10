@@ -30,6 +30,11 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+env:
+  # The root Makefile exports this so `python -m ingest.cli` resolves; the
+  # workflow needs the same because the packages are src-layout, not installed.
+  PYTHONPATH: packages/campus_synth/src:platform/src
+
 jobs:
   build:
     runs-on: ubuntu-latest
