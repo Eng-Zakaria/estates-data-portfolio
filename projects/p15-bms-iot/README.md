@@ -67,7 +67,7 @@ standard. `DATA.md` has the full entry.
 The whole thing runs without Docker:
 
 ```bash
-make iot-test       # 237 tests, ~2 min
+make iot-test       # 244 tests, ~2 min
 make iot-offline    # simulate 24 h, validate, detect faults, export for P01
 ```
 
@@ -87,7 +87,7 @@ Then open <http://localhost:3000> (Grafana) or <http://localhost:1880>
 Measured on this repository's code, seed 42, 24 simulated hours at a 5-minute
 cadence. Reproduce with `make iot-offline`; the pinned numbers are in
 [`tests/test_pipeline.py`](tests/test_pipeline.py) and
-[`docs/ACCEPTANCE_P15.md`](docs/ACCEPTANCE_P15.md).
+`docs/ACCEPTANCE_P15.md`.
 
 ### Ingestion
 
@@ -169,7 +169,7 @@ Grafana stack could not be started and no screenshots exist. The dashboards are
 provisioned from committed JSON (`make iot-dashboards`) and their SQL is
 asserted against the schema by tests, but "the dashboard renders" is not
 something this repository can show you. See
-[`docs/ACCEPTANCE_P15.md`](docs/ACCEPTANCE_P15.md) for the exact list of what
+`docs/ACCEPTANCE_P15.md` for the exact list of what
 was and was not verified.
 
 ## Design decisions and trade-offs
@@ -263,7 +263,7 @@ healthy cannot be used to check whether a detection rule still works.
 
 ## Data quality and testing
 
-237 tests, 95% line coverage over `src/`.
+244 tests, 95% line coverage over `src/`.
 
 | area | what is asserted | why it matters |
 |---|---|---|
@@ -320,7 +320,7 @@ up; and measure the rules against a month of real plant data once there is any.
 | criterion | evidence |
 |---|---|
 | **E2** - integrate data from building systems | MQTT ingestion, Node-RED flow, TimescaleDB schema with hypertables and continuous aggregates |
-| **E4** - data quality / validation | 11-reason validation contract, dead-letter queue, unit normalisation, staleness monitoring, 237 tests |
+| **E4** - data quality / validation | 11-reason validation contract, dead-letter queue, unit normalisation, staleness monitoring, 244 tests |
 | **D2** - low-code / flow tooling | the Node-RED flow is the production ingest path; rules-as-data shared with the Python reference |
 | **D3** - monitoring and observability | four provisioned Grafana dashboards, `bms.alerts` with a staleness check, per-point health, completeness heatmap |
 | **D7** - documentation and reproducibility | generated registries, flows, dashboards and SQL with drift tests; fault-detection table; pinned seeds |
@@ -345,7 +345,7 @@ p15-bms-iot/
   flows/               # Node-RED flow fragments + the merged p15_bms.json
   grafana/provisioning/# datasource and the four dashboards
   sql/                 # generated nightly export SQL
-  tests/               # 237 tests
+  tests/               # 244 tests
   docs/                # architecture, taxonomy, naming, real-system mapping, acceptance
   docker-compose.yml  mosquitto.conf  Dockerfile.nodered
 ```

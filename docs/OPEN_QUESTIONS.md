@@ -69,8 +69,8 @@
   environment and `com.docker.service` cannot be started without elevation, so `make iot-up`,
   `make iot-demo`, the Grafana dashboards, the flow import into a fresh Node-RED and the
   `schema.sql` migration against a real TimescaleDB are all **unverified**. Everything that does not
-  need a broker or a database is tested (237 tests, 95% coverage). Full list of unverified items:
-  `projects/p15-bms-iot/docs/ACCEPTANCE_P15.md` §7. **Human action:** run `make iot-up && make iot-demo`
+  need a broker or a database is tested (244 tests, 95% coverage). Full list of unverified items:
+  `docs/ACCEPTANCE_P15.md` §7. **Human action:** run `make iot-up && make iot-demo`
   on a machine with Docker Desktop, add screenshots under `projects/p15-bms-iot/docs/img/`, and record
   the actual time-to-first-data in Grafana against the spec's 2-minute target.
 - **Detection metrics are self-referential.** The simulator that injects the faults is the simulator

@@ -223,7 +223,7 @@ catches. Timezone is `Europe/London` on all four.
 
 ```
 $ make iot-test
-237 passed
+244 passed
 
 Name                       Stmts   Miss  Cover   Missing
 ---------------------------------------------------------
@@ -255,9 +255,9 @@ scalar the column can hold, and strict mode reports a hundred
 enforced: `disallow_untyped_defs`, `disallow_incomplete_defs`,
 `disallow_any_generics`, `check_untyped_defs`, `warn_return_any`.
 
-Test distribution (237 total): registry 9, validation contract 39, simulator 25,
+Test distribution (244 total): registry 9, validation contract 39, simulator 25,
 ingestion contract 11, health 32, schema SQL 21, flows 12, Grafana 17, load_db
-11, export 24, pipeline 20, CLI 16.
+11, export 24, pipeline 20, CLI 16, determinism 7.
 
 ## 7. Not verified
 
