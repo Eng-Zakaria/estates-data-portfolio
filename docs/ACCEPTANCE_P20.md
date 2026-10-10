@@ -110,9 +110,10 @@ PASS literacy page readability - 15/15 measured, min 67.35, mean 76.9, target 50
 | Tests | `python -m pytest projects/p20-governance-literacy/tests -q --no-cov` | **126 passed**, 25s |
 | Coverage of P20 modules | same with `--cov=projects/p20-governance-literacy/src` | **96%** (`checks.py` 99%, `cli.py` 88%, `dashboards.py` 97%, `dbt_meta.py` 96%, `generate.py` 99%, `glossary.py` 94%, `links.py` 99%, `metrics.py` 92%, `readability.py` 100%) |
 | Lint and format | `ruff check projects/p20-governance-literacy` / `ruff format --check` | clean |
+| Types | `mypy --strict projects/p20-governance-literacy/src` | clean, 10 modules |
 | Regenerate pages | `python projects/p20-governance-literacy/src/cli.py build` | 7 pages, idempotent (second run: 0 updated) |
 | Site build | `mkdocs build --strict -f projects/p20-governance-literacy/mkdocs.yml` | passes |
-| Everything | `make p20-run` | build + test + check + strict site build |
+| Everything | `make p20-run` | build + test + check + mypy --strict + strict site build |
 
 ## Generated content, from real artefacts in this checkout
 

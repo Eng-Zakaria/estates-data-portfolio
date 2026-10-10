@@ -1,6 +1,6 @@
 .PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo iot-up iot-down iot-offline iot-test iot-logs \
 iot-registry iot-flows iot-dashboards iot-export-sql iot-assets iot-sim iot-contract iot-health \
-iot-faults iot-export iot-clean-run p19 p18-run p10-run p08-run p06-run p07-run p09-run p11-run p12-run p13-fetch p13-eval p13-test p13-run p14-sample p14-check p14-check-clean p14-variant p14-test p14-run p16-test p16-eval p16-thresholds p16-run demos demos-serve aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs p20-build p20-check p20-test p20-site p20-run
+iot-faults iot-export iot-clean-run p19 p18-run p10-run p08-run p06-run p07-run p09-run p11-run p12-run p13-fetch p13-eval p13-test p13-run p14-sample p14-check p14-check-clean p14-variant p14-test p14-run p16-test p16-eval p16-thresholds p16-run demos demos-serve aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs p20-build p20-check p20-test p20-typecheck p20-site p20-run
 
 PROFILE ?= small
 SEED ?= 42
@@ -268,10 +268,13 @@ p20-check:
 p20-test:
 	$(PY) -m pytest $(P20)/tests -q -p no:cacheprovider --no-cov
 
+p20-typecheck:
+	mypy --strict $(P20)/src
+
 p20-site:
 	$(PY) -m mkdocs build --strict -f $(P20)/mkdocs.yml
 
-p20-run: p20-build p20-test p20-check p20-site
+p20-run: p20-build p20-test p20-check p20-typecheck p20-site
 
 AF_COMPOSE = ENV_FILE_PATH=.env docker compose --env-file platform/orchestration/.env --project-directory platform/orchestration -f platform/orchestration/docker-compose.yml -f platform/orchestration/docker-compose.override.yml
 

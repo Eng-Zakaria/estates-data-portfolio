@@ -78,7 +78,7 @@ python -m mkdocs serve -f projects/p20-governance-literacy/mkdocs.yml   # http:/
 python projects/p20-governance-literacy/src/cli.py coverage             # KPI coverage report
 ```
 
-`make p20-run` runs, in order: `p20-build` (regenerate the seven generated pages), `p20-test` (126 tests), `p20-check` (seven gates), `p20-site` (`mkdocs build --strict`).
+`make p20-run` runs, in order: `p20-build` (regenerate the seven generated pages), `p20-test` (126 tests), `p20-check` (seven gates), `p20-typecheck` (`mypy --strict`), `p20-site` (`mkdocs build --strict`).
 
 ## 5. Results, measured
 
@@ -149,7 +149,7 @@ Testing style: fixtures first, then the repository. The DAX parser, the dbt YAML
 | **E7** data governance and documentation | governance framework with roles, RACI, decision rights and escalation; classification and UK GDPR awareness note; naming and modelling standards; standards register with honest status; runbooks; ADR index |
 | Promote good practice in data governance, documentation and repeatable workflows | generated dictionary, lineage and DQ pages from the pipeline itself; seven gates in CI; a metric registry tested against the dashboards; the change-control process and log |
 | Support training and engagement to improve data literacy | 10-minute demo script, 45-minute workshop with three exercises, answer key, 12-question quiz, feedback form, slide outline, facilitator notes, and a measured readability score for every guide |
-| Engineering habits the portfolio asks for | hand-checked fixtures for every validator, ruff and strict MkDocs clean, deterministic generators, documented degradation when inputs are missing, deviations recorded rather than hidden |
+| Engineering habits the portfolio asks for | hand-checked fixtures for every validator, \mypy --strict\ and ruff clean, strict MkDocs clean, deterministic generators, documented degradation when inputs are missing, deviations recorded rather than hidden |
 
 ## Layout
 

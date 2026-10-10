@@ -14,7 +14,13 @@ from typing import Any
 import duckdb
 import pandas as pd
 
-REPO = Path(os.environ.get("ESTATES_REPO", r"C:\Users\devza\Work\Workspace\Exeter-uni-projects"))
+# Repo root: ESTATES_REPO wins, otherwise walk up from this file
+# (scripts/demos/data.py -> repo root). Never hardcode a machine path here or
+# the Linux CI runner silently reads nothing.
+REPO = Path(
+    os.environ.get("ESTATES_REPO")
+    or Path(__file__).resolve().parents[2]
+)
 GOLD = REPO / "data" / "gold"
 P = REPO / "projects"
 
