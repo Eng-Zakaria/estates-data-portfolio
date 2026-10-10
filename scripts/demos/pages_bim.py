@@ -66,7 +66,12 @@ def _excel(path: D.Path) -> pd.DataFrame | None:
 
 def ifc_analytics():
     gold_ifc = _parquets(D.REPO / "data" / "gold" / "ifc")
-    recon = D.csv(D.REPO / "data" / "gold" / "ifc" / "recon_model_vs_register.csv")
+    # The reconciliation writes Parquet, the QA report writes CSV.
+    recon = D.parquet(D.REPO / "data" / "gold" / "ifc" / "recon_model_vs_register.parquet")
+    if recon is None:
+        recon = D.csv(D.REPO / "data" / "gold" / "ifc" / "recon_model_vs_register.csv")
+    recon_by_building = D.csv(D.REPO / "data" / "gold" / "ifc" / "recon_summary_by_building.csv")
+    qa_report = D.csv(D.REPO / "data" / "gold" / "ifc" / "qa_report.csv")
     spaces = gold_ifc.get("ifc_spaces")
     elements = gold_ifc.get("ifc_elements")
 
@@ -152,19 +157,43 @@ def ifc_analytics():
                                                      horizontal=True)))
                 break
 
+    body.append("<h2>Model data-health report</h2>")
+    if qa_report is not None and len(qa_report):
+        body.append(note(
+            "Counts by class and the model-health checks: elements missing classification, type, "
+            "space or required property sets; duplicate GlobalIds; zero or negative areas; "
+            "spaces without a storey."
+        ))
+        sev_col = next((c for c in qa_report.columns if "severity" in c.lower() or "status" in c.lower()), None)
+        if sev_col:
+            vc = qa_report[sev_col].value_counts()
+            body.append(chart("p11-qasev", pie([str(k) for k in vc.index], list(vc.values),
+                                                title="QA findings by severity")))
+        cols = [c for c in qa_report.columns][:7]
+        body.append(table("p11-qarep", cols, [list(r) for _, r in qa_report.head(60).iterrows()]))
+    else:
+        body.append(note("QA report not found. Run the P11 pipeline."))
+
     body.append("<h2>Model vs space register reconciliation</h2>")
     if recon is not None and len(recon):
-        matched = int((recon["area_delta_m2"].abs() <= recon["gia_m2"].abs() * 0.10).sum()) \
-            if "area_delta_m2" in recon.columns and "gia_m2" in recon.columns else None
+        if recon_by_building is not None and len(recon_by_building):
+            body.append(chart(
+                "p11-reconb",
+                bar(list(recon_by_building[recon_by_building.columns[0]]),
+                    [int(v) for v in recon_by_building[recon_by_building.columns[1]]],
+                    title=f"Rooms to review by {recon_by_building.columns[0]}",
+                    y_title="rooms", horizontal=True, color="#ffb454"), tall=True))
+            bcols = list(recon_by_building.columns)
+            body.append(table("p11-reconbtbl", bcols, [list(r) for _, r in recon_by_building.iterrows()]))
         body.append(note(
             "Rooms whose model area differs from the register by more than 10% are flagged, plus "
             "rooms present in one system and not the other. The generator plants 12 mismatches and "
-            "5 missing rooms, and the acceptance doc records 100% recall on those."
+            "5 missing rooms; the acceptance doc records 100% recall on those."
         ))
         cols = [c for c in recon.columns][:9]
-        body.append(table("p11-recon", cols, [list(r) for _, r in recon.iterrows()]))
+        body.append(table("p11-recon", cols, [list(r) for _, r in recon.head(80).iterrows()]))
     else:
-        body.append(note("Reconciliation output not found."))
+        body.append(note("Reconciliation output not found. Run `make p11-run`."))
 
     return (
         picker(),
