@@ -26,4 +26,4 @@
 | P17 | Air quality & occupancy | ✅ done | 2026-10-06 | acceptance: docs/ACCEPTANCE_P17.md — 38 tests; README/SPEC MISSING (review) |
 | P18 | Digital twin data layer | ✅ done | 2026-10-06 | acceptance MISSING (review) — crosswalk, Brick SHACL, FastAPI, coverage; README present |
 | P19 | Spatial analysis | ✅ done | 2026-10-05 | acceptance MISSING (review) — OSM+synthetic, 10 tests, outputs; README present |
-| P20 | Governance & literacy pack | ✅ done | 2026-10-09 | acceptance: docs/ACCEPTANCE_P20.md — 123 tests, 96% cov, 7 gates green, 63/63 dashboard KPIs in registry + glossary, 107 links clean, Flesch min 67.4 / mean 76.9 (target 50), mkdocs --strict clean; gaps: P10 has no hand-off or source, P16 excluded from the KPI scan (explicit, tested), external links not fetched |
+| P20 | Governance & literacy pack | ✅ done | 2026-10-10 | acceptance: docs/ACCEPTANCE_P20.md — 126 tests, 96% cov, 7 gates green, 69/69 dashboard KPIs in registry + glossary, 107 links clean, Flesch min 67.4 / mean 76.4 (target 50), mkdocs --strict clean; gaps: P16 excluded from the KPI scan (explicit + tested), external links not fetched, governance roles unratified |

@@ -74,11 +74,11 @@ make p20-run               # build pages, run tests, run every gate, strict site
 Wants to read it rather than build it:
 
 ```bash
-python -m mkdocs serve -f projects/p20-governance-literacy/mkdocs.yml   # http://127.0.0.1:8000/
+python -m mkdocs serve -f projects/p20-governance-literacy/mkdocs.yml   # http://126.0.0.1:8000/
 python projects/p20-governance-literacy/src/cli.py coverage             # KPI coverage report
 ```
 
-`make p20-run` runs, in order: `p20-build` (regenerate the seven generated pages), `p20-test` (127 tests), `p20-check` (seven gates), `p20-site` (`mkdocs build --strict`).
+`make p20-run` runs, in order: `p20-build` (regenerate the seven generated pages), `p20-test` (126 tests), `p20-check` (seven gates), `p20-site` (`mkdocs build --strict`).
 
 ## 5. Results, measured
 
@@ -92,7 +92,7 @@ python projects/p20-governance-literacy/src/cli.py coverage             # KPI co
 | Models and edges in the dictionary and lineage pages | 45 models, 55 edges, 5 exposures | [dictionary](docs/generated/data-dictionary.md), [lineage](docs/generated/lineage.md) |
 | In-site links | 107 resolved, 0 broken; external links counted, never fetched | `python src/cli.py links` |
 | Literacy pages measured | 15 of 15, Flesch reading ease min **67.4**, mean **76.9** (target 50) | `python src/cli.py readability` |
-| Tests | 127 passing | `make p20-test` |
+| Tests | 126 passing | `make p20-test` |
 | `mkdocs build --strict` | passes, 32 pages, no warnings | `make p20-site` |
 | Coverage of core modules | 96% across the nine P20 modules (see `docs/ACCEPTANCE_P20.md`) | acceptance record |
 

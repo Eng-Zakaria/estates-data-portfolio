@@ -104,7 +104,7 @@ MODEL_MD = (
     "\n"
     "```dax\n"
     "Total NIA = SUM(building_areas[nia_m2])\n"
-    "Validation Blocking = COUNTROWS(FILTER(validation_report, validation_report[severity]=\"blocking\"))\n"
+    'Validation Blocking = COUNTROWS(FILTER(validation_report, validation_report[severity]="blocking"))\n'
     "```\n"
     "\n"
     "```sql\n"

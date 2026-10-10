@@ -107,7 +107,7 @@ PASS literacy page readability - 15/15 measured, min 67.35, mean 76.9, target 50
 
 | Check | Command | Result |
 |---|---|---|
-| Tests | `python -m pytest projects/p20-governance-literacy/tests -q --no-cov` | **127 passed**, 25s |
+| Tests | `python -m pytest projects/p20-governance-literacy/tests -q --no-cov` | **126 passed**, 25s |
 | Coverage of P20 modules | same with `--cov=projects/p20-governance-literacy/src` | **96%** (`checks.py` 99%, `cli.py` 88%, `dashboards.py` 97%, `dbt_meta.py` 96%, `generate.py` 99%, `glossary.py` 94%, `links.py` 99%, `metrics.py` 92%, `readability.py` 100%) |
 | Lint and format | `ruff check projects/p20-governance-literacy` / `ruff format --check` | clean |
 | Regenerate pages | `python projects/p20-governance-literacy/src/cli.py build` | 7 pages, idempotent (second run: 0 updated) |
@@ -129,7 +129,7 @@ PASS literacy page readability - 15/15 measured, min 67.35, mean 76.9, target 50
 ## Deviations from the spec, stated plainly
 
 1. **Dictionary and lineage are built from the dbt YAML and SQL, not from `manifest.json`.** The spec says scripts generate pages from `manifest.json`/`catalog.json`. No manifest is committed in this repository (it is a build artefact under `platform/dbt/target/`, which is git ignored), so the generator reads the reviewed YAML and the model SQL instead. `dbt_meta.load()` prefers a real `manifest.json` when one exists, and that path is implemented and tested (`tests/test_generators.py::test_manifest_path_is_preferred`).
-2. **P10 has no Power BI hand-off and no source in this checkout**, so it contributes no KPI names to the scan. Its dashboard page describes the return pack from the outputs that are present in `data/p10_output/` and says plainly that the project's code is missing. Recorded in `STATUS.md`.
+2. **P10 declares its measures inside `powerbi/model.md` rather than a `measures.dax` file.** The scan reads that fenced `dax` block, so its seven measures are registered and covered like every other dashboard's. It was added mid-build: the first version of the scanner found only `measures.dax` and `src/kpis.py`, which would have left P10's KPIs undocumented. If a future hand-off keeps its DAX in prose or a different fence tag, the scan will miss it, which is why `test_model_md_handoff_is_scanned` and `test_model_md_without_dax_fence_is_not_a_handoff` pin the behaviour.
 3. **P16 is excluded from the KPI scan** (mid-build, uncommitted). The exclusion is in `src/config.py` with a reason, and a test fails if a hand-off file appears unswept.
 4. **The site is built separately from the portfolio site** (`projects/p20-governance-literacy/mkdocs.yml`), and `docs.yml` copies it into the published site under `governance-pack/`. The root `Makefile` `docs` target builds both. This keeps the P20 nav and gates independent while still publishing it.
 5. **Cross-project references are code spans, not links.** `mkdocs build --strict` fails on links outside a site's `docs_dir`, and `docs/reference-index.md` lists every repository path as text instead.
@@ -141,6 +141,7 @@ PASS literacy page readability - 15/15 measured, min 67.35, mean 76.9, target 50
 
 - Ratify the roles, owners and service levels with named people and a data protection contact.
 - Replace the illustrative compliance frequencies with values from the legal source, recorded with version and URL.
+- Re-check the P10 dashboard guide against the restored P10 source (`projects/p10-institutional-return/src/`) if its hand-off changes shape again.
 - Obtain the HESA EMR specification and the licensed Uniclass tables, then move those standards from `mock`/`awareness-only` to `implemented`.
 - Add a nightly job with network access to check external links.
 - Run the workshop with a real cohort and record the measured change in confidence in `README.md` §5.

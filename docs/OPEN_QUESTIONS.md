@@ -90,10 +90,10 @@
   (`not-obtained`, see §7). The register
   (`projects/p20-governance-literacy/standards.yml`) is where the status changes once the documents are held, and each
   change needs a `DATA.md` provenance entry with licence and version before the codes are encoded.
-- **P10 has no source or Power BI hand-off in this checkout**, so the P20 dashboard guide describes the mock return
-  pack from the outputs in `data/p10_output/` rather than from code, and P10 contributes no KPI names to the metric
-  registry scan. Restore or rebuild `projects/p10-institutional-return/src/` (only `__pycache__` remains) and the
-  guide page and registry should be re-verified.
+- **P10 declares its KPI measures in `powerbi/model.md`, not `measures.dax`.** The P20 KPI scan reads that fenced
+  `dax` block (`src/dashboards.py`), so its seven measures are in the registry and the glossary. If a hand-off keeps its
+  DAX in prose, or in a fence tag other than `dax`, the scan misses it: add a rule and a fixture when that happens.
+  P10's own acceptance record is still missing.
 - **P16 excluded from the KPI scan** while it is mid-build: `SCAN_EXCLUSIONS` in
   `projects/p20-governance-literacy/src/config.py` lists it with the reason, and a test fails if a project ships a
   `powerbi/measures.dax` without being scanned or explicitly excluded. Add P16's measures to the registry when it lands.
