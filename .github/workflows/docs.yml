@@ -123,6 +123,14 @@ jobs:
 
       # P15 needs the MQTT/Node-RED/TimescaleDB compose stack, so the deployed page
       # shows the committed fault-detection evidence rather than live readings.
+      - name: P16 energy anomaly action list (small profile, no BDG2 download)
+        continue-on-error: true
+        env:
+          PYTHONPATH: projects/p16-energy-anomaly/src:packages/campus_synth/src:platform/src
+        run: |
+          python -m anomaly.cli run-campus --out projects/p16-energy-anomaly/outputs \
+            || echo "(P16 page will show a notice)"
+
       - name: Build interactive demo pages
         run: python scripts/build_demos.py
 

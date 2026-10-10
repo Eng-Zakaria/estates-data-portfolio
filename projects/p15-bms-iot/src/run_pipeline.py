@@ -61,6 +61,10 @@ def run(
     out_dir: Path,
     raw_dir: Path | None = None,
 ) -> PipelineResult:
+    # callers pass str as often as Path; coercing here keeps the TypeError out
+    # of the middle of a pipeline run
+    out_dir = Path(out_dir)
+    raw_dir = Path(raw_dir) if raw_dir is not None else None
     sim = Simulator(start, seed=seed, interval_minutes=interval_minutes, faults=faults)
     raw, truth = sim.generate(duration_hours)
 
