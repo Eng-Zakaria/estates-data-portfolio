@@ -14,6 +14,7 @@ back to what an operator would see on screen.
 
 from __future__ import annotations
 
+import argparse
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
@@ -489,3 +490,41 @@ def health_summary(
             }
         )
     return pd.DataFrame(rows, columns=HEALTH_COLUMNS)
+
+
+def main() -> None:
+    """CLI: read accepted readings, write findings and the health summary.
+
+    Kept separate from `run_pipeline.py`, which is the one-call version: this
+    entry point exists so a re-detector over already-ingested data does not
+    require re-simulating the day.
+
+        python src/health.py --readings data/p15/bms_readings_accepted.parquet --out data/p15
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--readings", type=Path, default=Path("data/p15/bms_readings_accepted.parquet"))
+    parser.add_argument("--out", type=Path, default=Path("data/p15"))
+    parser.add_argument("--registry", type=Path, default=Path(__file__).resolve().parent / "point_registry.csv")
+    parser.add_argument("--interval-minutes", type=int, default=5)
+    args = parser.parse_args()
+
+    readings = pd.read_parquet(args.readings)
+    cfg = DetectionConfig(interval_minutes=args.interval_minutes)
+    findings = detect(readings, args.registry, cfg)
+    health = health_summary(readings, args.registry, cfg)
+
+    args.out.mkdir(parents=True, exist_ok=True)
+    findings.to_parquet(args.out / "bms_findings.parquet", index=False)
+    health.to_parquet(args.out / "bms_point_health.parquet", index=False)
+
+    print(f"findings: {len(findings)}")
+    if not findings.empty:
+        for rule, n in sorted(findings["rule_id"].value_counts().items()):
+            print(f"  {rule}: {n}")
+    unhealthy = health[~health["healthy"]]
+    print(f"unhealthy points: {len(unhealthy)} of {len(health)}")
+    print(f"wrote {args.out / 'bms_findings.parquet'} and {args.out / 'bms_point_health.parquet'}")
+
+
+if __name__ == "__main__":
+    main()

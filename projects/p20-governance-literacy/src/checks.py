@@ -166,7 +166,6 @@ def owner_usage(glossary_yml: Path, raci_yml: Path, standards_yml: Path) -> set[
     owners = {t.owner for t in gloss.terms}
     for domain in raci["domains"]:
         owners.add(str(domain["accountable"]))
-    owners.update(str(r)["owner"] for r in raci["roles"] if isinstance(r, dict) and "owner" in r)
     owners.update(str(s["owner"]) for s in standards["standards"])
     return owners
 

@@ -12,6 +12,7 @@ from __future__ import annotations
 import csv
 from collections.abc import Iterable
 from pathlib import Path
+from typing import Any
 
 import dbt_meta
 import glossary as glossary_mod
@@ -348,7 +349,7 @@ def render_metric_registry(registry: Registry, gloss: glossary_mod.Glossary | No
 
 
 # ------------------------------------------------------- standards register
-def render_standards(standards: list[dict]) -> str:
+def render_standards(standards: list[dict[str, Any]]) -> str:
     body: list[str] = []
     body.append(
         f"{len(standards)} standards. Status is honest: `implemented` means a rule or code list from the "
@@ -394,7 +395,7 @@ def render_standards(standards: list[dict]) -> str:
 
 
 # ---------------------------------------------------------------------- RACI
-def render_raci(raci: dict) -> str:
+def render_raci(raci: dict[str, Any]) -> str:
     body: list[str] = []
     body.append(
         "Generated from `raci.yml`. **A** is the single accountable role per activity. "

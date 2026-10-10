@@ -16,6 +16,7 @@ import pytest
 import export_bms_trends
 import export_sql
 import grafana_dashboards
+import health
 import ingest_contract
 import load_db
 import make_registry
@@ -118,6 +119,41 @@ def test_simulator_rejects_an_unknown_fault_type():
     from simulator import FAULT_WINDOWS
 
     assert "not_a_fault" not in FAULT_WINDOWS
+
+
+# ---------------------------------------------------------------- health
+def test_health_cli_detects_and_writes_both_outputs(argv, tmp_path, capsys):
+    from conftest import START
+
+    from ingest_contract import apply_contract
+    from simulator import Simulator
+
+    frame, _ = Simulator(START, seed=7).generate(24.0)
+    accepted, _ = apply_contract(frame, now=pd.Timestamp(frame["ts"].max()) + pd.Timedelta(minutes=1))
+    accepted.to_parquet(tmp_path / "accepted.parquet", index=False)
+    argv("--readings", str(tmp_path / "accepted.parquet"), "--out", str(tmp_path))
+    health.main()
+    out = capsys.readouterr().out
+    assert "findings: 20" in out
+    assert "unhealthy points: 4 of 294" in out
+    assert (tmp_path / "bms_findings.parquet").exists()
+    assert (tmp_path / "bms_point_health.parquet").exists()
+
+
+def test_health_cli_interval_is_configurable(argv, tmp_path, capsys):
+    """The detector's windows are all expressed in samples, so a different
+    cadence has to be told to it explicitly."""
+    from conftest import START
+
+    from simulator import Simulator
+
+    frame, _ = Simulator(START, seed=7, interval_minutes=15).generate(24.0)
+    numeric = frame[~frame["malformed"]][["ts", "point_id", "value", "unit", "quality"]].copy()
+    numeric["value"] = numeric["value"].astype(float)
+    numeric.to_parquet(tmp_path / "accepted.parquet", index=False)
+    argv("--readings", str(tmp_path / "accepted.parquet"), "--out", str(tmp_path), "--interval-minutes", "15")
+    health.main()
+    assert "findings:" in capsys.readouterr().out
 
 
 # ---------------------------------------------------------------- registry

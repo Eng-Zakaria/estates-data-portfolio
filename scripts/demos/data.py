@@ -19,14 +19,56 @@ GOLD = REPO / "data" / "gold"
 P = REPO / "projects"
 
 
-def gold(name: str) -> pd.DataFrame | None:
-    path = GOLD / f"{name}.parquet"
-    if not path.exists():
+_WAREHOUSE_CACHE: dict[str, pd.DataFrame | None] = {}
+
+
+def _from_warehouse(name: str) -> pd.DataFrame | None:
+    """Read a mart straight out of the DuckDB warehouse.
+
+    `dbt build` writes to data/warehouse.duckdb, whereas the Parquet extracts in
+    data/gold are produced later by the publish/export steps. CI runs only
+    `dbt build`, so this fallback is what lets the deployed pages show real
+    numbers instead of "not found" notices.
+    """
+    if name in _WAREHOUSE_CACHE:
+        return _WAREHOUSE_CACHE[name]
+    db = REPO / "data" / "warehouse.duckdb"
+    if not db.exists():
+        _WAREHOUSE_CACHE[name] = None
         return None
     try:
-        return pd.read_parquet(path)
+        connection = duckdb.connect(str(db), read_only=True)
     except Exception:
+        _WAREHOUSE_CACHE[name] = None
         return None
+    try:
+        found = connection.execute(
+            "SELECT 1 FROM information_schema.tables "
+            "WHERE table_schema = 'main' AND table_name = ?",
+            [name],
+        ).fetchone()
+        if not found:
+            _WAREHOUSE_CACHE[name] = None
+            return None
+        df = connection.execute(f'SELECT * FROM "{name}"').df()
+        _WAREHOUSE_CACHE[name] = df
+        return df
+    except Exception:
+        _WAREHOUSE_CACHE[name] = None
+        return None
+    finally:
+        connection.close()
+
+
+def gold(name: str) -> pd.DataFrame | None:
+    """Prefer the published Parquet extract; fall back to the warehouse."""
+    path = GOLD / f"{name}.parquet"
+    if path.exists():
+        try:
+            return pd.read_parquet(path)
+        except Exception:
+            pass
+    return _from_warehouse(name)
 
 
 def parquet(path: Path) -> pd.DataFrame | None:

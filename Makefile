@@ -1,4 +1,6 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p07-run p09-run p11-run p12-run p13-fetch p13-eval p13-test p13-run p14-sample p14-check p14-check-clean p14-variant p14-test p14-run p16-test p16-eval p16-thresholds p16-run demos demos-serve aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs p20-build p20-check p20-test p20-site p20-run
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo iot-up iot-down iot-offline iot-test iot-logs \
+iot-registry iot-flows iot-dashboards iot-export-sql iot-assets iot-sim iot-contract iot-health \
+iot-faults iot-export iot-clean-run p19 p18-run p10-run p08-run p06-run p07-run p09-run p11-run p12-run p13-fetch p13-eval p13-test p13-run p14-sample p14-check p14-check-clean p14-variant p14-test p14-run p16-test p16-eval p16-thresholds p16-run demos demos-serve aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs p20-build p20-check p20-test p20-site p20-run
 
 PROFILE ?= small
 SEED ?= 42
@@ -163,6 +165,83 @@ p14-test:
 	$(PY) -m pytest $(P14)/tests/ -q -p no:cacheprovider --cov=$(P14)/src --cov-report=term-missing
 
 p14-run: p14-sample p14-test p14-check p14-check-clean p14-variant
+
+# P15 BMS/sensor ingestion: MQTT -> Node-RED -> TimescaleDB -> Grafana.
+# `iot-offline` needs no Docker and runs the whole contract + detector chain;
+# `iot-up` / `iot-demo` bring up the live stack (requires Docker Desktop).
+P15 = projects/p15-bms-iot
+P15_DURATION ?= 24
+P15_INTERVAL ?= 5
+P15_SPEEDUP ?= 144
+P15_COMPOSE = docker compose --project-directory $(P15) --env-file $(P15)/.env -f $(P15)/docker-compose.yml
+
+iot-registry:
+	$(PY) $(P15)/src/make_registry.py --out $(P15)/src/point_registry.csv
+
+iot-flows:
+	$(PY) $(P15)/scripts/build_flows.py
+
+iot-dashboards:
+	$(PY) $(P15)/src/grafana_dashboards.py
+
+iot-export-sql:
+	$(PY) $(P15)/src/export_sql.py --out $(P15)/sql/export_bms_trends.sql
+
+iot-assets: iot-registry iot-dashboards iot-export-sql
+
+iot-sim:
+	PYTHONPATH=$(P15)/src $(PY) $(P15)/src/simulator.py --dry-run \
+	  --duration-hours $(P15_DURATION) --interval-minutes $(P15_INTERVAL) \
+	  --out data/p15 --truth-out data/p15/truth.json
+
+iot-contract:
+	PYTHONPATH=$(P15)/src $(PY) $(P15)/src/ingest_contract.py \
+	  --readings data/p15/bms_readings_sim.parquet --out data/p15
+
+iot-health:
+	PYTHONPATH=$(P15)/src $(PY) $(P15)/src/health.py --readings data/p15/bms_readings_accepted.parquet --out data/p15
+
+iot-faults:
+	PYTHONPATH=$(P15)/src $(PY) $(P15)/scripts/check_faults.py \
+	  --readings data/p15/bms_readings_sim.parquet --truth data/p15/truth.json \
+	  --out $(P15)/docs/fault_detection.csv
+
+iot-export:
+	PYTHONPATH=$(P15)/src $(PY) $(P15)/src/export_bms_trends.py \
+	  --readings data/p15/bms_readings_accepted.parquet --out data/raw
+
+iot-test:
+	$(PY) -m pytest $(P15)/tests -q -p no:cacheprovider --cov=$(P15)/src --cov-report=term-missing
+
+# no Docker: simulate -> validate -> detect -> export, all in one command
+iot-offline:
+	PYTHONPATH=$(P15)/src $(PY) $(P15)/src/run_pipeline.py \
+	  --duration-hours $(P15_DURATION) --interval-minutes $(P15_INTERVAL) --out data/p15 --raw data/raw
+
+iot-clean-run:
+	PYTHONPATH=$(P15)/src $(PY) $(P15)/src/run_pipeline.py \
+	  --duration-hours $(P15_DURATION) --interval-minutes $(P15_INTERVAL) --faults --out data/p15_clean
+
+iot-up:
+	$(P15_COMPOSE) up -d --wait
+
+iot-down:
+	$(P15_COMPOSE) down -v
+
+iot-logs:
+	$(P15_COMPOSE) logs -f nodered
+
+# live demo: seed the registry, publish 24 simulated hours at 144x, then load the
+# offline outputs so the dashboards have findings to show without waiting
+iot-demo: iot-assets iot-up
+	PYTHONPATH=$(P15)/src $(PY) $(P15)/src/simulator.py --broker localhost --port 1883 \
+	  --speedup $(P15_SPEEDUP) --duration-hours $(P15_DURATION) --interval-minutes $(P15_INTERVAL) \
+	  --out data/p15 --truth-out data/p15/truth_live.json
+	$(MAKE) iot-offline
+	PYTHONPATH=$(P15)/src $(PY) $(P15)/src/load_db.py --data data/p15 --registry $(P15)/src/point_registry.csv
+	@echo "Grafana:  http://localhost:3000  (admin / see $(P15)/.env)"
+	@echo "Node-RED: http://localhost:1880  (user: admin, password: see $(P15)/.env)"
+	@echo "TimescaleDB: localhost:5433, database bms_db, schema bms"
 
 P16 = projects/p16-energy-anomaly
 

@@ -15,9 +15,13 @@ and is a no-op-friendly upsert so re-running it does not duplicate rows.
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pandas as pd
+
+from validate import load_registry
 
 READINGS = "bms.readings"
 POINTS = "bms.points"
@@ -26,8 +30,11 @@ FINDINGS = "bms.findings"
 
 
 def dsn_from_env() -> str:
-    import os
+    """libpq connection string from the environment.
 
+    The host defaults to localhost and the port to 5433, matching the port the
+    demo stack publishes (5432 belongs to the Airflow stack in this repo).
+    """
     return (
         f"host={os.environ.get('PGHOST', 'localhost')} "
         f"port={os.environ.get('PGPORT', '5433')} "
@@ -82,7 +89,7 @@ def load_points(conn: Connection, registry_csv: Path) -> int:
     return len(rows)
 
 
-def load_readings(conn, accepted: pd.DataFrame) -> int:
+def load_readings(conn: Connection, accepted: pd.DataFrame) -> int:
     """Upsert accepted readings. Redelivery is normal (at-least-once MQTT), so
     the same (ts, point_id) is an update rather than a duplicate."""
     sql = """
@@ -108,7 +115,7 @@ def load_readings(conn, accepted: pd.DataFrame) -> int:
     return len(rows)
 
 
-def load_dead_letter(conn, dead: pd.DataFrame) -> int:
+def load_dead_letter(conn: Connection, dead: pd.DataFrame) -> int:
     sql = """
         INSERT INTO bms.dead_letter (ts, topic, payload, reason, point_id)
         VALUES (%s, %s, %s, %s, %s)
@@ -130,7 +137,7 @@ def load_dead_letter(conn, dead: pd.DataFrame) -> int:
     return len(rows)
 
 
-def load_findings(conn, findings: pd.DataFrame) -> int:
+def load_findings(conn: Connection, findings: pd.DataFrame) -> int:
     sql = """
         INSERT INTO bms.findings (start_ts, end_ts, rule_id, point_id, samples, detail)
         VALUES (%s, %s, %s, %s, %s, %s)

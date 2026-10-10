@@ -7,7 +7,7 @@ PY ?= python
 P20 = projects/p20-governance-literacy
 MKDOCS_YML = $(P20)/mkdocs.yml
 
-.PHONY: build check test readability coverage links site serve clean
+.PHONY: build check test readability coverage links site serve typecheck clean
 
 ## Regenerate the generated pages from dbt, the DQ output and the YAML sources.
 build:
@@ -36,6 +36,10 @@ links:
 ## Strict site build (warnings become errors).
 site:
 	$(PY) -m mkdocs build --strict -f $(MKDOCS_YML)
+
+## Type check the generators and gates in strict mode.
+typecheck:
+	mypy --strict $(P20)/src
 
 ## Serve the site locally at http://127.0.0.1:8000/
 serve:

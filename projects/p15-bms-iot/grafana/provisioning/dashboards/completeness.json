@@ -82,16 +82,15 @@
           "color": {
             "mode": "palette-classic"
           },
-          "custom": {}
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 5,
+            "showPoints": "never",
+            "spanNulls": false
+          }
         },
-        "overrides": [],
-        "custom": {
-          "drawStyle": "line",
-          "lineWidth": 1,
-          "fillOpacity": 5,
-          "showPoints": "never",
-          "spanNulls": false
-        }
+        "overrides": []
       },
       "options": {
         "legend": {
@@ -132,16 +131,15 @@
           "color": {
             "mode": "palette-classic"
           },
-          "custom": {}
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 5,
+            "showPoints": "never",
+            "spanNulls": false
+          }
         },
-        "overrides": [],
-        "custom": {
-          "drawStyle": "line",
-          "lineWidth": 1,
-          "fillOpacity": 5,
-          "showPoints": "never",
-          "spanNulls": false
-        }
+        "overrides": []
       },
       "options": {
         "legend": {

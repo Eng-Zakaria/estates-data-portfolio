@@ -65,6 +65,11 @@ jobs:
       - name: Generate dbt docs
         run: dbt docs generate --profiles-dir platform/dbt --project-dir platform/dbt --target dev --no-version-check
 
+      - name: Run the data-quality framework (populates the P03 demo page)
+        continue-on-error: true
+        run: |
+          python -m quality.cli run || echo "(DQ run failed; P03 page will show a notice)"
+
       - name: Build interactive demo pages
         run: python scripts/build_demos.py
 

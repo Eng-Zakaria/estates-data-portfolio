@@ -19,6 +19,7 @@ p15-simulator = "simulator:main"
 p15-pipeline = "run_pipeline:main"
 p15-load-db = "load_db:main"
 p15-dashboards = "grafana_dashboards:main"
+p15-health = "health:main"
 
 [build-system]
 requires = ["hatchling"]

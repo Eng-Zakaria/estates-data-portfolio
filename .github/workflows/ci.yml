@@ -88,6 +88,9 @@ jobs:
       - name: P20 governance gates (registry, glossary, staleness, links, readability)
         run: python projects/p20-governance-literacy/src/cli.py check
 
+      - name: Mypy (P20 strict)
+        run: mypy --strict projects/p20-governance-literacy/src
+
       - name: P20 tests (fixtures + repository)
         run: python -m pytest projects/p20-governance-literacy/tests -q -p no:cacheprovider --no-cov
 

@@ -26,6 +26,7 @@ import yaml
 _REF = re.compile(r"\{\{\s*ref\(\s*'([^']+)'\s*\)\s*\}\}")
 _REF2 = re.compile(r"\{\{\s*ref\(\s*'([^']+)'\s*,\s*'([^']+)'\s*\)\s*\}\}")
 _SOURCE = re.compile(r"\{\{\s*source\(\s*'([^']+)'\s*,\s*'([^']+)'\s*\)\s*\}\}")
+_MATERIALIZED = re.compile(r"materialized\s*=\s*'(\w+)'")
 
 LAYERS = ("staging", "intermediate", "marts")
 
@@ -160,9 +161,9 @@ def from_yaml_and_sql(models_dir: Path) -> DbtMetadata:
         if name not in models:
             models[name] = Model(name=name, description="", layer=_layer_from_dir(models_dir, sql))
         model = models[name]
-        materialization = re.search(r"materialized\s*=\s*'(\w+)'", text)
-        if materialization:
-            model.materialization = materialization.group(1)
+        found_materialization = _MATERIALIZED.search(text)
+        if found_materialization is not None:
+            model.materialization = found_materialization.group(1)
         parents = {m.group(1) for m in _REF.finditer(text)}
         parents |= {m.group(2) for m in _REF2.finditer(text)}
         parents |= {f"{m.group(1)}.{m.group(2)}" for m in _SOURCE.finditer(text)}
