@@ -27,7 +27,7 @@ dev = [
   "ruff>=0.4",
   "mypy>=1.10",
   # P04/P05 pins (verified 2026-10-04; keep in sync with docs/PLAN_P05.md)
-  "dbt-duckdb==1.10.1",
+  "dbt-duckdb==1.11.0",
   "sqlfluff==4.4.0",
   "mkdocs-material>=9.5",
   # P20: readability gate. Pinned to 0.7.3 on purpose: 0.7.7+ pulls NLTK and
