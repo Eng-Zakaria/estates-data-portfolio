@@ -1,24 +1,83 @@
 site_name: Estates Data Portfolio (synthetic)
-site_description: Synthetic University Estates data portfolio — pipelines, dbt marts, data quality, CI.
+site_description: Synthetic University Estates data portfolio - pipelines, dbt marts, data quality, CI.
+site_url: https://eng-zakaria.github.io/estates-data-portfolio/
+
+# The interactive demo pages are the GitHub Pages site root (/); this MkDocs
+# site is published under /docs/. See .github/workflows/docs.yml.
+
 theme:
   name: material
+  palette:
+    scheme: slate
+    primary: indigo
+    accent: cyan
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+
 nav:
   - Home: index.md
-  - Acceptance:
+  - Portfolio report: PORTFOLIO_REPORT.md
+  - Data model: DATA_MODEL.md
+  - Data quality policy: dq-policy.md
+  - Acceptance evidence:
       - Foundation: ACCEPTANCE_F.md
       - P01 lakehouse: ACCEPTANCE_P01.md
+      - P02 Airflow: ACCEPTANCE_P02.md
+      - P03 data quality: ACCEPTANCE_P03.md
+      - P04 dbt: ACCEPTANCE_P04.md
       - P05 CI/CD: ACCEPTANCE_P05.md
+      - P11 IFC: ACCEPTANCE_P11.md
+      - P12 COBie: ACCEPTANCE_P12.md
+      - P13 Uniclass: ACCEPTANCE_P13.md
+      - P17 air quality: ACCEPTANCE_P17.md
+  - Sources and standards: SOURCES.md
   - CI demo: ci-demo.md
   - Branch protection: branch-protection.md
   - Open questions: OPEN_QUESTIONS.md
+  - Data lifecycle: DATA_MODEL.md
+  - ADR index:
+      - 001 Python packaging: adr/001-python-packaging.md
+      - 002 Orchestrator choice: adr/002-orchestrator-choice.md
   - Plans:
-      - P01 plan: PLAN_P01.md
-      - P04 plan: PLAN_P04.md
-      - P05 plan: PLAN_P05.md
+      - P01: PLAN_P01.md
+      - P02: PLAN_P02.md
+      - P03: PLAN_P03.md
+      - P04: PLAN_P04.md
+      - P05: PLAN_P05.md
+      - P06: PLAN_P06.md
+      - P07: PLAN_P07.md
+      - P08: PLAN_P08.md
+      - P09: PLAN_P09.md
+      - P10: PLAN_P10.md
+      - P11: PLAN_P11.md
+      - P12: PLAN_P12.md
+      - P13: PLAN_P13.md
+      - P14: PLAN_P14.md
+      - P15: PLAN_P15.md
+      - P16: PLAN_P16.md
+      - P18: PLAN_P18.md
+      - P19: PLAN_P19.md
+      - P20: PLAN_P20.md
+  - Specs:
+      - Foundation: specs/00-foundation-campus-synth.md
+      - Platform P01-P05: specs/01-platform-p01-p05.md
+      - Dashboards P06-P10: specs/02-dashboards-p06-p10.md
+      - BIM and standards P11-P14: specs/03-bim-standards-p11-p14.md
+      - Building systems P15-P17: specs/04-building-systems-p15-p17.md
+      - Twin, spatial, governance P18-P20: specs/05-twin-spatial-governance-p18-p20.md
+
 markdown_extensions:
   - admonition
+  - tables
+  - toc:
+      permalink: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true

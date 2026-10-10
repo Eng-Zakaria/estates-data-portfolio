@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P11 · IFC analytics — Estates Data Portfolio</title>
+<style>
+:root{
+  --bg:#0f1720; --panel:#16212c; --panel2:#1d2b38; --line:#2a3a4a;
+  --fg:#e8eef4; --muted:#9fb3c8; --accent:#4da3ff; --accent2:#57d9a3;
+  --warn:#ffb454; --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:15px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}
+header{padding:22px 26px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--accent)}
+h1{margin:6px 0 4px;font-size:25px;line-height:1.2}
+.sub{color:var(--muted);font-size:14px;max-width:70ch}
+.banner{margin:14px 26px 0;padding:10px 14px;border-radius:8px;font-size:13px;
+  background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.45);color:#ffd9a8}
+main{padding:20px 26px 60px}
+nav.picker{margin:16px 26px 0;display:flex;flex-wrap:wrap;gap:6px}
+nav.picker a{font-size:12px;padding:4px 9px;border:1px solid var(--line);
+  border-radius:20px;text-decoration:none;color:var(--muted);background:var(--panel)}
+nav.picker a:hover{color:var(--fg);border-color:var(--accent)}
+nav.picker a.on{background:var(--accent);color:#04121f;border-color:var(--accent);font-weight:600}
+h2{font-size:17px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:14px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.kpi .n{color:var(--muted);font-size:12px;margin-top:4px}
+.chart{width:100%;height:380px}
+.chart.tall{height:520px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}
+.controls label{display:flex;flex-direction:column;font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;gap:4px}
+select,input{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:6px 8px;font-size:13px;min-width:150px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;
+  background:var(--panel);cursor:pointer}
+tbody tr:hover{background:var(--panel2)}
+.scroll{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tag{display:inline-block;padding:1px 7px;border-radius:11px;font-size:11px;border:1px solid var(--line)}
+.ok{color:var(--accent2);border-color:var(--accent2)}
+.warn{color:var(--warn);border-color:var(--warn)}
+.bad{color:var(--bad);border-color:var(--bad)}
+.note{color:var(--muted);font-size:13px;background:var(--panel);border-left:3px solid var(--accent);
+  padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+#map{height:520px;border-radius:10px;border:1px solid var(--line)}
+footer{padding:18px 26px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+a.ll{color:var(--muted)}
+</style>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+</head>
+<body>
+<script>window.__fig = window.__fig || {};</script>
+<header>
+  <div class="eyebrow">Estates Data Portfolio · ifc-analytics</div>
+  <h1>P11 · IFC analytics</h1>
+  <div class="sub">Turning an IFC model into queryable tables, a model-health report and a register reconciliation.</div>
+</header>
+<div class="banner"><strong>Synthetic data.</strong> Synthetic data for portfolio demonstration. No real university, building, person or performance data is shown or implied.</div>
+<nav class="picker"><a href="foundation.html" class="">F · Synthetic generator</a><a href="lakehouse.html" class="">P01 · Lakehouse</a><a href="orchestration.html" class="">P02 · Airflow orchestration</a><a href="data-quality.html" class="">P03 · Data quality</a><a href="dbt-marts.html" class="">P04 · dbt marts</a><a href="cicd.html" class="">P05 · CI/CD</a><a href="space-utilisation.html" class="">P06 · Space utilisation</a><a href="assets-maintenance.html" class="">P07 · Assets &amp; maintenance</a><a href="net-zero-carbon.html" class="">P08 · Net zero &amp; carbon</a><a href="compliance.html" class="">P09 · Compliance tracker</a><a href="institutional-return.html" class="">P10 · Institutional return</a><a href="ifc-analytics.html" class="">P11 · IFC analytics</a><a href="cobie-validator.html" class="">P12 · COBie validator</a><a href="uniclass-mapper.html" class="">P13 · Uniclass mapper</a><a href="iso19650-checker.html" class="">P14 · ISO 19650 checker</a><a href="bms-iot.html" class="">P15 · BMS IoT ingestion</a><a href="energy-anomaly.html" class="">P16 · Energy anomaly</a><a href="air-quality.html" class="">P17 · Air quality &amp; occupancy</a><a href="digital-twin.html" class="">P18 · Digital twin layer</a><a href="spatial-map.html" class="">P19 · Spatial carbon map</a><a href="governance.html" class="">P20 · Governance &amp; literacy</a></nav>
+<main>
+<div class="note">BIM treated as data, not authoring: spaces, elements, systems, properties and quantities extracted to Parquet with IfcOpenShell, then a model-health report and a reconciliation against the space register. <strong>No geometry processing</strong> — extraction stays fast.</div>
+<div class="grid g4">
+<div class="card kpi"><div class="l">Analytical tables</div><div class="v">11</div><div class="n">spaces, elements, types, systems, properties…</div></div>
+<div class="card kpi"><div class="l">Spaces extracted</div><div class="v">32</div><div class="n">from the synthetic model</div></div>
+<div class="card kpi"><div class="l">Elements</div><div class="v">5</div><div class="n">AHUs, boilers, pumps, fan coils</div></div>
+<div class="card kpi"><div class="l">Extract runtime</div><div class="v">0.12 s</div><div class="n">no geometry step</div></div>
+</div>
+<h2>Extraction inventory</h2>
+<div class="scroll"><table id="p11-inv" class="sortable"><thead><tr><th>table</th><th>rows</th></tr></thead><tbody><tr><td>ifc_classifications</td><td>2</td></tr><tr><td>ifc_elements</td><td>5</td></tr><tr><td>ifc_project</td><td>1</td></tr><tr><td>ifc_properties_long</td><td>31</td></tr><tr><td>ifc_quantities_long</td><td>32</td></tr><tr><td>ifc_spaces</td><td>32</td></tr><tr><td>ifc_storeys</td><td>1</td></tr><tr><td>ifc_system_members</td><td>3</td></tr><tr><td>ifc_systems</td><td>3</td></tr><tr><td>ifc_types</td><td>2</td></tr><tr><td>recon_model_vs_register</td><td>501</td></tr></tbody></table></div>
+<h2>Model health — spaces</h2>
+<div class="scroll"><table id="p11-qa" class="sortable"><thead><tr><th>model check</th><th>rows</th><th>severity</th></tr></thead><tbody><tr><td>missing GlobalId</td><td>0</td><td><span class="tag ok">0</span></td></tr><tr><td>duplicate GlobalId</td><td>0</td><td><span class="tag ok">0</span></td></tr></tbody></table></div>
+<h2>Model health — elements</h2>
+<div class="scroll"><table id="p11-elemqa" class="sortable"><thead><tr><th>model check</th><th>rows</th></tr></thead><tbody><tr><td>classes present</td><td>0</td></tr></tbody></table></div>
+<div class="card"><div id="p11-classes" class="chart"></div><script>window.__fig["p11-classes"]={"data": [{"type": "bar", "x": ["IfcBoiler", "IfcFan", "IfcPump"], "y": ["3", "1", "1"], "orientation": "h", "marker": {"color": "#4da3ff"}}], "layout": {"title": "Elements by IFC class", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 60, "r": 20, "t": 45, "b": 60}, "xaxis": {"title": "", "gridcolor": "#2a3a4a"}, "yaxis": {"title": "elements", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<h2>Model vs space register reconciliation</h2>
+<div class="note">Reconciliation output not found.</div>
+</main>
+<footer>
+  Generated from the same gold marts and acceptance evidence quoted in the project README. Figures are reproduced exactly as measured; see the repository for tests and SQL that tie them back.
+  <br>Repository: <code>estates-data-portfolio</code>
+</footer>
+<script>
+// Render every Plotly figure embedded on this page.
+for (const [id, fig] of Object.entries(window.__fig || {})) {
+  const el = document.getElementById(id);
+  if (el && window.Plotly) {
+    el.style.width = '100%';
+    Plotly.newPlot(id, fig.data, fig.layout, {displaylogo:false, responsive:true});
+  }
+};
+// Sortable tables: click a header to sort ascending/descending.
+document.querySelectorAll('table.sortable').forEach(function (table) {
+  table.querySelectorAll('th').forEach(function (th, idx) {
+    th.addEventListener('click', function () {
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+      const dir = th.dataset.dir === 'asc' ? -1 : 1;
+      th.dataset.dir = dir === 1 ? 'asc' : 'desc';
+      rows.sort(function (a, b) {
+        const av = a.cells[idx]?.innerText ?? '';
+        const bv = b.cells[idx]?.innerText ?? '';
+        const an = parseFloat(av.replace(/[^0-9.\-]/g, ''));
+        const bn = parseFloat(bv.replace(/[^0-9.\-]/g, ''));
+        if (!Number.isNaN(an) && !Number.isNaN(bn)) return (an - bn) * dir;
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+});
+
+</script>
+</body>
+</html>

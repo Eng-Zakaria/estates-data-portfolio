@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P19 Â· Spatial analysis &amp; carbon map — Estates Data Portfolio</title>
+<style>
+:root{
+  --bg:#0f1720; --panel:#16212c; --panel2:#1d2b38; --line:#2a3a4a;
+  --fg:#e8eef4; --muted:#9fb3c8; --accent:#4da3ff; --accent2:#57d9a3;
+  --warn:#ffb454; --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:15px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}
+header{padding:22px 26px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--accent)}
+h1{margin:6px 0 4px;font-size:25px;line-height:1.2}
+.sub{color:var(--muted);font-size:14px;max-width:70ch}
+.banner{margin:14px 26px 0;padding:10px 14px;border-radius:8px;font-size:13px;
+  background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.45);color:#ffd9a8}
+main{padding:20px 26px 60px}
+nav.picker{margin:16px 26px 0;display:flex;flex-wrap:wrap;gap:6px}
+nav.picker a{font-size:12px;padding:4px 9px;border:1px solid var(--line);
+  border-radius:20px;text-decoration:none;color:var(--muted);background:var(--panel)}
+nav.picker a:hover{color:var(--fg);border-color:var(--accent)}
+nav.picker a.on{background:var(--accent);color:#04121f;border-color:var(--accent);font-weight:600}
+h2{font-size:17px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:14px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.kpi .n{color:var(--muted);font-size:12px;margin-top:4px}
+.chart{width:100%;height:380px}
+.chart.tall{height:520px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}
+.controls label{display:flex;flex-direction:column;font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;gap:4px}
+select,input{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:6px 8px;font-size:13px;min-width:150px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;
+  background:var(--panel);cursor:pointer}
+tbody tr:hover{background:var(--panel2)}
+.scroll{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tag{display:inline-block;padding:1px 7px;border-radius:11px;font-size:11px;border:1px solid var(--line)}
+.ok{color:var(--accent2);border-color:var(--accent2)}
+.warn{color:var(--warn);border-color:var(--warn)}
+.bad{color:var(--bad);border-color:var(--bad)}
+.note{color:var(--muted);font-size:13px;background:var(--panel);border-left:3px solid var(--accent);
+  padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+#map{height:520px;border-radius:10px;border:1px solid var(--line)}
+footer{padding:18px 26px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+a.ll{color:var(--muted)}
+</style>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<script>window.__fig = window.__fig || {};</script>
+<header>
+  <div class="eyebrow">Estates Data Portfolio · spatial-map</div>
+  <h1>P19 Â· Spatial analysis &amp; carbon map</h1>
+  <div class="sub">OpenStreetMap footprints joined to synthetic carbon metrics, with heat clusters and walking isochrones.</div>
+</header>
+<div class="banner"><strong>Synthetic data.</strong> Synthetic data for portfolio demonstration. No real university, building, person or performance data is shown or implied.</div>
+<nav class="picker"><a href="foundation.html" class="">F · Synthetic generator</a><a href="lakehouse.html" class="">P01 · Lakehouse</a><a href="orchestration.html" class="">P02 · Airflow orchestration</a><a href="data-quality.html" class="">P03 · Data quality</a><a href="dbt-marts.html" class="">P04 · dbt marts</a><a href="cicd.html" class="">P05 · CI/CD</a><a href="space-utilisation.html" class="">P06 · Space utilisation</a><a href="assets-maintenance.html" class="">P07 · Assets &amp; maintenance</a><a href="net-zero-carbon.html" class="">P08 · Net zero &amp; carbon</a><a href="compliance.html" class="">P09 · Compliance tracker</a><a href="institutional-return.html" class="">P10 · Institutional return</a><a href="ifc-analytics.html" class="">P11 · IFC analytics</a><a href="cobie-validator.html" class="">P12 · COBie validator</a><a href="uniclass-mapper.html" class="">P13 · Uniclass mapper</a><a href="iso19650-checker.html" class="">P14 · ISO 19650 checker</a><a href="bms-iot.html" class="">P15 · BMS IoT ingestion</a><a href="energy-anomaly.html" class="">P16 · Energy anomaly</a><a href="air-quality.html" class="">P17 · Air quality &amp; occupancy</a><a href="digital-twin.html" class="">P18 · Digital twin layer</a><a href="spatial-map.html" class="">P19 · Spatial carbon map</a><a href="governance.html" class="">P20 · Governance &amp; literacy</a></nav>
+<main>
+<div class="note"><strong>Synthetic metrics on public geometry.</strong> Building footprints come from OpenStreetMap (ODbL, Â© OpenStreetMap contributors) with names anonymised; every energy and carbon figure is synthetic. Footprint area is <em>not</em> floor area â€” the implied-storey check flags where it disagrees with GIA.</div>
+<div class="grid g4">
+<div class="card kpi"><div class="l">Mapped features</div><div class="v">8</div><div class="n">footprints joined to campus IDs by area rank</div></div>
+<div class="card kpi"><div class="l">Heat clusters</div><div class="v">4</div><div class="n">300 m threshold, screening level only</div></div>
+<div class="card kpi"><div class="l">Walking isochrones</div><div class="v">5 / 10 min</div><div class="n">OSM pedestrian network</div></div>
+<div class="card kpi"><div class="l">Analysis CRS</div><div class="v">EPSG:27700</div><div class="n">web export in EPSG:4326</div></div>
+</div>
+<h2>Interactive map</h2>
+<div class="note">Pan and zoom. Each footprint is shaded by carbon intensity; hover for the figures. Click a building for the full record.</div>
+<div id="map"></div>
+<div class="grid g2">
+<div class="card"><div id="p19-choropleth" class="chart"></div><script>window.__fig["p19-choropleth"]={"data": [{"type": "bar", "x": ["B004", "B007", "B008", "B005", "B001", "B003", "B006", "B002"], "y": [1.8242, 1.9872, 1.833, 1.9448, 1.9342, 1.9397, 1.8295, 1.8279], "orientation": "h", "marker": {"color": "#57d9a3"}}], "layout": {"title": "Carbon intensity (kgco2e_per_m2)", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 60, "r": 20, "t": 45, "b": 60}, "xaxis": {"title": "", "gridcolor": "#2a3a4a"}, "yaxis": {"title": "kgCO\u00e2\u201a\u201ae/m\u00c2\u00b2", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="card"><div id="p19-gia" class="chart"></div><script>window.__fig["p19-gia"]={"data": [{"type": "bar", "x": ["B004", "B007", "B008", "B005", "B001", "B003", "B006", "B002"], "y": [17546, 14974, 14697, 13087, 9303, 6022, 4514, 4486], "orientation": "h", "marker": {"color": "#4da3ff"}}], "layout": {"title": "GIA vs footprint-implied area", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 60, "r": 20, "t": 45, "b": 60}, "xaxis": {"title": "", "gridcolor": "#2a3a4a"}, "yaxis": {"title": "m\u00c2\u00b2", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+</div>
+<h2>Joined attributes</h2>
+<div class="scroll"><table id="p19-attrs" class="sortable"><thead><tr><th>building_id</th><th>anon_name</th><th>footprint_m2</th><th>gia_m2</th><th>gas_kwh</th><th>kgco2e_per_m2</th><th>storeys</th><th>storey_flag</th><th>heat_cluster</th></tr></thead><tbody><tr><td>B004</td><td>Building A</td><td>8632.258886455093</td><td>17545.8</td><td>53105.825</td><td>1.8242372150315174</td><td>2.0325850082567816</td><td>False</td><td>0</td></tr><tr><td>B007</td><td>Building B</td><td>8381.849726131053</td><td>14973.8</td><td>46364.181</td><td>1.9871966328987958</td><td>1.7864553158616099</td><td>False</td><td>1</td></tr><tr><td>B008</td><td>Building C</td><td>4431.667556263824</td><td>14697.3</td><td>45061.592</td><td>1.8330180519142982</td><td>3.316426562553522</td><td>False</td><td>2</td></tr><tr><td>B005</td><td>Building D</td><td>4286.583735213361</td><td>13087.3</td><td>40175.594</td><td>1.9447855890672627</td><td>3.0530839494608846</td><td>False</td><td>2</td></tr><tr><td>B001</td><td>Building E</td><td>4075.5537984504217</td><td>9302.6</td><td>28268.311</td><td>1.9342294017478976</td><td>2.2825364257335945</td><td>False</td><td>0</td></tr><tr><td>B003</td><td>Building F</td><td>3771.2701224927023</td><td>6022.2</td><td>18430.765</td><td>1.9396941407625123</td><td>1.5968625434922432</td><td>False</td><td>2</td></tr><tr><td>B006</td><td>Building G</td><td>3595.3726143554245</td><td>4513.8</td><td>13829.758</td><td>1.8295221067836416</td><td>1.2554470660363615</td><td>False</td><td>3</td></tr><tr><td>B002</td><td>Building H</td><td>3489.419278910603</td><td>4485.8</td><td>13706.968</td><td>1.827909152793258</td><td>1.285543421827046</td><td>False</td><td>2</td></tr></tbody></table></div>
+<h2>Walking isochrones</h2>
+<div class="scroll"><table id="p19-iso" class="sortable"><thead><tr><th>mins</th></tr></thead><tbody><tr><td>5min</td></tr><tr><td>10min</td></tr></tbody></table></div>
+<h2>Build log</h2>
+<pre style="background:#16212c;border:1px solid #2a3a4a;border-radius:10px;padding:14px;overflow:auto;font-size:12px">{
+ "matched": 8,
+ "storey_flags": 0,
+ "clusters": 4,
+ "gas_kwh_by_cluster": {
+  "0": 81374.1,
+  "1": 46364.2,
+  "2": 117374.9,
+  "3": 13829.8
+ },
+ "isochrone_origin": "B004",
+ "outputs": [
+  "build.log.json",
+  "building_points.csv",
+  "campus_carbon.geojson",
+  "campus_carbon.gpkg",
+  "campus_carbon.html",
+  "campus_carbon.qml",
+  "campus_carbon.topojson",
+  "choropleth.png",
+  "clusters_isochrones.png",
+  "isochrones.geojson"
+ ]
+}</pre>
+</main>
+<footer>
+  Generated from the same gold marts and acceptance evidence quoted in the project README. Figures are reproduced exactly as measured; see the repository for tests and SQL that tie them back.
+  <br>Repository: <code>estates-data-portfolio</code>
+</footer>
+<script>
+// Render every Plotly figure embedded on this page.
+for (const [id, fig] of Object.entries(window.__fig || {})) {
+  const el = document.getElementById(id);
+  if (el && window.Plotly) {
+    el.style.width = '100%';
+    Plotly.newPlot(id, fig.data, fig.layout, {displaylogo:false, responsive:true});
+  }
+};
+// Sortable tables: click a header to sort ascending/descending.
+document.querySelectorAll('table.sortable').forEach(function (table) {
+  table.querySelectorAll('th').forEach(function (th, idx) {
+    th.addEventListener('click', function () {
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+      const dir = th.dataset.dir === 'asc' ? -1 : 1;
+      th.dataset.dir = dir === 1 ? 'asc' : 'desc';
+      rows.sort(function (a, b) {
+        const av = a.cells[idx]?.innerText ?? '';
+        const bv = b.cells[idx]?.innerText ?? '';
+        const an = parseFloat(av.replace(/[^0-9.\-]/g, ''));
+        const bn = parseFloat(bv.replace(/[^0-9.\-]/g, ''));
+        if (!Number.isNaN(an) && !Number.isNaN(bn)) return (an - bn) * dir;
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+});
+
+(function(){
+  var data = {"type": "FeatureCollection", "name": "campus_carbon", "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:OGC:1.3:CRS84"}}, "features": [{"type": "Feature", "properties": {"building_id": "B004", "anon_name": "Building A", "footprint_m2": 8632.258886455093, "gia_m2": 17545.8, "gas_kwh": 53105.825, "kgco2e_per_m2": 1.8242372150315174, "storeys": 2.0325850082567816, "storey_flag": false, "heat_cluster": 0}, "geometry": {"type": "Polygon", "coordinates": [[[-3.537315789745346, 50.73850259475527], [-3.537136389745286, 50.73839069475516], [-3.537106589745258, 50.738409994755166], [-3.536479989745044, 50.73802109475487], [-3.537162789745687, 50.7375803947545], [-3.537343089745749, 50.737692294754595], [-3.537406189745809, 50.73765159475457], [-3.537366789745794, 50.73762709475455], [-3.537333889745764, 50.73764829475455], [-3.537259389745737, 50.737601994754534], [-3.537285089745762, 50.737585394754525], [-3.537172689745724, 50.73751539475446], [-3.537226689745776, 50.73748059475443], [-3.536849489745647, 50.73724549475426], [-3.537300989746071, 50.73695539475401], [-3.537436989746117, 50.73704009475408], [-3.537572589746244, 50.73695299475401], [-3.537798989746322, 50.73709429475411], [-3.53765968974619, 50.737183694754194], [-3.537719989746211, 50.73722129475423], [-3.537650589746146, 50.73726579475426], [-3.537838289746211, 50.737383094754364], [-3.537526389745917, 50.7375827947545], [-3.53768748974597, 50.737683594754586], [-3.53757958974587, 50.73775259475465], [-3.537657389745896, 50.73780129475466], [-3.537612989745855, 50.737829694754694], [-3.537807989745921, 50.737951594754804], [-3.537694389745814, 50.73802429475486], [-3.537754389745835, 50.73806179475488], [-3.537710389745794, 50.73809009475491], [-3.537835989745836, 50.73816839475497], [-3.537315789745346, 50.73850259475527]]]}}, {"type": "Feature", "properties": {"building_id": "B007", "anon_name": "Building B", "footprint_m2": 8381.849726131053, "gia_m2": 14973.8, "gas_kwh": 46364.181, "kgco2e_per_m2": 1.9871966328987958, "storeys": 1.7864553158616099, "storey_flag": false, "heat_cluster": 1}, "geometry": {"type": "MultiPolygon", "coordinates": [[[[-3.532161389747014, 50.72808609474711], [-3.532148089747025, 50.72804579474706], [-3.531840689746811, 50.72808649474712], [-3.531851489746801, 50.72811909474714], [-3.53167718974668, 50.728142194747164], [-3.531650589746702, 50.728061994747115], [-3.531824989746823, 50.728038894747094], [-3.53230968974716, 50.727974694747004], [-3.532338689747138, 50.72806259474709], [-3.532161389747014, 50.72808609474711]]], [[[-3.533795389747944, 50.728310594747256], [-3.533782989747955, 50.728275894747235], [-3.533199189747543, 50.728359194747306], [-3.533191789747549, 50.72833829474729], [-3.533074689747467, 50.728354994747285], [-3.533061189747475, 50.72831719474727], [-3.533172789747555, 50.72830129474726], [-3.533142689747577, 50.728216794747205], [-3.533516589747839, 50.728163394747156], [-3.533533989747826, 50.72821229474718], [-3.533760989747987, 50.728179894747164], [-3.533750989747992, 50.728151994747144], [-3.533917089748107, 50.728128294747115], [-3.533923889748104, 50.728147294747146], [-3.53417208974828, 50.728111894747116], [-3.534211389748254, 50.7282223947472], [-3.533975289748085, 50.72825609474721], [-3.53398498974808, 50.728283494747245], [-3.533795389747944, 50.728310594747256]]], [[[-3.530864389746109, 50.72825829474727], [-3.530872889746101, 50.72828559474729], [-3.530760389746024, 50.728299494747304], [-3.530755289746028, 50.728282994747296], [-3.530734889746014, 50.72828559474727], [-3.530742189746007, 50.72830889474731], [-3.53061518974592, 50.72832469474734], [-3.530606689745926, 50.7282972947473], [-3.530550489745887, 50.72830429474729], [-3.530521789745912, 50.728211494747235], [-3.530592689745963, 50.72820269474723], [-3.530599289745957, 50.72822409474724], [-3.53087728974615, 50.72818949474723], [-3.530869589746157, 50.728164694747186], [-3.530960689746221, 50.728153394747174], [-3.530988589746195, 50.72824359474725], [-3.53100378974618, 50.72829259474728], [-3.530916189746119, 50.7283034947473], [-3.530900789746134, 50.72825379474723], [-3.530864389746109, 50.72825829474727]]], [[[-3.534077189748087, 50.7283868947473], [-3.533291689747534, 50.72850279474741], [-3.533258789747558, 50.72841329474736], [-3.534044189748111, 50.72829739474726], [-3.534077189748087, 50.7283868947473]]], [[[-3.531211789746257, 50.72841109474739], [-3.53197418974679, 50.728310094747286], [-3.53192368974683, 50.72815719474717], [-3.532135689746978, 50.72812909474715], [-3.532167089746951, 50.72822399474721], [-3.532214489746986, 50.72821769474721], [-3.532195789747002, 50.72816109474717], [-3.532407289747149, 50.72813309474713], [-3.532419589747139, 50.72817009474719], [-3.532820489747418, 50.72811699474712], [-3.532815389747423, 50.7281013947471], [-3.532867489747458, 50.728094494747104], [-3.532891289747439, 50.72816669474717], [-3.532856289747415, 50.72817129474717], [-3.532903089747378, 50.72831269474728], [-3.532211889746895, 50.72840419474736], [-3.53234318974679, 50.72880149474767], [-3.532387489746823, 50.72879559474767], [-3.532362989746843, 50.72872159474761], [-3.532586089746996, 50.72869199474757], [-3.532642289746952, 50.7288619947477], [-3.532374189746766, 50.72889749474774], [-3.532351289746783, 50.728828094747705], [-3.532162189746651, 50.72885309474771], [-3.532022289746762, 50.728430094747374], [-3.531251889746225, 50.72853219474747], [-3.531211789746257, 50.72841109474739]]], [[[-3.530673389745809, 50.72863429474756], [-3.530613689745857, 50.72845119474742], [-3.530554889745816, 50.72845889474743], [-3.530532289745834, 50.72838959474737], [-3.530737889745979, 50.72836279474735], [-3.530760489745962, 50.72843219474741], [-3.530719689745933, 50.7284374947474], [-3.530778689745884, 50.728618594747545], [-3.53081688974591, 50.72861359474754], [-3.530834089745896, 50.72866639474759], [-3.53066668974578, 50.728688294747606], [-3.530650089745794, 50.728637294747564], [-3.530673389745809, 50.72863429474756]]], [[[-3.532843289747266, 50.728467194747395], [-3.532829889747277, 50.72842929474737], [-3.532896489747324, 50.728419794747346], [-3.532907689747316, 50.7284515947474], [-3.532986389747369, 50.728440494747375], [-3.533036589747334, 50.72858279474748], [-3.532463489746933, 50.72866379474755], [-3.532415489746967, 50.72852759474747], [-3.532843289747266, 50.728467194747395]]], [[[-3.531901289746646, 50.72851499474746], [-3.531966589746591, 50.7287163947476], [-3.531572689746317, 50.72876759474766], [-3.531507389746371, 50.72856619474749], [-3.531901289746646, 50.72851499474746]]], [[[-3.531022589745987, 50.72872949474763], [-3.530931989745923, 50.72874179474765], [-3.530875089745964, 50.72857329474749], [-3.531160089746165, 50.72853469474746], [-3.531218389746121, 50.72870739474761], [-3.531119989746053, 50.72872069474762], [-3.531126489746047, 50.72873989474765], [-3.531030489745981, 50.728752894747664], [-3.531022589745987, 50.72872949474763]]], [[[-3.530878989745857, 50.72881079474771], [-3.531231389746099, 50.72877019474765], [-3.531240789746093, 50.72879899474769], [-3.53128328974612, 50.728796394747675], [-3.531328089746088, 50.72892619474778], [-3.530951089745835, 50.7289526947478], [-3.530916089745819, 50.7289409947478], [-3.530878989745857, 50.72881079474771]]]]}}, {"type": "Feature", "properties": {"building_id": "B008", "anon_name": "Building C", "footprint_m2": 4431.667556263824, "gia_m2": 14697.3, "gas_kwh": 45061.592, "kgco2e_per_m2": 1.8330180519142982, "storeys": 3.316426562553522, "storey_flag": false, "heat_cluster": 2}, "geometry": {"type": "Polygon", "coordinates": [[[-3.53372148974476, 50.73492199475246], [-3.533710689744727, 50.73497789475251], [-3.53364308974468, 50.73498559475251], [-3.533558289744621, 50.73499949475254], [-3.533504089744638, 50.73489029475247], [-3.533455489744637, 50.7348273947524], [-3.533426589744624, 50.73481579475239], [-3.533386489744604, 50.73480409475239], [-3.533188289744466, 50.73482969475241], [-3.533162689744441, 50.73484929475241], [-3.533153989744418, 50.734888494752454], [-3.533150589744387, 50.73494419475249], [-3.53317808974436, 50.73503879475256], [-3.532983389744226, 50.735057594752575], [-3.532990789744178, 50.73517239475267], [-3.533005789744148, 50.73525829475277], [-3.532997589744112, 50.735320094752815], [-3.533468589744441, 50.73525439475273], [-3.533577489744369, 50.73555469475296], [-3.533704489744451, 50.735553494752956], [-3.533824189744521, 50.73556369475297], [-3.534145589744713, 50.735591194753006], [-3.53418298974477, 50.73551909475294], [-3.534153089744779, 50.735462794752884], [-3.534141589744799, 50.735404294752854], [-3.533994789744888, 50.73502139475256], [-3.533965589744905, 50.73494539475249], [-3.533935389744901, 50.734913994752475], [-3.533841189744889, 50.734815794752386], [-3.533804489744855, 50.73483179475239], [-3.533765789744824, 50.73484759475241], [-3.533739789744797, 50.734869794752434], [-3.53372148974476, 50.73492199475246]]]}}, {"type": "Feature", "properties": {"building_id": "B005", "anon_name": "Building D", "footprint_m2": 4286.583735213361, "gia_m2": 13087.3, "gas_kwh": 40175.594, "kgco2e_per_m2": 1.9447855890672627, "storeys": 3.0530839494608846, "storey_flag": false, "heat_cluster": 2}, "geometry": {"type": "Polygon", "coordinates": [[[-3.532040089742508, 50.737417694754456], [-3.532931689743138, 50.737286494754365], [-3.533016289743141, 50.73738989475443], [-3.532962989743101, 50.73740519475444], [-3.533003389743062, 50.73753929475453], [-3.533135589742956, 50.73793979475485], [-3.532286189742358, 50.738067194754976], [-3.532040089742508, 50.737417694754456]], [[-3.532751689742961, 50.73741439475446], [-3.532364189742686, 50.73747649475452], [-3.53241348974266, 50.7375996947546], [-3.532800989742935, 50.737537494754534], [-3.532751689742961, 50.73741439475446]]]}}, {"type": "Feature", "properties": {"building_id": "B001", "anon_name": "Building E", "footprint_m2": 4075.5537984504217, "gia_m2": 9302.6, "gas_kwh": 28268.311, "kgco2e_per_m2": 1.9342294017478976, "storeys": 2.2825364257335945, "storey_flag": false, "heat_cluster": 0}, "geometry": {"type": "Polygon", "coordinates": [[[-3.536228389744292, 50.739267194755854], [-3.535829889744151, 50.73903139475566], [-3.536903289745151, 50.738360294755125], [-3.537287289745277, 50.738611694755335], [-3.536228389744292, 50.739267194755854]]]}}, {"type": "Feature", "properties": {"building_id": "B003", "anon_name": "Building F", "footprint_m2": 3771.2701224927023, "gia_m2": 6022.2, "gas_kwh": 18430.765, "kgco2e_per_m2": 1.9396941407625123, "storeys": 1.5968625434922432, "storey_flag": false, "heat_cluster": 2}, "geometry": {"type": "Polygon", "coordinates": [[[-3.53253548974303, 50.73698299475412], [-3.532530989743031, 50.736971394754114], [-3.532501589743049, 50.736894894754045], [-3.532491589743056, 50.736868994754026], [-3.532168489742826, 50.73691879475407], [-3.531943789742668, 50.736953494754104], [-3.531915689742684, 50.736880394754046], [-3.531855489742641, 50.73688969475405], [-3.531849689742643, 50.73687469475403], [-3.531837789742653, 50.73684359475401], [-3.5319052897427, 50.73683319475401], [-3.531806389742759, 50.736576094753794], [-3.531774489742736, 50.736581094753795], [-3.531746589742754, 50.73650859475376], [-3.531777989742776, 50.73650369475375], [-3.53202418974295, 50.73646579475373], [-3.53200728974296, 50.73642189475368], [-3.532062889742999, 50.736413294753675], [-3.532182889742927, 50.73672499475391], [-3.532358189743051, 50.73669799475388], [-3.532181589743157, 50.73623939475353], [-3.532002389743032, 50.73626699475357], [-3.53203788974301, 50.73635909475362], [-3.531976789742966, 50.73636849475363], [-3.53196938974297, 50.736349494753625], [-3.531840589742879, 50.73636929475365], [-3.531827489742887, 50.73633539475364], [-3.531811489742896, 50.73629369475357], [-3.531775389742918, 50.73619989475352], [-3.531750189742932, 50.73613449475346], [-3.531613889742835, 50.736155494753476], [-3.531637989742822, 50.73621829475355], [-3.531675789742799, 50.736316294753614], [-3.531618689742759, 50.736325094753624], [-3.531511789742684, 50.73634159475363], [-3.531540189742665, 50.73641529475366], [-3.530853789742181, 50.73652109475377], [-3.530868489742172, 50.736559294753796], [-3.530800889742124, 50.736569694753825], [-3.530814589742117, 50.73660519475385], [-3.530883089742164, 50.73659459475383], [-3.530895689742156, 50.73662749475386], [-3.531290789742435, 50.73656659475381], [-3.531318889742419, 50.73663959475386], [-3.531385489742467, 50.73662929475385], [-3.531360289742482, 50.736563894753814], [-3.53157108974263, 50.73653139475378], [-3.531638989742589, 50.736707794753904], [-3.531649889742583, 50.73673599475392], [-3.531688189742561, 50.73683549475402], [-3.53163108974252, 50.73684429475403], [-3.531609789742533, 50.73678889475398], [-3.531423289742403, 50.736817594754], [-3.531469489742374, 50.73693769475409], [-3.5316498897425, 50.73690989475406], [-3.531634989742509, 50.73687109475404], [-3.531711089742565, 50.73685929475405], [-3.531727389742554, 50.73690149475407], [-3.53180228974251, 50.73709609475421], [-3.53253548974303, 50.73698299475412]]]}}, {"type": "Feature", "properties": {"building_id": "B006", "anon_name": "Building G", "footprint_m2": 3595.3726143554245, "gia_m2": 4513.8, "gas_kwh": 13829.758, "kgco2e_per_m2": 1.8295221067836416, "storeys": 1.2554470660363615, "storey_flag": false, "heat_cluster": 3}, "geometry": {"type": "Polygon", "coordinates": [[[-3.544422589753307, 50.73124709474941], [-3.544151789753137, 50.7312419947494], [-3.544138389753315, 50.730851694749106], [-3.544009689753231, 50.73084999474911], [-3.544098689753673, 50.73003799474846], [-3.544139689753884, 50.72964889474816], [-3.544159789753972, 50.72949219474803], [-3.544284189754049, 50.72949419474803], [-3.544228989753734, 50.73008869474851], [-3.544294989753774, 50.73008899474852], [-3.544361289753816, 50.7300893947485], [-3.544401189753841, 50.730089594748485], [-3.544422589753307, 50.73124709474941]]]}}, {"type": "Feature", "properties": {"building_id": "B002", "anon_name": "Building H", "footprint_m2": 3489.419278910603, "gia_m2": 4485.8, "gas_kwh": 13706.968, "kgco2e_per_m2": 1.827909152793258, "storeys": 1.285543421827046, "storey_flag": false, "heat_cluster": 2}, "geometry": {"type": "Polygon", "coordinates": [[[-3.530914189742671, 50.73556509475302], [-3.530565389742302, 50.73587809475326], [-3.53120328974259, 50.73612689475346], [-3.531703389743131, 50.73565559475307], [-3.531488889743037, 50.73556449475302], [-3.531344189742881, 50.73570089475313], [-3.531370289742891, 50.735711994753146], [-3.531113589742614, 50.735954494753315], [-3.530825589742487, 50.73583629475322], [-3.531050789742731, 50.73562579475309], [-3.531207789742798, 50.73569229475309], [-3.53131068974291, 50.73559509475302], [-3.5308289897427, 50.73539089475288], [-3.530842789742715, 50.735377794752885], [-3.530703389742656, 50.735318594752826], [-3.530687289742638, 50.73533379475284], [-3.530558089742581, 50.73527889475278], [-3.530115489742104, 50.73569599475312], [-3.530486289742262, 50.73585359475325], [-3.530606489742393, 50.735740294753164], [-3.530359289742286, 50.73563519475307], [-3.530590789742538, 50.73541709475291], [-3.530914189742671, 50.73556509475302]]]}}]};
+  if (!data || !data.features || !data.features.length) return;
+  if (typeof L === 'undefined') { return; }
+  var map = L.map('map', {scrollWheelZoom: true}).setView([50.715, -3.53], 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors (ODbL). Metrics are synthetic.'
+  }).addTo(map);
+  var layer = L.geoJSON(data, {
+    style: function(feature){
+      var p = feature.properties || {};
+      var v = p.kgco2e_m2 ?? p.kgco2e_per_m2 ?? p.intensity ?? 0;
+      var t = Math.min(1, Math.max(0, (Number(v) || 0) / (Number(p.max) || 1)));
+      return {color: '#e8eef4', weight: 1, fillColor: t > 0.66 ? '#ff6b6b' : (t > 0.33 ? '#ffb454' : '#57d9a3'), fillOpacity: 0.65};
+    },
+    onEachFeature: function(feature, lyr){
+      var p = feature.properties || {};
+      var rows = Object.keys(p).map(function(k){ return '<div><b>' + k + ':</b> ' + p[k] + '</div>'; }).join('');
+      lyr.bindPopup('<div style="color:#111">' + rows + '</div>');
+    }
+  }).addTo(map);
+  map.fitBounds(layer.getBounds(), {padding: [18, 18]});
+})();
+
+</script>
+</body>
+</html>

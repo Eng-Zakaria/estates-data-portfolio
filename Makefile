@@ -1,4 +1,4 @@
-.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p07-run p09-run p11-run p12-run p13-fetch p13-eval p13-test p13-run p14-sample p14-check p14-check-clean p14-variant p14-test p14-run p16-test p16-eval p16-thresholds p16-run aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs
+.PHONY: setup data test lint typecheck ci docs clean ingest catalogue airflow-up airflow-down airflow-ps airflow-logs airflow-pools airflow-backfill iot-demo p19 p18-run p10-run p08-run p06-run p07-run p09-run p11-run p12-run p13-fetch p13-eval p13-test p13-run p14-sample p14-check p14-check-clean p14-variant p14-test p14-run p16-test p16-eval p16-thresholds p16-run demos demos-serve aws-plan aws-apply aws-destroy dbt-build dbt-test dq-check security dbt-docs p20-build p20-check p20-test p20-site p20-run
 
 PROFILE ?= small
 SEED ?= 42
@@ -43,6 +43,15 @@ dbt-test:
 dbt-docs:
 	dbt docs generate --profiles-dir platform/dbt --project-dir platform/dbt --target dev
 
+# Rebuild the interactive static demo pages published to GitHub Pages.
+# Reads the gold marts and project outputs, so run `make data && make ingest &&
+# make dbt-build` first for a full set; without them pages degrade to notices.
+demos:
+	$(PY) scripts/build_demos.py
+
+demos-serve:
+	$(PY) -m http.server 8899 --directory docs/apps
+
 dq-check:
 	$(PY) .github/scripts/dq_gate.py
 
@@ -51,6 +60,7 @@ security:
 
 docs:
 	mkdocs build --strict 2>&1 || echo "mkdocs not configured yet (P20)"
+	$(MAKE) p20-site
 
 clean:
 	rm -rf data/raw data/raw_snapshots data/truth .pytest_cache
@@ -166,6 +176,23 @@ p16-thresholds:
 	$(PY) $(P16)/scripts/threshold_separation.py
 
 p16-run: p16-test p16-eval p16-thresholds
+
+# P20 governance and literacy pack: regenerate pages, run every gate, strict site build.
+P20 = projects/p20-governance-literacy
+
+p20-build:
+	$(PY) $(P20)/src/cli.py build
+
+p20-check:
+	$(PY) $(P20)/src/cli.py check
+
+p20-test:
+	$(PY) -m pytest $(P20)/tests -q -p no:cacheprovider --no-cov
+
+p20-site:
+	$(PY) -m mkdocs build --strict -f $(P20)/mkdocs.yml
+
+p20-run: p20-build p20-test p20-check p20-site
 
 AF_COMPOSE = ENV_FILE_PATH=.env docker compose --env-file platform/orchestration/.env --project-directory platform/orchestration -f platform/orchestration/docker-compose.yml -f platform/orchestration/docker-compose.override.yml
 

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P18 · Digital twin data layer — Estates Data Portfolio</title>
+<style>
+:root{
+  --bg:#0f1720; --panel:#16212c; --panel2:#1d2b38; --line:#2a3a4a;
+  --fg:#e8eef4; --muted:#9fb3c8; --accent:#4da3ff; --accent2:#57d9a3;
+  --warn:#ffb454; --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:15px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}
+header{padding:22px 26px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--accent)}
+h1{margin:6px 0 4px;font-size:25px;line-height:1.2}
+.sub{color:var(--muted);font-size:14px;max-width:70ch}
+.banner{margin:14px 26px 0;padding:10px 14px;border-radius:8px;font-size:13px;
+  background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.45);color:#ffd9a8}
+main{padding:20px 26px 60px}
+nav.picker{margin:16px 26px 0;display:flex;flex-wrap:wrap;gap:6px}
+nav.picker a{font-size:12px;padding:4px 9px;border:1px solid var(--line);
+  border-radius:20px;text-decoration:none;color:var(--muted);background:var(--panel)}
+nav.picker a:hover{color:var(--fg);border-color:var(--accent)}
+nav.picker a.on{background:var(--accent);color:#04121f;border-color:var(--accent);font-weight:600}
+h2{font-size:17px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:14px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.kpi .n{color:var(--muted);font-size:12px;margin-top:4px}
+.chart{width:100%;height:380px}
+.chart.tall{height:520px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}
+.controls label{display:flex;flex-direction:column;font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;gap:4px}
+select,input{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:6px 8px;font-size:13px;min-width:150px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;
+  background:var(--panel);cursor:pointer}
+tbody tr:hover{background:var(--panel2)}
+.scroll{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tag{display:inline-block;padding:1px 7px;border-radius:11px;font-size:11px;border:1px solid var(--line)}
+.ok{color:var(--accent2);border-color:var(--accent2)}
+.warn{color:var(--warn);border-color:var(--warn)}
+.bad{color:var(--bad);border-color:var(--bad)}
+.note{color:var(--muted);font-size:13px;background:var(--panel);border-left:3px solid var(--accent);
+  padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+#map{height:520px;border-radius:10px;border:1px solid var(--line)}
+footer{padding:18px 26px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+a.ll{color:var(--muted)}
+</style>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+</head>
+<body>
+<script>window.__fig = window.__fig || {};</script>
+<header>
+  <div class="eyebrow">Estates Data Portfolio · digital-twin</div>
+  <h1>P18 · Digital twin data layer</h1>
+  <div class="sub">Canonical IDs, a cross-system crosswalk, a Brick Schema model and an API that serves context.</div>
+</header>
+<div class="banner"><strong>Synthetic data.</strong> Synthetic data for portfolio demonstration. No real university, building, person or performance data is shown or implied.</div>
+<nav class="picker"><a href="foundation.html" class="">F · Synthetic generator</a><a href="lakehouse.html" class="">P01 · Lakehouse</a><a href="orchestration.html" class="">P02 · Airflow orchestration</a><a href="data-quality.html" class="">P03 · Data quality</a><a href="dbt-marts.html" class="">P04 · dbt marts</a><a href="cicd.html" class="">P05 · CI/CD</a><a href="space-utilisation.html" class="">P06 · Space utilisation</a><a href="assets-maintenance.html" class="">P07 · Assets &amp; maintenance</a><a href="net-zero-carbon.html" class="">P08 · Net zero &amp; carbon</a><a href="compliance.html" class="">P09 · Compliance tracker</a><a href="institutional-return.html" class="">P10 · Institutional return</a><a href="ifc-analytics.html" class="">P11 · IFC analytics</a><a href="cobie-validator.html" class="">P12 · COBie validator</a><a href="uniclass-mapper.html" class="">P13 · Uniclass mapper</a><a href="iso19650-checker.html" class="">P14 · ISO 19650 checker</a><a href="bms-iot.html" class="">P15 · BMS IoT ingestion</a><a href="energy-anomaly.html" class="">P16 · Energy anomaly</a><a href="air-quality.html" class="">P17 · Air quality &amp; occupancy</a><a href="digital-twin.html" class="">P18 · Digital twin layer</a><a href="spatial-map.html" class="">P19 · Spatial carbon map</a><a href="governance.html" class="">P20 · Governance &amp; literacy</a></nav>
+<main>
+<div class="note">This is the <strong>data foundation</strong> of a digital twin, not a 3D viewer. Canonical IDs and a crosswalk are the hard part: once a space, asset, meter and IFC element all resolve to one identity, the graph, the API and the dashboards all stop being integrations.</div>
+<div class="grid g4">
+<div class="card kpi"><div class="l">Crosswalk rows</div><div class="v">34,584</div><div class="n">(canonical_id, system, native_id)</div></div>
+<div class="card kpi"><div class="l">Source systems</div><div class="v">8</div><div class="n">space register, CAFM, IFC, BMS, meters, sensors</div></div>
+<div class="card kpi"><div class="l">Canonical entities</div><div class="v">20132</div><div class="n">one identity each</div></div>
+<div class="card kpi"><div class="l">Brick model</div><div class="v">SHACL valid</div><div class="n">validated against the Brick ontology</div></div>
+</div>
+<h2>Crosswalk coverage by source system</h2>
+<div class="card"><div id="p18-systems" class="chart tall"></div><script>window.__fig["p18-systems"]={"data": [{"type": "bar", "x": ["space_register", "timetable", "cafm", "ifc", "sensor", "inspection", "bms", "meter"], "y": ["14171", "12026", "7434", "787", "90", "40", "20", "16"], "orientation": "h", "marker": {"color": "#4da3ff"}}], "layout": {"title": "Crosswalk rows by source system", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 60, "r": 20, "t": 45, "b": 60}, "xaxis": {"title": "", "gridcolor": "#2a3a4a"}, "yaxis": {"title": "rows", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="scroll"><table id="p18-xw" class="sortable"><thead><tr><th>canonical_id</th><th>system</th><th>native_id</th></tr></thead><tbody><tr><td>asset:A-B001-000001</td><td>cafm</td><td>A-B001-000001</td></tr><tr><td>asset:A-B001-000001</td><td>space_register</td><td>S-B001-L00-029</td></tr><tr><td>asset:A-B001-000002</td><td>cafm</td><td>A-B001-000002</td></tr><tr><td>asset:A-B001-000002</td><td>space_register</td><td>S-B001-L02-009</td></tr><tr><td>asset:A-B001-000003</td><td>cafm</td><td>A-B001-000003</td></tr><tr><td>asset:A-B001-000003</td><td>space_register</td><td>S-B001-L04-010</td></tr><tr><td>asset:A-B001-000004</td><td>cafm</td><td>A-B001-000004</td></tr><tr><td>asset:A-B001-000004</td><td>space_register</td><td>S-B001-L00-018</td></tr><tr><td>asset:A-B001-000005</td><td>cafm</td><td>A-B001-000005</td></tr><tr><td>asset:A-B001-000005</td><td>space_register</td><td>S-B001-L01-012</td></tr><tr><td>asset:A-B001-000006</td><td>cafm</td><td>A-B001-000006</td></tr><tr><td>asset:A-B001-000006</td><td>space_register</td><td>S-B001-L00-042</td></tr><tr><td>asset:A-B001-000007</td><td>cafm</td><td>A-B001-000007</td></tr><tr><td>asset:A-B001-000007</td><td>space_register</td><td>S-B001-L04-010</td></tr><tr><td>asset:A-B001-000008</td><td>cafm</td><td>A-B001-000008</td></tr><tr><td>asset:A-B001-000008</td><td>space_register</td><td>S-B001-L01-016</td></tr><tr><td>asset:A-B001-000009</td><td>cafm</td><td>A-B001-000009</td></tr><tr><td>asset:A-B001-000009</td><td>space_register</td><td>S-B001-L01-026</td></tr><tr><td>asset:A-B001-000010</td><td>cafm</td><td>A-B001-000010</td></tr><tr><td>asset:A-B001-000010</td><td>space_register</td><td>S-B001-L00-031</td></tr><tr><td>asset:A-B001-000011</td><td>cafm</td><td>A-B001-000011</td></tr><tr><td>asset:A-B001-000011</td><td>space_register</td><td>S-B001-L03-004</td></tr><tr><td>asset:A-B001-000012</td><td>cafm</td><td>A-B001-000012</td></tr><tr><td>asset:A-B001-000012</td><td>space_register</td><td>S-B001-L04-002</td></tr><tr><td>asset:A-B001-000013</td><td>cafm</td><td>A-B001-000013</td></tr><tr><td>asset:A-B001-000013</td><td>space_register</td><td>S-B001-L02-013</td></tr><tr><td>asset:A-B001-000014</td><td>cafm</td><td>A-B001-000014</td></tr><tr><td>asset:A-B001-000014</td><td>space_register</td><td>S-B001-L00-050</td></tr><tr><td>asset:A-B001-000015</td><td>cafm</td><td>A-B001-000015</td></tr><tr><td>asset:A-B001-000015</td><td>space_register</td><td>S-B001-L02-025</td></tr><tr><td>asset:A-B001-000016</td><td>cafm</td><td>A-B001-000016</td></tr><tr><td>asset:A-B001-000016</td><td>space_register</td><td>S-B001-L01-053</td></tr><tr><td>asset:A-B001-000017</td><td>cafm</td><td>A-B001-000017</td></tr><tr><td>asset:A-B001-000017</td><td>space_register</td><td>S-B001-L01-026</td></tr><tr><td>asset:A-B001-000018</td><td>cafm</td><td>A-B001-000018</td></tr><tr><td>asset:A-B001-000018</td><td>space_register</td><td>S-B001-L00-017</td></tr><tr><td>asset:A-B001-000019</td><td>cafm</td><td>A-B001-000019</td></tr><tr><td>asset:A-B001-000019</td><td>space_register</td><td>S-B001-L02-013</td></tr><tr><td>asset:A-B001-000020</td><td>cafm</td><td>A-B001-000020</td></tr><tr><td>asset:A-B001-000020</td><td>space_register</td><td>S-B001-L04-037</td></tr><tr><td>asset:A-B001-000021</td><td>cafm</td><td>A-B001-000021</td></tr><tr><td>asset:A-B001-000021</td><td>space_register</td><td>S-B001-L00-049</td></tr><tr><td>asset:A-B001-000022</td><td>cafm</td><td>A-B001-000022</td></tr><tr><td>asset:A-B001-000022</td><td>space_register</td><td>S-B001-L04-045</td></tr><tr><td>asset:A-B001-000023</td><td>cafm</td><td>A-B001-000023</td></tr><tr><td>asset:A-B001-000023</td><td>space_register</td><td>S-B001-L03-039</td></tr><tr><td>asset:A-B001-000024</td><td>cafm</td><td>A-B001-000024</td></tr><tr><td>asset:A-B001-000024</td><td>space_register</td><td>S-B001-L00-033</td></tr><tr><td>asset:A-B001-000025</td><td>cafm</td><td>A-B001-000025</td></tr><tr><td>asset:A-B001-000025</td><td>space_register</td><td>S-B001-L00-034</td></tr><tr><td>asset:A-B001-000026</td><td>cafm</td><td>A-B001-000026</td></tr><tr><td>asset:A-B001-000026</td><td>space_register</td><td>S-B001-L00-031</td></tr><tr><td>asset:A-B001-000027</td><td>cafm</td><td>A-B001-000027</td></tr><tr><td>asset:A-B001-000027</td><td>space_register</td><td>S-B001-L00-001</td></tr><tr><td>asset:A-B001-000028</td><td>cafm</td><td>A-B001-000028</td></tr><tr><td>asset:A-B001-000028</td><td>space_register</td><td>S-B001-L01-016</td></tr><tr><td>asset:A-B001-000029</td><td>cafm</td><td>A-B001-000029</td></tr><tr><td>asset:A-B001-000029</td><td>space_register</td><td>S-B001-L01-011</td></tr><tr><td>asset:A-B001-000030</td><td>cafm</td><td>A-B001-000030</td></tr><tr><td>asset:A-B001-000030</td><td>space_register</td><td>S-B001-L03-005</td></tr><tr><td>asset:A-B001-000031</td><td>cafm</td><td>A-B001-000031</td></tr><tr><td>asset:A-B001-000031</td><td>space_register</td><td>S-B001-L02-040</td></tr><tr><td>asset:A-B001-000032</td><td>cafm</td><td>A-B001-000032</td></tr><tr><td>asset:A-B001-000032</td><td>space_register</td><td>S-B001-L02-025</td></tr><tr><td>asset:A-B001-000033</td><td>cafm</td><td>A-B001-000033</td></tr><tr><td>asset:A-B001-000033</td><td>space_register</td><td>S-B001-L00-018</td></tr><tr><td>asset:A-B001-000034</td><td>cafm</td><td>A-B001-000034</td></tr><tr><td>asset:A-B001-000034</td><td>space_register</td><td>S-B001-L04-008</td></tr><tr><td>asset:A-B001-000035</td><td>cafm</td><td>A-B001-000035</td></tr><tr><td>asset:A-B001-000035</td><td>space_register</td><td>S-B001-L00-034</td></tr><tr><td>asset:A-B001-000036</td><td>cafm</td><td>A-B001-000036</td></tr><tr><td>asset:A-B001-000036</td><td>space_register</td><td>S-B001-L01-046</td></tr><tr><td>asset:A-B001-000037</td><td>cafm</td><td>A-B001-000037</td></tr><tr><td>asset:A-B001-000037</td><td>space_register</td><td>S-B001-L03-028</td></tr><tr><td>asset:A-B001-000038</td><td>cafm</td><td>A-B001-000038</td></tr><tr><td>asset:A-B001-000038</td><td>space_register</td><td>S-B001-L04-044</td></tr><tr><td>asset:A-B001-000039</td><td>cafm</td><td>A-B001-000039</td></tr><tr><td>asset:A-B001-000039</td><td>space_register</td><td>S-B001-L04-030</td></tr><tr><td>asset:A-B001-000040</td><td>cafm</td><td>A-B001-000040</td></tr><tr><td>asset:A-B001-000040</td><td>space_register</td><td>S-B001-L02-009</td></tr></tbody></table></div>
+<h2>Relationships</h2>
+<div class="card"><div id="p18-preds" class="chart"></div><script>window.__fig["p18-preds"]={"data": [{"type": "bar", "x": ["isLocatedIn", "hasPart", "hasPoint", "feeds", "isServedBy", "isMeteredBy"], "y": ["20065", "1983", "389", "154", "154", "16"], "orientation": "h", "marker": {"color": "#57d9a3"}}], "layout": {"title": "Relationships by predicate", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 60, "r": 20, "t": 45, "b": 60}, "xaxis": {"title": "", "gridcolor": "#2a3a4a"}, "yaxis": {"title": "rows", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="note">Predicates follow Brick where practical: <code>hasPart</code>, <code>isLocatedIn</code>, <code>feeds</code>, <code>hasPoint</code>, <code>isMeteredBy</code>, <code>isServedBy</code>.</div>
+<div class="scroll"><table id="p18-rel" class="sortable"><thead><tr><th>subject_id</th><th>predicate</th><th>object_id</th><th>source</th><th>valid_from</th><th>valid_to</th></tr></thead><tbody><tr><td>asset:A-B001-000001</td><td>feeds</td><td>space:S-B001-L00-029</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000001</td><td>isLocatedIn</td><td>space:S-B001-L00-029</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000002</td><td>isLocatedIn</td><td>space:S-B001-L02-009</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000003</td><td>feeds</td><td>space:S-B001-L04-010</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000003</td><td>isLocatedIn</td><td>space:S-B001-L04-010</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000004</td><td>isLocatedIn</td><td>space:S-B001-L00-018</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000005</td><td>isLocatedIn</td><td>space:S-B001-L01-012</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000006</td><td>isLocatedIn</td><td>space:S-B001-L00-042</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000007</td><td>isLocatedIn</td><td>space:S-B001-L04-010</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000008</td><td>isLocatedIn</td><td>space:S-B001-L01-016</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000009</td><td>isLocatedIn</td><td>space:S-B001-L01-026</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000010</td><td>isLocatedIn</td><td>space:S-B001-L00-031</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000011</td><td>feeds</td><td>space:S-B001-L03-004</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000011</td><td>isLocatedIn</td><td>space:S-B001-L03-004</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000012</td><td>isLocatedIn</td><td>space:S-B001-L04-002</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000013</td><td>feeds</td><td>space:S-B001-L02-013</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000013</td><td>isLocatedIn</td><td>space:S-B001-L02-013</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000014</td><td>isLocatedIn</td><td>space:S-B001-L00-050</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000015</td><td>feeds</td><td>space:S-B001-L02-025</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000015</td><td>isLocatedIn</td><td>space:S-B001-L02-025</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000016</td><td>feeds</td><td>space:S-B001-L01-053</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000016</td><td>isLocatedIn</td><td>space:S-B001-L01-053</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000017</td><td>isLocatedIn</td><td>space:S-B001-L01-026</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000018</td><td>isLocatedIn</td><td>space:S-B001-L00-017</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000019</td><td>isLocatedIn</td><td>space:S-B001-L02-013</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000020</td><td>isLocatedIn</td><td>space:S-B001-L04-037</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000021</td><td>isLocatedIn</td><td>space:S-B001-L00-049</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000022</td><td>isLocatedIn</td><td>space:S-B001-L04-045</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000023</td><td>isLocatedIn</td><td>space:S-B001-L03-039</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000024</td><td>isLocatedIn</td><td>space:S-B001-L00-033</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000025</td><td>feeds</td><td>space:S-B001-L00-034</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000025</td><td>isLocatedIn</td><td>space:S-B001-L00-034</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000026</td><td>isLocatedIn</td><td>space:S-B001-L00-031</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000027</td><td>isLocatedIn</td><td>space:S-B001-L00-001</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000028</td><td>isLocatedIn</td><td>space:S-B001-L01-016</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000029</td><td>isLocatedIn</td><td>space:S-B001-L01-011</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000030</td><td>isLocatedIn</td><td>space:S-B001-L03-005</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000031</td><td>isLocatedIn</td><td>space:S-B001-L02-040</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000032</td><td>isLocatedIn</td><td>space:S-B001-L02-025</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000033</td><td>isLocatedIn</td><td>space:S-B001-L00-018</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000034</td><td>isLocatedIn</td><td>space:S-B001-L04-008</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000035</td><td>isLocatedIn</td><td>space:S-B001-L00-034</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000036</td><td>feeds</td><td>space:S-B001-L01-046</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000036</td><td>isLocatedIn</td><td>space:S-B001-L01-046</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000037</td><td>isLocatedIn</td><td>space:S-B001-L03-028</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000038</td><td>isLocatedIn</td><td>space:S-B001-L04-044</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000039</td><td>isLocatedIn</td><td>space:S-B001-L04-030</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000040</td><td>isLocatedIn</td><td>space:S-B001-L02-009</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000041</td><td>isLocatedIn</td><td>space:S-B001-L00-014</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000042</td><td>isLocatedIn</td><td>space:S-B001-L03-005</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000043</td><td>isLocatedIn</td><td>space:S-B001-L03-028</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000044</td><td>isLocatedIn</td><td>space:S-B001-L02-006</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000045</td><td>isLocatedIn</td><td>space:S-B001-L00-024</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000046</td><td>isLocatedIn</td><td>space:S-B001-L03-027</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000047</td><td>isLocatedIn</td><td>space:S-B001-L01-046</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000048</td><td>isLocatedIn</td><td>space:S-B001-L00-049</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000049</td><td>isLocatedIn</td><td>space:S-B001-L01-046</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000050</td><td>isLocatedIn</td><td>space:S-B001-L02-009</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000051</td><td>isLocatedIn</td><td>space:S-B001-L02-021</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr><tr><td>asset:A-B001-000052</td><td>isLocatedIn</td><td>space:S-B001-L01-011</td><td>cafm</td><td>2026-01-01</td><td>None</td></tr></tbody></table></div>
+<h2>API and explorer</h2>
+<div class="note">A FastAPI service with OpenAPI docs exposes buildings, spaces, assets, time series, graph neighbours and a coverage report — pagination, API-key header, consistent error model, and a TestClient suite covering every endpoint. A Streamlit explorer renders the same graph.</div>
+<h3>Brick TTL (17,026 bytes)</h3>
+<pre style="background:#16212c;border:1px solid #2a3a4a;border-radius:10px;padding:14px;overflow:auto;font-size:12px">@prefix brick: &lt;https://brickschema.org/schema/Brick#&gt; .
+@prefix rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; .
+
+&lt;http://example.org/digital-twin/B001#AHU_A-B001-000001&gt; a brick:AHU ;
+    rdfs:label "A-B001-000001" ;
+    brick:feeds &lt;http://example.org/digital-twin/B001#Zone_S-B001-L00-029&gt; .
+
+&lt;http://example.org/digital-twin/B001#AHU_A-B001-000003&gt; a brick:AHU ;
+    rdfs:label "A-B001-000003" ;
+    brick:feeds &lt;http://example.org/digital-twin/B001#Terminal_A-B001-000153&gt;,
+        &lt;http://example.org/digital-twin/B001#Terminal_A-B001-000171&gt;,
+        &lt;http://example.org/digital-twin/B001#Zone_S-B001-L04-010&gt; .
+
+&lt;http://example.org/digital-twin/B001#AHU_A-B001-000011&gt; a brick:AHU ;
+    rdfs:label "A-B001-000011" ;
+    brick:feeds &lt;http://example.org/digital-twin/B001#Terminal_A-B001-000126&gt;,
+        &lt;http://example.org/digital-twin/B001#Zone_S-B001-L03-004&gt; .
+
+&lt;http://example.org/digital-twin/B001#AHU_A-B001-000013&gt; a brick:AHU ;
+    rdfs:label "A-B001-000013" ;
+    brick:feeds &lt;http://example.org/digital-twin/B001#Terminal_A-B001-000181&gt;,
+        &lt;http://example.org/digital-twin/B001#Zone_S-B001-L02-013&gt; .
+
+&lt;http://example.org/digital-twin/B001#AHU_A-B001-000015&gt; a brick:AHU ;
+    rdfs:label "A-B001-000015" ;
+    brick:feeds &lt;http://example.org/digital-twin/B001#Zone_S-B001-L02-025&gt; .
+
+&lt;http://example.org/digital-twin/B001#AHU_A-B001-000016&gt; a brick:AHU ;
+    rdfs:label "A-B001-000016" ;
+    brick:feeds &lt;http://example.org/digital-twin/B001#Zone_S-B001-L01-053&gt; .</pre>
+</main>
+<footer>
+  Generated from the same gold marts and acceptance evidence quoted in the project README. Figures are reproduced exactly as measured; see the repository for tests and SQL that tie them back.
+  <br>Repository: <code>estates-data-portfolio</code>
+</footer>
+<script>
+// Render every Plotly figure embedded on this page.
+for (const [id, fig] of Object.entries(window.__fig || {})) {
+  const el = document.getElementById(id);
+  if (el && window.Plotly) {
+    el.style.width = '100%';
+    Plotly.newPlot(id, fig.data, fig.layout, {displaylogo:false, responsive:true});
+  }
+};
+// Sortable tables: click a header to sort ascending/descending.
+document.querySelectorAll('table.sortable').forEach(function (table) {
+  table.querySelectorAll('th').forEach(function (th, idx) {
+    th.addEventListener('click', function () {
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+      const dir = th.dataset.dir === 'asc' ? -1 : 1;
+      th.dataset.dir = dir === 1 ? 'asc' : 'desc';
+      rows.sort(function (a, b) {
+        const av = a.cells[idx]?.innerText ?? '';
+        const bv = b.cells[idx]?.innerText ?? '';
+        const an = parseFloat(av.replace(/[^0-9.\-]/g, ''));
+        const bn = parseFloat(bv.replace(/[^0-9.\-]/g, ''));
+        if (!Number.isNaN(an) && !Number.isNaN(bn)) return (an - bn) * dir;
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estates Data Portfolio — Estates Data Portfolio</title>
+<style>
+:root{
+  --bg:#0f1720; --panel:#16212c; --panel2:#1d2b38; --line:#2a3a4a;
+  --fg:#e8eef4; --muted:#9fb3c8; --accent:#4da3ff; --accent2:#57d9a3;
+  --warn:#ffb454; --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:15px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}
+header{padding:22px 26px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--accent)}
+h1{margin:6px 0 4px;font-size:25px;line-height:1.2}
+.sub{color:var(--muted);font-size:14px;max-width:70ch}
+.banner{margin:14px 26px 0;padding:10px 14px;border-radius:8px;font-size:13px;
+  background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.45);color:#ffd9a8}
+main{padding:20px 26px 60px}
+nav.picker{margin:16px 26px 0;display:flex;flex-wrap:wrap;gap:6px}
+nav.picker a{font-size:12px;padding:4px 9px;border:1px solid var(--line);
+  border-radius:20px;text-decoration:none;color:var(--muted);background:var(--panel)}
+nav.picker a:hover{color:var(--fg);border-color:var(--accent)}
+nav.picker a.on{background:var(--accent);color:#04121f;border-color:var(--accent);font-weight:600}
+h2{font-size:17px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:14px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.kpi .n{color:var(--muted);font-size:12px;margin-top:4px}
+.chart{width:100%;height:380px}
+.chart.tall{height:520px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}
+.controls label{display:flex;flex-direction:column;font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;gap:4px}
+select,input{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:6px 8px;font-size:13px;min-width:150px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;
+  background:var(--panel);cursor:pointer}
+tbody tr:hover{background:var(--panel2)}
+.scroll{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tag{display:inline-block;padding:1px 7px;border-radius:11px;font-size:11px;border:1px solid var(--line)}
+.ok{color:var(--accent2);border-color:var(--accent2)}
+.warn{color:var(--warn);border-color:var(--warn)}
+.bad{color:var(--bad);border-color:var(--bad)}
+.note{color:var(--muted);font-size:13px;background:var(--panel);border-left:3px solid var(--accent);
+  padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+#map{height:520px;border-radius:10px;border:1px solid var(--line)}
+footer{padding:18px 26px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+a.ll{color:var(--muted)}
+</style>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+</head>
+<body>
+<script>window.__fig = window.__fig || {};</script>
+<header>
+  <div class="eyebrow">Estates Data Portfolio · index</div>
+  <h1>Estates Data Portfolio</h1>
+  <div class="sub">Data pipelines, dbt marts, data quality, Power BI handoff, BIM/standards, building systems and governance for a university estates function.</div>
+</header>
+<div class="banner"><strong>Synthetic data.</strong> Synthetic data for portfolio demonstration. No real university, building, person or performance data is shown or implied.</div>
+<nav class="picker"><a href="foundation.html" class="">F · Synthetic generator</a><a href="lakehouse.html" class="">P01 · Lakehouse</a><a href="orchestration.html" class="">P02 · Airflow orchestration</a><a href="data-quality.html" class="">P03 · Data quality</a><a href="dbt-marts.html" class="">P04 · dbt marts</a><a href="cicd.html" class="">P05 · CI/CD</a><a href="space-utilisation.html" class="">P06 · Space utilisation</a><a href="assets-maintenance.html" class="">P07 · Assets &amp; maintenance</a><a href="net-zero-carbon.html" class="">P08 · Net zero &amp; carbon</a><a href="compliance.html" class="">P09 · Compliance tracker</a><a href="institutional-return.html" class="">P10 · Institutional return</a><a href="ifc-analytics.html" class="">P11 · IFC analytics</a><a href="cobie-validator.html" class="">P12 · COBie validator</a><a href="uniclass-mapper.html" class="">P13 · Uniclass mapper</a><a href="iso19650-checker.html" class="">P14 · ISO 19650 checker</a><a href="bms-iot.html" class="">P15 · BMS IoT ingestion</a><a href="energy-anomaly.html" class="">P16 · Energy anomaly</a><a href="air-quality.html" class="">P17 · Air quality &amp; occupancy</a><a href="digital-twin.html" class="">P18 · Digital twin layer</a><a href="spatial-map.html" class="">P19 · Spatial carbon map</a><a href="governance.html" class="">P20 · Governance &amp; literacy</a></nav>
+<main>
+<div class="note">Twenty projects covering data pipelines, orchestration, data quality, dbt modelling, Power BI handoff, BIM and standards, building systems, spatial analysis, a digital-twin data layer, and governance. <strong>All data is synthetic</strong> — generated by the portfolio's own generator with a known ground truth, so the numbers here are reproducible and testable.</div><div class="grid g3"><div class="card"><a class="card" style="text-decoration:none;display:block" href="foundation.html"><div class="eyebrow">F</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Synthetic generator</h3><div class="sub">Generates the messy campus source exports every other project reads, with a known ground truth.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="lakehouse.html"><div class="eyebrow">P01</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Lakehouse</h3><div class="sub">Bronze → silver medallion ingestion with data contracts, idempotency and quarantine.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="orchestration.html"><div class="eyebrow">P02</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Airflow orchestration</h3><div class="sub">Seven DAGs, watermarks, schema-drift quarantine and failure alerting.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="data-quality.html"><div class="eyebrow">P03</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Data quality</h3><div class="sub">133 YAML checks compiled to Great Expectations and DuckDB, with scoring, recall and alerts.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="dbt-marts.html"><div class="eyebrow">P04</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">dbt marts</h3><div class="sub">Staging → intermediate → gold marts with contracts, snapshots and reconciliation tests.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="cicd.html"><div class="eyebrow">P05</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">CI/CD</h3><div class="sub">GitHub Actions gates: lint, types, tests, dbt build, DQ, terraform, docs.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="space-utilisation.html"><div class="eyebrow">P06</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Space utilisation</h3><div class="sub">Frequency × occupancy from timetable plus observed sensor occupancy.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="assets-maintenance.html"><div class="eyebrow">P07</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Assets & maintenance</h3><div class="sub">Backlog, SLA, reliability, lifecycle and renewal forecast from CAFM-style work orders.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="net-zero-carbon.html"><div class="eyebrow">P08</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Net zero & carbon</h3><div class="sub">Scope 1/2, intensity, pathway variance and overnight baseload from meter data.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="compliance.html"><div class="eyebrow">P09</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Compliance tracker</h3><div class="sub">Statutory inspection status, risk scoring, trend and a weekly HTML digest.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="institutional-return.html"><div class="eyebrow">P10</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Institutional return</h3><div class="sub">Mock HESA EMR / TRAC-style return: mapping, validation, cost allocation, audit trail.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="ifc-analytics.html"><div class="eyebrow">P11</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">IFC analytics</h3><div class="sub">IFC → analytical tables with a model QA report and reconciliation against the space register.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="cobie-validator.html"><div class="eyebrow">P12</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">COBie validator</h3><div class="sub">Rules-driven COBie workbook validation, readiness score and handover loader.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="uniclass-mapper.html"><div class="eyebrow">P13</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Uniclass mapper</h3><div class="sub">Hybrid fuzzy + embedding classification of messy asset descriptions with a review loop.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="iso19650-checker.html"><div class="eyebrow">P14</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">ISO 19650 checker</h3><div class="sub">Convention-agnostic container naming and metadata checker with fix suggestions and rollback.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="bms-iot.html"><div class="eyebrow">P15</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">BMS IoT ingestion</h3><div class="sub">MQTT → Node-RED → TimescaleDB → Grafana with dead-letter handling and fault monitoring.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="energy-anomaly.html"><div class="eyebrow">P16</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Energy anomaly</h3><div class="sub">Baselines, MAD / IsolationForest / CUSUM detectors and a prioritised savings action list.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="air-quality.html"><div class="eyebrow">P17</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Air quality & occupancy</h3><div class="sub">Ventilation risk, thermal comfort, observed occupancy and sensor health.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="digital-twin.html"><div class="eyebrow">P18</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Digital twin layer</h3><div class="sub">Canonical IDs, a cross-system crosswalk, Brick Schema and a FastAPI context API.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="spatial-map.html"><div class="eyebrow">P19</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Spatial carbon map</h3><div class="sub">OpenStreetMap footprints joined to synthetic metrics: choropleth, heat clusters, isochrones.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div><div class="card"><a class="card" style="text-decoration:none;display:block" href="governance.html"><div class="eyebrow">P20</div><h3 style="margin:6px 0 8px;color:#e8eef4;font-size:16px;text-transform:none;letter-spacing:0">Governance & literacy</h3><div class="sub">Data governance, standards register, metric registry, dashboard guides and a training kit.</div><div class="n" style="color:#57d9a3;margin-top:10px;font-size:12px">Interactive demo →</div></a></div></div>
+</main>
+<footer>
+  Generated from the same gold marts and acceptance evidence quoted in the project README. Figures are reproduced exactly as measured; see the repository for tests and SQL that tie them back.
+  <br>Repository: <code>estates-data-portfolio</code>
+</footer>
+<script>
+// Render every Plotly figure embedded on this page.
+for (const [id, fig] of Object.entries(window.__fig || {})) {
+  const el = document.getElementById(id);
+  if (el && window.Plotly) {
+    el.style.width = '100%';
+    Plotly.newPlot(id, fig.data, fig.layout, {displaylogo:false, responsive:true});
+  }
+};
+// Sortable tables: click a header to sort ascending/descending.
+document.querySelectorAll('table.sortable').forEach(function (table) {
+  table.querySelectorAll('th').forEach(function (th, idx) {
+    th.addEventListener('click', function () {
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+      const dir = th.dataset.dir === 'asc' ? -1 : 1;
+      th.dataset.dir = dir === 1 ? 'asc' : 'desc';
+      rows.sort(function (a, b) {
+        const av = a.cells[idx]?.innerText ?? '';
+        const bv = b.cells[idx]?.innerText ?? '';
+        const an = parseFloat(av.replace(/[^0-9.\-]/g, ''));
+        const bn = parseFloat(bv.replace(/[^0-9.\-]/g, ''));
+        if (!Number.isNaN(an) && !Number.isNaN(bn)) return (an - bn) * dir;
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+});
+
+</script>
+</body>
+</html>

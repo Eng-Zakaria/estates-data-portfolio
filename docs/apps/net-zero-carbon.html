@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P08 · Net zero &amp; carbon — Estates Data Portfolio</title>
+<style>
+:root{
+  --bg:#0f1720; --panel:#16212c; --panel2:#1d2b38; --line:#2a3a4a;
+  --fg:#e8eef4; --muted:#9fb3c8; --accent:#4da3ff; --accent2:#57d9a3;
+  --warn:#ffb454; --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:15px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}
+header{padding:22px 26px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--accent)}
+h1{margin:6px 0 4px;font-size:25px;line-height:1.2}
+.sub{color:var(--muted);font-size:14px;max-width:70ch}
+.banner{margin:14px 26px 0;padding:10px 14px;border-radius:8px;font-size:13px;
+  background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.45);color:#ffd9a8}
+main{padding:20px 26px 60px}
+nav.picker{margin:16px 26px 0;display:flex;flex-wrap:wrap;gap:6px}
+nav.picker a{font-size:12px;padding:4px 9px;border:1px solid var(--line);
+  border-radius:20px;text-decoration:none;color:var(--muted);background:var(--panel)}
+nav.picker a:hover{color:var(--fg);border-color:var(--accent)}
+nav.picker a.on{background:var(--accent);color:#04121f;border-color:var(--accent);font-weight:600}
+h2{font-size:17px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:14px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.kpi .n{color:var(--muted);font-size:12px;margin-top:4px}
+.chart{width:100%;height:380px}
+.chart.tall{height:520px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}
+.controls label{display:flex;flex-direction:column;font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;gap:4px}
+select,input{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:6px 8px;font-size:13px;min-width:150px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;
+  background:var(--panel);cursor:pointer}
+tbody tr:hover{background:var(--panel2)}
+.scroll{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tag{display:inline-block;padding:1px 7px;border-radius:11px;font-size:11px;border:1px solid var(--line)}
+.ok{color:var(--accent2);border-color:var(--accent2)}
+.warn{color:var(--warn);border-color:var(--warn)}
+.bad{color:var(--bad);border-color:var(--bad)}
+.note{color:var(--muted);font-size:13px;background:var(--panel);border-left:3px solid var(--accent);
+  padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+#map{height:520px;border-radius:10px;border:1px solid var(--line)}
+footer{padding:18px 26px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+a.ll{color:var(--muted)}
+</style>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+</head>
+<body>
+<script>window.__fig = window.__fig || {};</script>
+<header>
+  <div class="eyebrow">Estates Data Portfolio · net-zero-carbon</div>
+  <h1>P08 · Net zero &amp; carbon</h1>
+  <div class="sub">Scope 1/2 accounts, intensity league table, pathway variance and overnight baseload.</div>
+</header>
+<div class="banner"><strong>Synthetic data.</strong> Synthetic data for portfolio demonstration. No real university, building, person or performance data is shown or implied.</div>
+<nav class="picker"><a href="foundation.html" class="">F · Synthetic generator</a><a href="lakehouse.html" class="">P01 · Lakehouse</a><a href="orchestration.html" class="">P02 · Airflow orchestration</a><a href="data-quality.html" class="">P03 · Data quality</a><a href="dbt-marts.html" class="">P04 · dbt marts</a><a href="cicd.html" class="">P05 · CI/CD</a><a href="space-utilisation.html" class="">P06 · Space utilisation</a><a href="assets-maintenance.html" class="">P07 · Assets &amp; maintenance</a><a href="net-zero-carbon.html" class="">P08 · Net zero &amp; carbon</a><a href="compliance.html" class="">P09 · Compliance tracker</a><a href="institutional-return.html" class="">P10 · Institutional return</a><a href="ifc-analytics.html" class="">P11 · IFC analytics</a><a href="cobie-validator.html" class="">P12 · COBie validator</a><a href="uniclass-mapper.html" class="">P13 · Uniclass mapper</a><a href="iso19650-checker.html" class="">P14 · ISO 19650 checker</a><a href="bms-iot.html" class="">P15 · BMS IoT ingestion</a><a href="energy-anomaly.html" class="">P16 · Energy anomaly</a><a href="air-quality.html" class="">P17 · Air quality &amp; occupancy</a><a href="digital-twin.html" class="">P18 · Digital twin layer</a><a href="spatial-map.html" class="">P19 · Spatial carbon map</a><a href="governance.html" class="">P20 · Governance &amp; literacy</a></nav>
+<main>
+<div class="note">Scope 1 (gas combustion) and Scope 2 location-based (electricity) from half-hourly meter data, converted with the <strong>DESNZ 2025 factors fetched by script</strong> — never typed from memory. Market-based Scope 2 is a labelled placeholder and is never mixed into these totals.</div>
+<div class="grid g4">
+<div class="card kpi"><div class="l">Scope 1 energy</div><div class="v">258,943 kWh</div><div class="n">0 kgCO₂e</div></div>
+<div class="card kpi"><div class="l">Scope 2 energy</div><div class="v">609,043 kWh</div><div class="n">107,801 kgCO₂e</div></div>
+<div class="card kpi"><div class="l">Total kgCO₂e</div><div class="v">107,801</div><div class="n">location-based</div></div>
+<div class="card kpi"><div class="l">Conversion factors</div><div class="v">2</div><div class="n">DESNZ 2025, OGL v3.0</div></div>
+</div>
+<h2>Emission factors in use</h2>
+<div class="note">Sourced from the official DESNZ workbook by <code>platform/dbt/scripts/fetch_desnz.py</code>.</div><div class="scroll"><table id="p8-factors" class="sortable"><thead><tr><th>fuel</th><th>scope</th><th>unit</th><th>factor_kgco2e_per_kwh</th><th>factor_year</th></tr></thead><tbody><tr><td>natural_gas</td><td>Scope 1</td><td>kWh</td><td>0.2027</td><td>2025</td></tr><tr><td>electricity</td><td>Scope 2</td><td>kWh</td><td>0.177</td><td>2025</td></tr></tbody></table></div>
+<h2>Carbon by building</h2>
+<div class="card"><div id="p8-buildings" class="chart tall"></div><script>window.__fig["p8-buildings"]={"data": [{"type": "bar", "x": ["Building D (2)", "Building G (2)", "Science Block 2 (2)", "Building E (2)", "Science Block 1 (2)", "Building C (2)", "Building F (2)", "Building B (2)", "Building D (1)", "Building C (1)", "Science Block 1 (1)", "Building B (1)", "Building F (1)", "Building E (1)", "Building G (1)", "Science Block 2 (1)"], "y": [21243.2, 20357.9, 17806.4, 17308.4, 12263.4, 7945.3, 5454.8, 5421.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "orientation": "h", "marker": {"color": "#4da3ff"}}], "layout": {"title": "kgCO\u2082e by building and scope", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 60, "r": 20, "t": 45, "b": 60}, "xaxis": {"title": "", "gridcolor": "#2a3a4a"}, "yaxis": {"title": "kgCO\u2082e", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="card"><div id="p8-intensity" class="chart tall"></div><script>window.__fig["p8-intensity"]={"data": [{"type": "bar", "x": ["Building G (2)", "Building E (2)", "Building C (2)", "Science Block 1 (2)", "Science Block 2 (2)", "Building D (2)", "Building B (2)", "Building F (2)", "Building D (1)", "Building C (1)", "Science Block 1 (1)", "Building B (1)", "Building F (1)", "Building E (1)", "Building G (1)", "Science Block 2 (1)"], "y": [1.3596, 1.3225, 1.3193, 1.3183, 1.2115, 1.2107, 1.2085, 1.2085, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "orientation": "h", "marker": {"color": "#57d9a3"}}], "layout": {"title": "Carbon intensity kgCO\u2082e/m\u00b2 (by GIA)", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 60, "r": 20, "t": 45, "b": 60}, "xaxis": {"title": "", "gridcolor": "#2a3a4a"}, "yaxis": {"title": "kgCO\u2082e/m\u00b2", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="scroll"><table id="p8-inttbl" class="sortable"><thead><tr><th>building</th><th>scope</th><th>kgCO₂e</th><th>GIA m²</th><th>kgCO₂e/m²</th></tr></thead><tbody><tr><td>Building G</td><td>Scope 2 (electricity)</td><td>20,357.9</td><td>14,974</td><td>1.3596</td></tr><tr><td>Building E</td><td>Scope 2 (electricity)</td><td>17,308.4</td><td>13,087</td><td>1.3225</td></tr><tr><td>Building C</td><td>Scope 2 (electricity)</td><td>7,945.3</td><td>6,022</td><td>1.3193</td></tr><tr><td>Science Block 1</td><td>Scope 2 (electricity)</td><td>12,263.4</td><td>9,303</td><td>1.3183</td></tr><tr><td>Science Block 2</td><td>Scope 2 (electricity)</td><td>17,806.4</td><td>14,697</td><td>1.2115</td></tr><tr><td>Building D</td><td>Scope 2 (electricity)</td><td>21,243.2</td><td>17,546</td><td>1.2107</td></tr><tr><td>Building B</td><td>Scope 2 (electricity)</td><td>5,421.2</td><td>4,486</td><td>1.2085</td></tr><tr><td>Building F</td><td>Scope 2 (electricity)</td><td>5,454.8</td><td>4,514</td><td>1.2085</td></tr><tr><td>Building D</td><td>Scope 1 (gas)</td><td>0.0</td><td>17,546</td><td>0.0000</td></tr><tr><td>Building C</td><td>Scope 1 (gas)</td><td>0.0</td><td>6,022</td><td>0.0000</td></tr><tr><td>Science Block 1</td><td>Scope 1 (gas)</td><td>0.0</td><td>9,303</td><td>0.0000</td></tr><tr><td>Building B</td><td>Scope 1 (gas)</td><td>0.0</td><td>4,486</td><td>0.0000</td></tr><tr><td>Building F</td><td>Scope 1 (gas)</td><td>0.0</td><td>4,514</td><td>0.0000</td></tr><tr><td>Building E</td><td>Scope 1 (gas)</td><td>0.0</td><td>13,087</td><td>0.0000</td></tr><tr><td>Building G</td><td>Scope 1 (gas)</td><td>0.0</td><td>14,974</td><td>0.0000</td></tr><tr><td>Science Block 2</td><td>Scope 1 (gas)</td><td>0.0</td><td>14,697</td><td>0.0000</td></tr></tbody></table></div>
+<h2>Monthly carbon and pathway variance</h2>
+<div class="note">Mart baselines are NULL because no base-year data exists, so the pathway uses a user-supplied baseline rather than a fabricated one. Variance to baseline is shown exactly as the mart computes it.</div>
+<div class="card"><div id="p8-monthly" class="chart"></div><script>window.__fig["p8-monthly"]={"data": [{"type": "bar", "name": "kWh", "x": ["2026-03-01", "2026-01-01", "2026-01-01", "2026-03-01", "2026-02-01", "2026-02-01"], "y": [210462, 98265, 208239, 77427, 83251, 190342], "marker": {"color": "#4da3ff"}}, {"type": "bar", "name": "kgCO\u2082e", "x": ["2026-03-01", "2026-01-01", "2026-01-01", "2026-03-01", "2026-02-01", "2026-02-01"], "y": [37251.8, 19918.3, 36858.3, 15694.5, 16875.0, 33690.5], "marker": {"color": "#57d9a3"}}], "layout": {"title": "Energy and emissions by month", "barmode": "group", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "legend": {"orientation": "h", "y": -0.2}, "margin": {"l": 65, "r": 20, "t": 45, "b": 70}, "xaxis": {"gridcolor": "#2a3a4a"}, "yaxis": {"title": "kWh / kgCO\u2082e", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="scroll"><table id="p8-monthtbl" class="sortable"><thead><tr><th>month</th><th>fuel</th><th>kwh</th><th>kgco2e</th><th>baseline_kwh</th><th>variance_to_baseline</th></tr></thead><tbody><tr><td>2026-03-01</td><td>electricity</td><td>210461.88700000002</td><td>37251.753999</td><td>nan</td><td>nan</td></tr><tr><td>2026-01-01</td><td>natural_gas</td><td>98264.70800000009</td><td>19918.256311600016</td><td>nan</td><td>nan</td></tr><tr><td>2026-01-01</td><td>electricity</td><td>208239.20799999984</td><td>36858.33981599997</td><td>nan</td><td>nan</td></tr><tr><td>2026-03-01</td><td>natural_gas</td><td>77427.10599999999</td><td>15694.474386199996</td><td>nan</td><td>nan</td></tr><tr><td>2026-02-01</td><td>natural_gas</td><td>83251.18</td><td>16875.014185999997</td><td>nan</td><td>nan</td></tr><tr><td>2026-02-01</td><td>electricity</td><td>190341.67499999984</td><td>33690.476474999974</td><td>nan</td><td>nan</td></tr></tbody></table></div>
+<h2>Overnight baseload</h2>
+<div class="note">Baseload is the minimum 00:00–05:00 load as a share of the daily peak. This is the single most actionable number for a net-zero programme: it is energy that is being paid for and not used.</div>
+<div class="card"><div id="p8-profile" class="chart tall"></div><script>window.__fig["p8-profile"]={"data": [{"type": "scatter", "mode": "lines", "x": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23], "y": [10.962, 11.034, 11.122, 11.137, 11.121, 10.758, 10.71, 10.702, 14.263, 14.119, 14.057, 13.895, 13.764, 13.688, 13.678, 13.637, 13.82, 16.787, 13.243, 13.258, 13.448, 13.617, 13.666, 10.67], "name": "", "line": {"color": "#57d9a3", "width": 2}, "fill": null}], "layout": {"title": "Mean half-hourly load by hour of day (all meters)", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 65, "r": 20, "t": 45, "b": 60}, "xaxis": {"gridcolor": "#2a3a4a"}, "yaxis": {"title": "kWh", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="grid g4">
+<div class="card kpi"><div class="l">Mean overnight load</div><div class="v">11.022 kWh</div><div class="n">00:00–05:59</div></div>
+<div class="card kpi"><div class="l">Mean daily peak</div><div class="v">16.787 kWh</div><div class="n">busiest half-hour</div></div>
+<div class="card kpi"><div class="l">Baseload ratio</div><div class="v">65.7%</div><div class="n">overnight ÷ peak</div></div>
+<div class="card kpi"><div class="l">Half-hourly readings</div><div class="v">67,822</div><div class="n">DST-correct UTC</div></div>
+</div>
+<div class="card"><div id="p8-hdd" class="chart"></div><script>window.__fig["p8-hdd"]={"data": [{"type": "scatter", "mode": "lines", "x": ["2026-01-01", "2026-01-02", "2026-01-03", "2026-01-04", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-10", "2026-01-11", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-17", "2026-01-18", "2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-24", "2026-01-25", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-01-31", "2026-02-01", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05", "2026-02-06", "2026-02-07", "2026-02-08", "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12", "2026-02-13", "2026-02-14", "2026-02-15", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-21", "2026-02-22", "2026-02-23", "2026-02-24", "2026-02-25", "2026-02-26", "2026-02-27", "2026-02-28", "2026-03-01", "2026-03-02", "2026-03-03", "2026-03-04", "2026-03-05", "2026-03-06", "2026-03-07", "2026-03-08", "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-12", "2026-03-13", "2026-03-14", "2026-03-15", "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19", "2026-03-20", "2026-03-21", "2026-03-22", "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-26", "2026-03-27", "2026-03-28", "2026-03-29", "2026-03-30", "2026-03-31"], "y": [13.46, 13.55, 13.25, 13.57, 13.39, 13.27, 13.45, 13.43, 13.69, 13.47, 13.45, 13.42, 13.74, 13.55, 13.67, 13.01, 13.53, 13.39, 13.45, 13.01, 13.38, 13.42, 13.64, 13.32, 12.92, 13.28, 13.59, 13.11, 13.33, 13.17, 13.19, 13.17, 13.11, 13.05, 13.3, 13.23, 13.02, 12.78, 12.94, 12.56, 12.87, 12.76, 12.69, 12.55, 12.3, 12.47, 12.17, 12.09, 12.13, 12.31, 11.93, 11.98, 11.89, 11.85, 11.43, 11.23, 11.36, 11.6, 11.23, 11.08, 11.04, 11.1, 10.87, 10.76, 10.21, 10.58, 10.55, 10.52, 10.1, 10.34, 9.92, 9.39, 9.77, 9.54, 9.25, 9.03, 9.58, 8.84, 8.9, 8.9, 8.65, 8.3, 8.26, 8.22, 8.4, 8.06, 7.96, 7.87, 7.66, 7.58], "name": "", "line": {"color": "#ffb454", "width": 2}, "fill": null}], "layout": {"title": "Heating degree days (weather normalisation)", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 65, "r": 20, "t": 45, "b": 60}, "xaxis": {"gridcolor": "#2a3a4a"}, "yaxis": {"title": "HDD", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="note">HDD normalisation is indicative only: the synthetic window is a single quarter, so the weather signal is weak. The methodology states the linear assumption and its limits.</div>
+</main>
+<footer>
+  Generated from the same gold marts and acceptance evidence quoted in the project README. Figures are reproduced exactly as measured; see the repository for tests and SQL that tie them back.
+  <br>Repository: <code>estates-data-portfolio</code>
+</footer>
+<script>
+// Render every Plotly figure embedded on this page.
+for (const [id, fig] of Object.entries(window.__fig || {})) {
+  const el = document.getElementById(id);
+  if (el && window.Plotly) {
+    el.style.width = '100%';
+    Plotly.newPlot(id, fig.data, fig.layout, {displaylogo:false, responsive:true});
+  }
+};
+// Sortable tables: click a header to sort ascending/descending.
+document.querySelectorAll('table.sortable').forEach(function (table) {
+  table.querySelectorAll('th').forEach(function (th, idx) {
+    th.addEventListener('click', function () {
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+      const dir = th.dataset.dir === 'asc' ? -1 : 1;
+      th.dataset.dir = dir === 1 ? 'asc' : 'desc';
+      rows.sort(function (a, b) {
+        const av = a.cells[idx]?.innerText ?? '';
+        const bv = b.cells[idx]?.innerText ?? '';
+        const an = parseFloat(av.replace(/[^0-9.\-]/g, ''));
+        const bn = parseFloat(bv.replace(/[^0-9.\-]/g, ''));
+        if (!Number.isNaN(an) && !Number.isNaN(bn)) return (an - bn) * dir;
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+});
+
+</script>
+</body>
+</html>

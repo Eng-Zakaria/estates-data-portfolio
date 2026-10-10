@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synthetic campus generator — Estates Data Portfolio</title>
+<style>
+:root{
+  --bg:#0f1720; --panel:#16212c; --panel2:#1d2b38; --line:#2a3a4a;
+  --fg:#e8eef4; --muted:#9fb3c8; --accent:#4da3ff; --accent2:#57d9a3;
+  --warn:#ffb454; --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:15px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}
+header{padding:22px 26px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--accent)}
+h1{margin:6px 0 4px;font-size:25px;line-height:1.2}
+.sub{color:var(--muted);font-size:14px;max-width:70ch}
+.banner{margin:14px 26px 0;padding:10px 14px;border-radius:8px;font-size:13px;
+  background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.45);color:#ffd9a8}
+main{padding:20px 26px 60px}
+nav.picker{margin:16px 26px 0;display:flex;flex-wrap:wrap;gap:6px}
+nav.picker a{font-size:12px;padding:4px 9px;border:1px solid var(--line);
+  border-radius:20px;text-decoration:none;color:var(--muted);background:var(--panel)}
+nav.picker a:hover{color:var(--fg);border-color:var(--accent)}
+nav.picker a.on{background:var(--accent);color:#04121f;border-color:var(--accent);font-weight:600}
+h2{font-size:17px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:14px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.kpi .n{color:var(--muted);font-size:12px;margin-top:4px}
+.chart{width:100%;height:380px}
+.chart.tall{height:520px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}
+.controls label{display:flex;flex-direction:column;font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;gap:4px}
+select,input{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:6px 8px;font-size:13px;min-width:150px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;
+  background:var(--panel);cursor:pointer}
+tbody tr:hover{background:var(--panel2)}
+.scroll{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tag{display:inline-block;padding:1px 7px;border-radius:11px;font-size:11px;border:1px solid var(--line)}
+.ok{color:var(--accent2);border-color:var(--accent2)}
+.warn{color:var(--warn);border-color:var(--warn)}
+.bad{color:var(--bad);border-color:var(--bad)}
+.note{color:var(--muted);font-size:13px;background:var(--panel);border-left:3px solid var(--accent);
+  padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+#map{height:520px;border-radius:10px;border:1px solid var(--line)}
+footer{padding:18px 26px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+a.ll{color:var(--muted)}
+</style>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+</head>
+<body>
+<script>window.__fig = window.__fig || {};</script>
+<header>
+  <div class="eyebrow">Estates Data Portfolio · foundation</div>
+  <h1>Synthetic campus generator</h1>
+  <div class="sub">The messy source exports every other project reads — built with a known ground truth so downstream projects can be scored on what they actually catch.</div>
+</header>
+<div class="banner"><strong>Synthetic data.</strong> Synthetic data for portfolio demonstration. No real university, building, person or performance data is shown or implied.</div>
+<nav class="picker"><a href="foundation.html" class="">F · Synthetic generator</a><a href="lakehouse.html" class="">P01 · Lakehouse</a><a href="orchestration.html" class="">P02 · Airflow orchestration</a><a href="data-quality.html" class="">P03 · Data quality</a><a href="dbt-marts.html" class="">P04 · dbt marts</a><a href="cicd.html" class="">P05 · CI/CD</a><a href="space-utilisation.html" class="">P06 · Space utilisation</a><a href="assets-maintenance.html" class="">P07 · Assets &amp; maintenance</a><a href="net-zero-carbon.html" class="">P08 · Net zero &amp; carbon</a><a href="compliance.html" class="">P09 · Compliance tracker</a><a href="institutional-return.html" class="">P10 · Institutional return</a><a href="ifc-analytics.html" class="">P11 · IFC analytics</a><a href="cobie-validator.html" class="">P12 · COBie validator</a><a href="uniclass-mapper.html" class="">P13 · Uniclass mapper</a><a href="iso19650-checker.html" class="">P14 · ISO 19650 checker</a><a href="bms-iot.html" class="">P15 · BMS IoT ingestion</a><a href="energy-anomaly.html" class="">P16 · Energy anomaly</a><a href="air-quality.html" class="">P17 · Air quality &amp; occupancy</a><a href="digital-twin.html" class="">P18 · Digital twin layer</a><a href="spatial-map.html" class="">P19 · Spatial carbon map</a><a href="governance.html" class="">P20 · Governance &amp; literacy</a></nav>
+<main>
+<div class="note">Every dataset in this portfolio comes from this generator. It emits clean truth tables and seven deliberately messy source exports, so downstream projects have something realistic to fail on and a documented ground truth to prove they caught it.</div>
+<div class="grid g4">
+<div class="card kpi"><div class="l">Truth tables</div><div class="v">17</div><div class="n">schemas.py validators on every one</div></div>
+<div class="card kpi"><div class="l">Truth rows</div><div class="v">0</div><div class="n">small profile, seed 42</div></div>
+<div class="card kpi"><div class="l">Logged defects</div><div class="v">2660</div><div class="n">ground_truth.yaml, defects=0.03</div></div>
+<div class="card kpi"><div class="l">Defect types</div><div class="v">8</div><div class="n">duplicates, nulls, orphans, gaps, DST…</div></div>
+</div>
+<h2>Truth tables</h2>
+<div class="card"><div id="f-tables" class="chart tall"></div><script>window.__fig["f-tables"]={"data": [{"type": "bar", "x": ["academic_calendar", "activity_splits", "assets", "buildings", "cost_pools", "departments", "floors", "inspection_types", "inspections", "meter_readings_hh", "meters", "sensor_readings", "sensors", "spaces", "timetable_events", "weather", "work_orders"], "y": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "orientation": "h", "marker": {"color": "#4da3ff"}}], "layout": {"title": "Rows per truth table", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 60, "r": 20, "t": 45, "b": 60}, "xaxis": {"title": "", "gridcolor": "#2a3a4a"}, "yaxis": {"title": "rows", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="scroll"><table id="f-tabletbl" class="sortable"><thead><tr><th>table</th><th>rows</th></tr></thead><tbody><tr><td>academic_calendar</td><td>0</td></tr><tr><td>activity_splits</td><td>0</td></tr><tr><td>assets</td><td>0</td></tr><tr><td>buildings</td><td>0</td></tr><tr><td>cost_pools</td><td>0</td></tr><tr><td>departments</td><td>0</td></tr><tr><td>floors</td><td>0</td></tr><tr><td>inspection_types</td><td>0</td></tr><tr><td>inspections</td><td>0</td></tr><tr><td>meter_readings_hh</td><td>0</td></tr><tr><td>meters</td><td>0</td></tr><tr><td>sensor_readings</td><td>0</td></tr><tr><td>sensors</td><td>0</td></tr><tr><td>spaces</td><td>0</td></tr><tr><td>timetable_events</td><td>0</td></tr><tr><td>weather</td><td>0</td></tr><tr><td>work_orders</td><td>0</td></tr></tbody></table></div>
+<h2>Defect catalogue</h2>
+<div class="note">Every row here was injected by <code>inject_defects</code> and is listed in <code>ground_truth.yaml</code>. P03 measures whether the data-quality framework recovers them; P01 measures how many are quarantined.</div>
+<div class="card"><div id="f-defects" class="chart tall"></div><script>window.__fig["f-defects"]={"data": [{"type": "bar", "x": ["nulls_in_mandatory", "duplicate_rows", "out_of_range", "misspelt_category", "future_dates", "orphan_fk", "completed_before_raised", "gaps"], "y": [2660, 2659, 1994, 1994, 1223, 6, 3, 1], "orientation": "h", "marker": {"color": "#4da3ff"}}], "layout": {"title": "Injected defects by type", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 60, "r": 20, "t": 45, "b": 60}, "xaxis": {"title": "", "gridcolor": "#2a3a4a"}, "yaxis": {"title": "rows", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="scroll"><table id="f-defecttbl" class="sortable"><thead><tr><th>defect type</th><th>rows</th></tr></thead><tbody><tr><td>nulls_in_mandatory</td><td>2,660</td></tr><tr><td>duplicate_rows</td><td>2,659</td></tr><tr><td>out_of_range</td><td>1,994</td></tr><tr><td>misspelt_category</td><td>1,994</td></tr><tr><td>future_dates</td><td>1,223</td></tr><tr><td>orphan_fk</td><td>6</td></tr><tr><td>completed_before_raised</td><td>3</td></tr><tr><td>gaps</td><td>1</td></tr></tbody></table></div>
+<h2>Why synthetic?</h2>
+<div class="note">Hard rule 1 of the portfolio: no employer or university data is ever used. Planting known defects means each project can report a real recall figure instead of an opinion.</div>
+</main>
+<footer>
+  Generated from the same gold marts and acceptance evidence quoted in the project README. Figures are reproduced exactly as measured; see the repository for tests and SQL that tie them back.
+  <br>Repository: <code>estates-data-portfolio</code>
+</footer>
+<script>
+// Render every Plotly figure embedded on this page.
+for (const [id, fig] of Object.entries(window.__fig || {})) {
+  const el = document.getElementById(id);
+  if (el && window.Plotly) {
+    el.style.width = '100%';
+    Plotly.newPlot(id, fig.data, fig.layout, {displaylogo:false, responsive:true});
+  }
+};
+// Sortable tables: click a header to sort ascending/descending.
+document.querySelectorAll('table.sortable').forEach(function (table) {
+  table.querySelectorAll('th').forEach(function (th, idx) {
+    th.addEventListener('click', function () {
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+      const dir = th.dataset.dir === 'asc' ? -1 : 1;
+      th.dataset.dir = dir === 1 ? 'asc' : 'desc';
+      rows.sort(function (a, b) {
+        const av = a.cells[idx]?.innerText ?? '';
+        const bv = b.cells[idx]?.innerText ?? '';
+        const an = parseFloat(av.replace(/[^0-9.\-]/g, ''));
+        const bn = parseFloat(bv.replace(/[^0-9.\-]/g, ''));
+        if (!Number.isNaN(an) && !Number.isNaN(bn)) return (an - bn) * dir;
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+});
+
+</script>
+</body>
+</html>

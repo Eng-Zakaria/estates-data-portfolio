@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P10 · Institutional return — Estates Data Portfolio</title>
+<style>
+:root{
+  --bg:#0f1720; --panel:#16212c; --panel2:#1d2b38; --line:#2a3a4a;
+  --fg:#e8eef4; --muted:#9fb3c8; --accent:#4da3ff; --accent2:#57d9a3;
+  --warn:#ffb454; --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:15px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}
+header{padding:22px 26px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--accent)}
+h1{margin:6px 0 4px;font-size:25px;line-height:1.2}
+.sub{color:var(--muted);font-size:14px;max-width:70ch}
+.banner{margin:14px 26px 0;padding:10px 14px;border-radius:8px;font-size:13px;
+  background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.45);color:#ffd9a8}
+main{padding:20px 26px 60px}
+nav.picker{margin:16px 26px 0;display:flex;flex-wrap:wrap;gap:6px}
+nav.picker a{font-size:12px;padding:4px 9px;border:1px solid var(--line);
+  border-radius:20px;text-decoration:none;color:var(--muted);background:var(--panel)}
+nav.picker a:hover{color:var(--fg);border-color:var(--accent)}
+nav.picker a.on{background:var(--accent);color:#04121f;border-color:var(--accent);font-weight:600}
+h2{font-size:17px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:14px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.kpi .n{color:var(--muted);font-size:12px;margin-top:4px}
+.chart{width:100%;height:380px}
+.chart.tall{height:520px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}
+.controls label{display:flex;flex-direction:column;font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;gap:4px}
+select,input{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:6px 8px;font-size:13px;min-width:150px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;
+  background:var(--panel);cursor:pointer}
+tbody tr:hover{background:var(--panel2)}
+.scroll{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tag{display:inline-block;padding:1px 7px;border-radius:11px;font-size:11px;border:1px solid var(--line)}
+.ok{color:var(--accent2);border-color:var(--accent2)}
+.warn{color:var(--warn);border-color:var(--warn)}
+.bad{color:var(--bad);border-color:var(--bad)}
+.note{color:var(--muted);font-size:13px;background:var(--panel);border-left:3px solid var(--accent);
+  padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+#map{height:520px;border-radius:10px;border:1px solid var(--line)}
+footer{padding:18px 26px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+a.ll{color:var(--muted)}
+</style>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+</head>
+<body>
+<script>window.__fig = window.__fig || {};</script>
+<header>
+  <div class="eyebrow">Estates Data Portfolio · institutional-return</div>
+  <h1>P10 · Institutional return</h1>
+  <div class="sub">A mock HESA EMR / TRAC-style statutory return built from gold marts, with validation and audit.</div>
+</header>
+<div class="banner"><strong>Synthetic data.</strong> Synthetic data for portfolio demonstration. No real university, building, person or performance data is shown or implied.</div>
+<nav class="picker"><a href="foundation.html" class="">F · Synthetic generator</a><a href="lakehouse.html" class="">P01 · Lakehouse</a><a href="orchestration.html" class="">P02 · Airflow orchestration</a><a href="data-quality.html" class="">P03 · Data quality</a><a href="dbt-marts.html" class="">P04 · dbt marts</a><a href="cicd.html" class="">P05 · CI/CD</a><a href="space-utilisation.html" class="">P06 · Space utilisation</a><a href="assets-maintenance.html" class="">P07 · Assets &amp; maintenance</a><a href="net-zero-carbon.html" class="">P08 · Net zero &amp; carbon</a><a href="compliance.html" class="">P09 · Compliance tracker</a><a href="institutional-return.html" class="">P10 · Institutional return</a><a href="ifc-analytics.html" class="">P11 · IFC analytics</a><a href="cobie-validator.html" class="">P12 · COBie validator</a><a href="uniclass-mapper.html" class="">P13 · Uniclass mapper</a><a href="iso19650-checker.html" class="">P14 · ISO 19650 checker</a><a href="bms-iot.html" class="">P15 · BMS IoT ingestion</a><a href="energy-anomaly.html" class="">P16 · Energy anomaly</a><a href="air-quality.html" class="">P17 · Air quality &amp; occupancy</a><a href="digital-twin.html" class="">P18 · Digital twin layer</a><a href="spatial-map.html" class="">P19 · Spatial carbon map</a><a href="governance.html" class="">P20 · Governance &amp; literacy</a></nav>
+<main>
+<div class="note"><strong>This is not an official return.</strong> It is a mock built from public HESA EMR and TRAC guidance, using generic categories where the full coding manual was not accessible. The point is the process: mapping, building, validating, allocating and auditing a statutory-style return from gold marts.</div>
+<h2>Mapping layer — internal category → return category</h2>
+<div class="note">Versioned config. A test asserts every internal category maps exactly once.</div>
+<div class="scroll"><table id="p10-mapping" class="sortable"><thead><tr><th>internal_category</th><th>return_category</th><th>version</th><th>notes</th></tr></thead><tbody><tr><td>Catering</td><td>Other</td><td>v1</td><td>Illustrative mapping; not official HESA/TRAC codes</td></tr><tr><td>Laboratory</td><td>Research</td><td>v1</td><td>Illustrative mapping; not official HESA/TRAC codes</td></tr><tr><td>Library</td><td>Teaching</td><td>v1</td><td>Illustrative mapping; not official HESA/TRAC codes</td></tr><tr><td>Office</td><td>Research</td><td>v1</td><td>Illustrative mapping; not official HESA/TRAC codes</td></tr><tr><td>Residential</td><td>Residential</td><td>v1</td><td>Illustrative mapping; not official HESA/TRAC codes</td></tr><tr><td>Sports</td><td>Other</td><td>v1</td><td>Illustrative mapping; not official HESA/TRAC codes</td></tr><tr><td>Support</td><td>Other</td><td>v1</td><td>Illustrative mapping; not official HESA/TRAC codes</td></tr><tr><td>Teaching</td><td>Teaching</td><td>v1</td><td>Illustrative mapping; not official HESA/TRAC codes</td></tr></tbody></table></div>
+<h2>Building floor areas</h2>
+<div class="grid g4">
+<div class="card kpi"><div class="l">Buildings reported</div><div class="v">32</div></div>
+<div class="card kpi"><div class="l">nia m2</div><div class="v">42,450</div></div>
+<div class="card kpi"><div class="l">gia m2</div><div class="v">338,514</div></div>
+<div class="card kpi"><div class="l">Blocking violations</div><div class="v">0</div></div>
+</div>
+<div class="scroll"><table id="p10-areatbl" class="sortable"><thead><tr><th>building_id</th><th>return_category</th><th>nia_m2</th><th>gia_m2</th></tr></thead><tbody><tr><td>B001</td><td>Other</td><td>896.7</td><td>9302.6</td></tr><tr><td>B001</td><td>Research</td><td>2115.1</td><td>9302.6</td></tr><tr><td>B001</td><td>Residential</td><td>174.7</td><td>9302.6</td></tr><tr><td>B001</td><td>Teaching</td><td>1673.6</td><td>9302.6</td></tr><tr><td>B002</td><td>Other</td><td>758.4</td><td>4485.8</td></tr><tr><td>B002</td><td>Research</td><td>526.1</td><td>4485.8</td></tr><tr><td>B002</td><td>Residential</td><td>15.3</td><td>4485.8</td></tr><tr><td>B002</td><td>Teaching</td><td>1104.3</td><td>4485.8</td></tr><tr><td>B003</td><td>Other</td><td>186.4</td><td>6022.2</td></tr><tr><td>B003</td><td>Research</td><td>198.0</td><td>6022.2</td></tr><tr><td>B003</td><td>Residential</td><td>26.8</td><td>6022.2</td></tr><tr><td>B003</td><td>Teaching</td><td>2731.5</td><td>6022.2</td></tr><tr><td>B004</td><td>Other</td><td>1355.4</td><td>17545.8</td></tr><tr><td>B004</td><td>Research</td><td>3901.4</td><td>17545.8</td></tr><tr><td>B004</td><td>Residential</td><td>341.6</td><td>17545.8</td></tr><tr><td>B004</td><td>Teaching</td><td>3337.6</td><td>17545.8</td></tr><tr><td>B005</td><td>Other</td><td>910.6</td><td>13087.3</td></tr><tr><td>B005</td><td>Research</td><td>3751.6</td><td>13087.3</td></tr><tr><td>B005</td><td>Residential</td><td>280.6</td><td>13087.3</td></tr><tr><td>B005</td><td>Teaching</td><td>1330.8</td><td>13087.3</td></tr><tr><td>B006</td><td>Other</td><td>281.8</td><td>4513.8</td></tr><tr><td>B006</td><td>Research</td><td>1526.9</td><td>4513.8</td></tr><tr><td>B006</td><td>Residential</td><td>57.4</td><td>4513.8</td></tr><tr><td>B006</td><td>Teaching</td><td>674.3</td><td>4513.8</td></tr><tr><td>B007</td><td>Other</td><td>1085.6</td><td>14973.8</td></tr><tr><td>B007</td><td>Research</td><td>3649.4</td><td>14973.8</td></tr><tr><td>B007</td><td>Residential</td><td>259.6</td><td>14973.8</td></tr><tr><td>B007</td><td>Teaching</td><td>2547.5</td><td>14973.8</td></tr><tr><td>B008</td><td>Other</td><td>821.1999999999999</td><td>14697.3</td></tr><tr><td>B008</td><td>Research</td><td>2141.4</td><td>14697.3</td></tr><tr><td>B008</td><td>Residential</td><td>248.1</td><td>14697.3</td></tr><tr><td>B008</td><td>Teaching</td><td>3540.1</td><td>14697.3</td></tr></tbody></table></div>
+<h2>TRAC-style cost allocation</h2>
+<div class="note">Cost pools allocated to Teaching / Research / Other using space-based drivers (NIA × category weighting × department activity split). A test asserts the allocated total equals the pool total to the penny and that no allocation is negative.</div>
+<div class="scroll"><table id="p10-costtbl" class="sortable"><thead><tr><th>pool</th><th>activity</th><th>allocated_gbp</th><th>driver_total</th></tr></thead><tbody><tr><td>rates</td><td>Teaching</td><td>481691.5</td><td>17093.188</td></tr><tr><td>rates</td><td>Research</td><td>615588.62</td><td>21844.629</td></tr><tr><td>rates</td><td>Other</td><td>102719.88</td><td>3645.093</td></tr><tr><td>utilities</td><td>Teaching</td><td>321127.66</td><td>17093.188</td></tr><tr><td>utilities</td><td>Research</td><td>410392.41</td><td>21844.629</td></tr><tr><td>utilities</td><td>Other</td><td>68479.93</td><td>3645.093</td></tr><tr><td>maintenance</td><td>Teaching</td><td>602114.37</td><td>17093.188</td></tr><tr><td>maintenance</td><td>Research</td><td>769485.77</td><td>21844.629</td></tr><tr><td>maintenance</td><td>Other</td><td>128399.86</td><td>3645.093</td></tr><tr><td>cleaning</td><td>Teaching</td><td>240845.75</td><td>17093.188</td></tr><tr><td>cleaning</td><td>Research</td><td>307794.31</td><td>21844.629</td></tr><tr><td>cleaning</td><td>Other</td><td>51359.94</td><td>3645.093</td></tr><tr><td>security</td><td>Teaching</td><td>160563.83</td><td>17093.188</td></tr><tr><td>security</td><td>Research</td><td>205196.21</td><td>21844.629</td></tr><tr><td>security</td><td>Other</td><td>34239.96</td><td>3645.093</td></tr></tbody></table></div>
+<h2>Energy by fuel</h2>
+<div class="scroll"><table id="p10-energytbl" class="sortable"><thead><tr><th>building_id</th><th>utility</th><th>kwh</th></tr></thead><tbody><tr><td>B001</td><td>electricity</td><td>69284.60900000003</td></tr><tr><td>B001</td><td>gas</td><td>28268.311000000005</td></tr><tr><td>B002</td><td>electricity</td><td>30628.432</td></tr><tr><td>B002</td><td>gas</td><td>13706.968</td></tr><tr><td>B003</td><td>electricity</td><td>44888.75699999998</td></tr><tr><td>B003</td><td>gas</td><td>18430.765000000007</td></tr><tr><td>B004</td><td>electricity</td><td>120017.80000000006</td></tr><tr><td>B004</td><td>gas</td><td>53105.825</td></tr><tr><td>B005</td><td>electricity</td><td>97787.56799999998</td></tr><tr><td>B005</td><td>gas</td><td>40175.594</td></tr><tr><td>B006</td><td>electricity</td><td>30818.10700000001</td></tr><tr><td>B006</td><td>gas</td><td>13829.757999999998</td></tr><tr><td>B007</td><td>electricity</td><td>115016.18899999998</td></tr><tr><td>B007</td><td>gas</td><td>46364.181</td></tr><tr><td>B008</td><td>electricity</td><td>100601.308</td></tr><tr><td>B008</td><td>gas</td><td>45061.592</td></tr></tbody></table></div>
+<h2>Emissions</h2>
+<div class="scroll"><table id="p10-emtbl" class="sortable"><thead><tr><th>building_id</th><th>fuel</th><th>kgco2e</th></tr></thead><tbody><tr><td>B001</td><td>electricity</td><td>12263.375793000005</td></tr><tr><td>B001</td><td>natural_gas</td><td>5729.9866397000005</td></tr><tr><td>B002</td><td>electricity</td><td>5421.232464</td></tr><tr><td>B002</td><td>natural_gas</td><td>2778.4024136</td></tr><tr><td>B003</td><td>electricity</td><td>7945.309988999997</td></tr><tr><td>B003</td><td>natural_gas</td><td>3735.9160655000014</td></tr><tr><td>B004</td><td>electricity</td><td>21243.150600000008</td></tr><tr><td>B004</td><td>natural_gas</td><td>10764.550727499998</td></tr><tr><td>B005</td><td>electricity</td><td>17308.399535999997</td></tr><tr><td>B005</td><td>natural_gas</td><td>8143.592903799999</td></tr><tr><td>B006</td><td>electricity</td><td>5454.8049390000015</td></tr><tr><td>B006</td><td>natural_gas</td><td>2803.2919465999994</td></tr><tr><td>B007</td><td>electricity</td><td>20357.865452999995</td></tr><tr><td>B007</td><td>natural_gas</td><td>9398.0194887</td></tr><tr><td>B008</td><td>electricity</td><td>17806.431515999997</td></tr><tr><td>B008</td><td>natural_gas</td><td>9133.9846984</td></tr></tbody></table></div>
+<h2>Validation engine</h2>
+<div class="note">Rules run completeness, valid codes, arithmetic (NIA ≤ GIA, category sums), energy reconciliation to meter totals and year-on-year change flags. Severity is <em>blocking</em> or <em>query</em>, mirroring a submitter's validation report.</div>
+<div class="scroll"><table id="p10-validation" class="sortable"><thead><tr><th>rule</th><th>severity</th><th>message</th><th>records</th></tr></thead><tbody></tbody></table></div>
+</main>
+<footer>
+  Generated from the same gold marts and acceptance evidence quoted in the project README. Figures are reproduced exactly as measured; see the repository for tests and SQL that tie them back.
+  <br>Repository: <code>estates-data-portfolio</code>
+</footer>
+<script>
+// Render every Plotly figure embedded on this page.
+for (const [id, fig] of Object.entries(window.__fig || {})) {
+  const el = document.getElementById(id);
+  if (el && window.Plotly) {
+    el.style.width = '100%';
+    Plotly.newPlot(id, fig.data, fig.layout, {displaylogo:false, responsive:true});
+  }
+};
+// Sortable tables: click a header to sort ascending/descending.
+document.querySelectorAll('table.sortable').forEach(function (table) {
+  table.querySelectorAll('th').forEach(function (th, idx) {
+    th.addEventListener('click', function () {
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+      const dir = th.dataset.dir === 'asc' ? -1 : 1;
+      th.dataset.dir = dir === 1 ? 'asc' : 'desc';
+      rows.sort(function (a, b) {
+        const av = a.cells[idx]?.innerText ?? '';
+        const bv = b.cells[idx]?.innerText ?? '';
+        const an = parseFloat(av.replace(/[^0-9.\-]/g, ''));
+        const bn = parseFloat(bv.replace(/[^0-9.\-]/g, ''));
+        if (!Number.isNaN(an) && !Number.isNaN(bn)) return (an - bn) * dir;
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+});
+
+</script>
+</body>
+</html>

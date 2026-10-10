@@ -1,0 +1,1 @@
+"""Static web-demo generators for the Estates Data Portfolio."""

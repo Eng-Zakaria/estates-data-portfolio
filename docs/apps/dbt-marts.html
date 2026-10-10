@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dbt project (gold marts) — Estates Data Portfolio</title>
+<style>
+:root{
+  --bg:#0f1720; --panel:#16212c; --panel2:#1d2b38; --line:#2a3a4a;
+  --fg:#e8eef4; --muted:#9fb3c8; --accent:#4da3ff; --accent2:#57d9a3;
+  --warn:#ffb454; --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:15px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}
+header{padding:22px 26px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--accent)}
+h1{margin:6px 0 4px;font-size:25px;line-height:1.2}
+.sub{color:var(--muted);font-size:14px;max-width:70ch}
+.banner{margin:14px 26px 0;padding:10px 14px;border-radius:8px;font-size:13px;
+  background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.45);color:#ffd9a8}
+main{padding:20px 26px 60px}
+nav.picker{margin:16px 26px 0;display:flex;flex-wrap:wrap;gap:6px}
+nav.picker a{font-size:12px;padding:4px 9px;border:1px solid var(--line);
+  border-radius:20px;text-decoration:none;color:var(--muted);background:var(--panel)}
+nav.picker a:hover{color:var(--fg);border-color:var(--accent)}
+nav.picker a.on{background:var(--accent);color:#04121f;border-color:var(--accent);font-weight:600}
+h2{font-size:17px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:14px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.kpi .n{color:var(--muted);font-size:12px;margin-top:4px}
+.chart{width:100%;height:380px}
+.chart.tall{height:520px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}
+.controls label{display:flex;flex-direction:column;font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;gap:4px}
+select,input{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:6px 8px;font-size:13px;min-width:150px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;
+  background:var(--panel);cursor:pointer}
+tbody tr:hover{background:var(--panel2)}
+.scroll{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tag{display:inline-block;padding:1px 7px;border-radius:11px;font-size:11px;border:1px solid var(--line)}
+.ok{color:var(--accent2);border-color:var(--accent2)}
+.warn{color:var(--warn);border-color:var(--warn)}
+.bad{color:var(--bad);border-color:var(--bad)}
+.note{color:var(--muted);font-size:13px;background:var(--panel);border-left:3px solid var(--accent);
+  padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+#map{height:520px;border-radius:10px;border:1px solid var(--line)}
+footer{padding:18px 26px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+a.ll{color:var(--muted)}
+</style>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+</head>
+<body>
+<script>window.__fig = window.__fig || {};</script>
+<header>
+  <div class="eyebrow">Estates Data Portfolio · dbt-marts</div>
+  <h1>dbt project (gold marts)</h1>
+  <div class="sub">Staging → intermediate → gold, with enforced contracts, SCD2 snapshots, incremental half-hourly facts and silver↔mart reconciliation tests.</div>
+</header>
+<div class="banner"><strong>Synthetic data.</strong> Synthetic data for portfolio demonstration. No real university, building, person or performance data is shown or implied.</div>
+<nav class="picker"><a href="foundation.html" class="">F · Synthetic generator</a><a href="lakehouse.html" class="">P01 · Lakehouse</a><a href="orchestration.html" class="">P02 · Airflow orchestration</a><a href="data-quality.html" class="">P03 · Data quality</a><a href="dbt-marts.html" class="">P04 · dbt marts</a><a href="cicd.html" class="">P05 · CI/CD</a><a href="space-utilisation.html" class="">P06 · Space utilisation</a><a href="assets-maintenance.html" class="">P07 · Assets &amp; maintenance</a><a href="net-zero-carbon.html" class="">P08 · Net zero &amp; carbon</a><a href="compliance.html" class="">P09 · Compliance tracker</a><a href="institutional-return.html" class="">P10 · Institutional return</a><a href="ifc-analytics.html" class="">P11 · IFC analytics</a><a href="cobie-validator.html" class="">P12 · COBie validator</a><a href="uniclass-mapper.html" class="">P13 · Uniclass mapper</a><a href="iso19650-checker.html" class="">P14 · ISO 19650 checker</a><a href="bms-iot.html" class="">P15 · BMS IoT ingestion</a><a href="energy-anomaly.html" class="">P16 · Energy anomaly</a><a href="air-quality.html" class="">P17 · Air quality &amp; occupancy</a><a href="digital-twin.html" class="">P18 · Digital twin layer</a><a href="spatial-map.html" class="">P19 · Spatial carbon map</a><a href="governance.html" class="">P20 · Governance &amp; literacy</a></nav>
+<main>
+<div class="note">The estate is modelled as staging views → intermediate joins → contracted gold marts. Silver-to-mart reconciliation is a dbt test, so a row cannot silently disappear between the lakehouse and a dashboard. <em>(Inventory read from project files + warehouse.)</em></div>
+<div class="grid g4">
+<div class="card kpi"><div class="l">Models</div><div class="v">41</div><div class="n">40/41 have at least one test</div></div>
+<div class="card kpi"><div class="l">Tests</div><div class="v">137</div><div class="n">column-level, model-level and singular SQL</div></div>
+<div class="card kpi"><div class="l">Contracts enforced</div><div class="v">21</div><div class="n">column name + data type</div></div>
+<div class="card kpi"><div class="l">Fully documented models</div><div class="v">41/41</div><div class="n">292 columns described</div></div>
+</div>
+<div class="grid g4">
+<div class="card kpi"><div class="l">SCD2 snapshots</div><div class="v">2</div><div class="n">spaces, assets</div></div>
+<div class="card kpi"><div class="l">Seeds</div><div class="v">4</div><div class="n">incl. DESNZ emission factors</div></div>
+<div class="card kpi"><div class="l">Tables built</div><div class="v">41</div><div class="n">live row counts from the warehouse</div></div>
+<div class="card kpi"><div class="l">Unexplained row loss</div><div class="v">0</div><div class="n">silver ↔ mart reconciliation test</div></div>
+</div>
+<h2>Model inventory</h2>
+<div class="card"><div id="p4-tests" class="chart tall"></div><script>window.__fig["p4-tests"]={"data": [{"type": "bar", "x": ["int_asset_age", "int_current_space", "int_meter_hh_cleaned", "int_work_order_enriched", "dim_asset", "dim_building", "dim_date", "dim_department", "dim_emission_factor", "dim_inspection_type", "dim_meter", "dim_space", "dim_trade", "fct_energy_daily", "fct_inspection", "fct_meter_hh", "fct_sensor_15min", "fct_space_observed_occupancy", "fct_timetable_event", "fct_work_order", "mart_asset_health", "mart_carbon_monthly", "mart_compliance_status", "mart_dq_scorecard", "mart_space_utilisation", "stg_bms__trend", "stg_cafm__work_order", "stg_insp__inspection", "stg_meter__hh_a", "stg_meter__hh_b", "stg_sensor__reading", "stg_space__register", "stg_truth__asset", "stg_truth__building", "stg_truth__department", "stg_truth__inspection_type", "stg_truth__meter", "stg_truth__sensor", "stg_truth__space", "stg_truth__weather", "stg_tt__event"], "y": [2, 6, 2, 3, 4, 2, 2, 2, 3, 2, 4, 4, 2, 2, 5, 4, 3, 4, 4, 5, 3, 0, 3, 2, 3, 2, 6, 5, 2, 2, 2, 4, 5, 2, 2, 2, 4, 3, 5, 1, 3], "orientation": "h", "marker": {"color": "#4da3ff"}}], "layout": {"title": "Tests per model", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 60, "r": 20, "t": 45, "b": 60}, "xaxis": {"title": "", "gridcolor": "#2a3a4a"}, "yaxis": {"title": "tests", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="scroll"><table id="p4-modeltbl" class="sortable"><thead><tr><th>model</th><th>materialized</th><th>columns</th><th>documented</th><th>tests</th><th>contract</th></tr></thead><tbody><tr><td>int_asset_age</td><td>table</td><td>11</td><td>11</td><td>2</td><td><span class="tag warn">no</span></td></tr><tr><td>int_current_space</td><td>table</td><td>9</td><td>9</td><td>6</td><td><span class="tag warn">no</span></td></tr><tr><td>int_meter_hh_cleaned</td><td>table</td><td>5</td><td>5</td><td>2</td><td><span class="tag warn">no</span></td></tr><tr><td>int_work_order_enriched</td><td>table</td><td>16</td><td>16</td><td>3</td><td><span class="tag warn">no</span></td></tr><tr><td>dim_asset</td><td>table</td><td>9</td><td>9</td><td>4</td><td><span class="tag ok">yes</span></td></tr><tr><td>dim_building</td><td>table</td><td>10</td><td>10</td><td>2</td><td><span class="tag ok">yes</span></td></tr><tr><td>dim_date</td><td>table</td><td>9</td><td>9</td><td>2</td><td><span class="tag ok">yes</span></td></tr><tr><td>dim_department</td><td>table</td><td>5</td><td>5</td><td>2</td><td><span class="tag ok">yes</span></td></tr><tr><td>dim_emission_factor</td><td>table</td><td>6</td><td>6</td><td>3</td><td><span class="tag ok">yes</span></td></tr><tr><td>dim_inspection_type</td><td>table</td><td>4</td><td>4</td><td>2</td><td><span class="tag ok">yes</span></td></tr><tr><td>dim_meter</td><td>table</td><td>6</td><td>6</td><td>4</td><td><span class="tag ok">yes</span></td></tr><tr><td>dim_space</td><td>table</td><td>9</td><td>9</td><td>4</td><td><span class="tag ok">yes</span></td></tr><tr><td>dim_trade</td><td>table</td><td>2</td><td>2</td><td>2</td><td><span class="tag ok">yes</span></td></tr><tr><td>fct_energy_daily</td><td>table</td><td>8</td><td>8</td><td>2</td><td><span class="tag ok">yes</span></td></tr><tr><td>fct_inspection</td><td>table</td><td>7</td><td>7</td><td>5</td><td><span class="tag ok">yes</span></td></tr><tr><td>fct_meter_hh</td><td>table</td><td>5</td><td>5</td><td>4</td><td><span class="tag ok">yes</span></td></tr><tr><td>fct_sensor_15min</td><td>table</td><td>5</td><td>5</td><td>3</td><td><span class="tag ok">yes</span></td></tr><tr><td>fct_space_observed_occupancy</td><td>table</td><td>4</td><td>4</td><td>4</td><td><span class="tag ok">yes</span></td></tr><tr><td>fct_timetable_event</td><td>table</td><td>8</td><td>8</td><td>4</td><td><span class="tag ok">yes</span></td></tr><tr><td>fct_work_order</td><td>table</td><td>16</td><td>16</td><td>5</td><td><span class="tag ok">yes</span></td></tr><tr><td>mart_asset_health</td><td>table</td><td>11</td><td>11</td><td>3</td><td><span class="tag ok">yes</span></td></tr><tr><td>mart_carbon_monthly</td><td>table</td><td>6</td><td>6</td><td>0</td><td><span class="tag ok">yes</span></td></tr><tr><td>mart_compliance_status</td><td>table</td><td>9</td><td>9</td><td>3</td><td><span class="tag ok">yes</span></td></tr><tr><td>mart_dq_scorecard</td><td>table</td><td>5</td><td>5</td><td>2</td><td><span class="tag ok">yes</span></td></tr><tr><td>mart_space_utilisation</td><td>table</td><td>11</td><td>11</td><td>3</td><td><span class="tag ok">yes</span></td></tr><tr><td>stg_bms__trend</td><td>view</td><td>3</td><td>3</td><td>2</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_cafm__work_order</td><td>view</td><td>13</td><td>13</td><td>6</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_insp__inspection</td><td>view</td><td>6</td><td>6</td><td>5</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_meter__hh_a</td><td>view</td><td>5</td><td>5</td><td>2</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_meter__hh_b</td><td>view</td><td>5</td><td>5</td><td>2</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_sensor__reading</td><td>view</td><td>3</td><td>3</td><td>2</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_space__register</td><td>view</td><td>6</td><td>6</td><td>4</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_truth__asset</td><td>view</td><td>9</td><td>9</td><td>5</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_truth__building</td><td>view</td><td>10</td><td>10</td><td>2</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_truth__department</td><td>view</td><td>5</td><td>5</td><td>2</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_truth__inspection_type</td><td>view</td><td>4</td><td>4</td><td>2</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_truth__meter</td><td>view</td><td>6</td><td>6</td><td>4</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_truth__sensor</td><td>view</td><td>4</td><td>4</td><td>3</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_truth__space</td><td>view</td><td>6</td><td>6</td><td>5</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_truth__weather</td><td>view</td><td>4</td><td>4</td><td>1</td><td><span class="tag warn">no</span></td></tr><tr><td>stg_tt__event</td><td>view</td><td>7</td><td>7</td><td>3</td><td><span class="tag warn">no</span></td></tr></tbody></table></div>
+<h2>Gold marts and the rows they hold</h2>
+<div class="note">These are the tables every dashboard demo on this site reads. Row counts are live from <code>data/warehouse.duckdb</code>.</div><div class="scroll"><table id="p4-goldtbl" class="sortable"><thead><tr><th>model</th><th>materialized</th><th>columns</th><th>documented</th><th>tests</th><th>contract</th><th>rows</th></tr></thead><tbody><tr><td>int_asset_age</td><td>table</td><td>11</td><td>11</td><td>2</td><td><span class="tag warn">no</span></td><td>1,496</td></tr><tr><td>int_current_space</td><td>table</td><td>9</td><td>9</td><td>6</td><td><span class="tag warn">no</span></td><td>495</td></tr><tr><td>int_meter_hh_cleaned</td><td>table</td><td>5</td><td>5</td><td>2</td><td><span class="tag warn">no</span></td><td>68,119</td></tr><tr><td>int_work_order_enriched</td><td>table</td><td>16</td><td>16</td><td>3</td><td><span class="tag warn">no</span></td><td>5,938</td></tr><tr><td>dim_asset</td><td>table</td><td>9</td><td>9</td><td>4</td><td><span class="tag ok">yes</span></td><td>1,496</td></tr><tr><td>dim_building</td><td>table</td><td>10</td><td>10</td><td>2</td><td><span class="tag ok">yes</span></td><td>8</td></tr><tr><td>dim_date</td><td>table</td><td>9</td><td>9</td><td>2</td><td><span class="tag ok">yes</span></td><td>90</td></tr><tr><td>dim_department</td><td>table</td><td>5</td><td>5</td><td>2</td><td><span class="tag ok">yes</span></td><td>6</td></tr><tr><td>dim_emission_factor</td><td>table</td><td>6</td><td>6</td><td>3</td><td><span class="tag ok">yes</span></td><td>2</td></tr><tr><td>dim_inspection_type</td><td>table</td><td>4</td><td>4</td><td>2</td><td><span class="tag ok">yes</span></td><td>5</td></tr><tr><td>dim_meter</td><td>table</td><td>6</td><td>6</td><td>4</td><td><span class="tag ok">yes</span></td><td>16</td></tr><tr><td>dim_space</td><td>table</td><td>9</td><td>9</td><td>4</td><td><span class="tag ok">yes</span></td><td>495</td></tr><tr><td>dim_trade</td><td>table</td><td>2</td><td>2</td><td>2</td><td><span class="tag ok">yes</span></td><td>4</td></tr><tr><td>fct_energy_daily</td><td>table</td><td>8</td><td>8</td><td>2</td><td><span class="tag ok">yes</span></td><td>1,431</td></tr><tr><td>fct_inspection</td><td>table</td><td>7</td><td>7</td><td>5</td><td><span class="tag ok">yes</span></td><td>40</td></tr><tr><td>fct_meter_hh</td><td>table</td><td>5</td><td>5</td><td>4</td><td><span class="tag ok">yes</span></td><td>67,822</td></tr><tr><td>fct_sensor_15min</td><td>table</td><td>5</td><td>5</td><td>3</td><td><span class="tag ok">yes</span></td><td>773,974</td></tr><tr><td>fct_space_observed_occupancy</td><td>table</td><td>4</td><td>4</td><td>4</td><td><span class="tag ok">yes</span></td><td>248,877</td></tr><tr><td>fct_timetable_event</td><td>table</td><td>8</td><td>8</td><td>4</td><td><span class="tag ok">yes</span></td><td>12,026</td></tr><tr><td>fct_work_order</td><td>table</td><td>16</td><td>16</td><td>5</td><td><span class="tag ok">yes</span></td><td>5,938</td></tr><tr><td>mart_asset_health</td><td>table</td><td>11</td><td>11</td><td>3</td><td><span class="tag ok">yes</span></td><td>1,496</td></tr><tr><td>mart_carbon_monthly</td><td>table</td><td>6</td><td>6</td><td>0</td><td><span class="tag ok">yes</span></td><td>6</td></tr><tr><td>mart_compliance_status</td><td>table</td><td>9</td><td>9</td><td>3</td><td><span class="tag ok">yes</span></td><td>40</td></tr><tr><td>mart_dq_scorecard</td><td>table</td><td>5</td><td>5</td><td>2</td><td><span class="tag ok">yes</span></td><td>8</td></tr><tr><td>mart_space_utilisation</td><td>table</td><td>11</td><td>11</td><td>3</td><td><span class="tag ok">yes</span></td><td>495</td></tr><tr><td>stg_bms__trend</td><td>view</td><td>3</td><td>3</td><td>2</td><td><span class="tag warn">no</span></td><td>172,780</td></tr><tr><td>stg_cafm__work_order</td><td>view</td><td>13</td><td>13</td><td>6</td><td><span class="tag warn">no</span></td><td>5,938</td></tr><tr><td>stg_insp__inspection</td><td>view</td><td>6</td><td>6</td><td>5</td><td><span class="tag warn">no</span></td><td>40</td></tr><tr><td>stg_meter__hh_a</td><td>view</td><td>5</td><td>5</td><td>2</td><td><span class="tag warn">no</span></td><td>33,866</td></tr><tr><td>stg_meter__hh_b</td><td>view</td><td>5</td><td>5</td><td>2</td><td><span class="tag warn">no</span></td><td>34,349</td></tr><tr><td>stg_sensor__reading</td><td>view</td><td>3</td><td>3</td><td>2</td><td><span class="tag warn">no</span></td><td>773,974</td></tr><tr><td>stg_space__register</td><td>view</td><td>6</td><td>6</td><td>4</td><td><span class="tag warn">no</span></td><td>495</td></tr><tr><td>stg_truth__asset</td><td>view</td><td>9</td><td>9</td><td>5</td><td><span class="tag warn">no</span></td><td>1,496</td></tr><tr><td>stg_truth__building</td><td>view</td><td>10</td><td>10</td><td>2</td><td><span class="tag warn">no</span></td><td>8</td></tr><tr><td>stg_truth__department</td><td>view</td><td>5</td><td>5</td><td>2</td><td><span class="tag warn">no</span></td><td>6</td></tr><tr><td>stg_truth__inspection_type</td><td>view</td><td>4</td><td>4</td><td>2</td><td><span class="tag warn">no</span></td><td>5</td></tr><tr><td>stg_truth__meter</td><td>view</td><td>6</td><td>6</td><td>4</td><td><span class="tag warn">no</span></td><td>16</td></tr><tr><td>stg_truth__sensor</td><td>view</td><td>4</td><td>4</td><td>3</td><td><span class="tag warn">no</span></td><td>90</td></tr><tr><td>stg_truth__space</td><td>view</td><td>6</td><td>6</td><td>5</td><td><span class="tag warn">no</span></td><td>500</td></tr><tr><td>stg_truth__weather</td><td>view</td><td>4</td><td>4</td><td>1</td><td><span class="tag warn">no</span></td><td>4,320</td></tr><tr><td>stg_tt__event</td><td>view</td><td>7</td><td>7</td><td>3</td><td><span class="tag warn">no</span></td><td>12,347</td></tr></tbody></table></div>
+</main>
+<footer>
+  Generated from the same gold marts and acceptance evidence quoted in the project README. Figures are reproduced exactly as measured; see the repository for tests and SQL that tie them back.
+  <br>Repository: <code>estates-data-portfolio</code>
+</footer>
+<script>
+// Render every Plotly figure embedded on this page.
+for (const [id, fig] of Object.entries(window.__fig || {})) {
+  const el = document.getElementById(id);
+  if (el && window.Plotly) {
+    el.style.width = '100%';
+    Plotly.newPlot(id, fig.data, fig.layout, {displaylogo:false, responsive:true});
+  }
+};
+// Sortable tables: click a header to sort ascending/descending.
+document.querySelectorAll('table.sortable').forEach(function (table) {
+  table.querySelectorAll('th').forEach(function (th, idx) {
+    th.addEventListener('click', function () {
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+      const dir = th.dataset.dir === 'asc' ? -1 : 1;
+      th.dataset.dir = dir === 1 ? 'asc' : 'desc';
+      rows.sort(function (a, b) {
+        const av = a.cells[idx]?.innerText ?? '';
+        const bv = b.cells[idx]?.innerText ?? '';
+        const an = parseFloat(av.replace(/[^0-9.\-]/g, ''));
+        const bn = parseFloat(bv.replace(/[^0-9.\-]/g, ''));
+        if (!Number.isNaN(an) && !Number.isNaN(bn)) return (an - bn) * dir;
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+});
+
+</script>
+</body>
+</html>

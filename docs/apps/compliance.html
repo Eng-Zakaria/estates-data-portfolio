@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P09 · Compliance tracker — Estates Data Portfolio</title>
+<style>
+:root{
+  --bg:#0f1720; --panel:#16212c; --panel2:#1d2b38; --line:#2a3a4a;
+  --fg:#e8eef4; --muted:#9fb3c8; --accent:#4da3ff; --accent2:#57d9a3;
+  --warn:#ffb454; --bad:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:15px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent)}
+header{padding:22px 26px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--accent)}
+h1{margin:6px 0 4px;font-size:25px;line-height:1.2}
+.sub{color:var(--muted);font-size:14px;max-width:70ch}
+.banner{margin:14px 26px 0;padding:10px 14px;border-radius:8px;font-size:13px;
+  background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.45);color:#ffd9a8}
+main{padding:20px 26px 60px}
+nav.picker{margin:16px 26px 0;display:flex;flex-wrap:wrap;gap:6px}
+nav.picker a{font-size:12px;padding:4px 9px;border:1px solid var(--line);
+  border-radius:20px;text-decoration:none;color:var(--muted);background:var(--panel)}
+nav.picker a:hover{color:var(--fg);border-color:var(--accent)}
+nav.picker a.on{background:var(--accent);color:#04121f;border-color:var(--accent);font-weight:600}
+h2{font-size:17px;margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:14px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.kpi .n{color:var(--muted);font-size:12px;margin-top:4px}
+.chart{width:100%;height:380px}
+.chart.tall{height:520px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}
+.controls label{display:flex;flex-direction:column;font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;gap:4px}
+select,input{background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:6px 8px;font-size:13px;min-width:150px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;
+  background:var(--panel);cursor:pointer}
+tbody tr:hover{background:var(--panel2)}
+.scroll{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.tag{display:inline-block;padding:1px 7px;border-radius:11px;font-size:11px;border:1px solid var(--line)}
+.ok{color:var(--accent2);border-color:var(--accent2)}
+.warn{color:var(--warn);border-color:var(--warn)}
+.bad{color:var(--bad);border-color:var(--bad)}
+.note{color:var(--muted);font-size:13px;background:var(--panel);border-left:3px solid var(--accent);
+  padding:10px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+#map{height:520px;border-radius:10px;border:1px solid var(--line)}
+footer{padding:18px 26px 40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+a.ll{color:var(--muted)}
+</style>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+</head>
+<body>
+<script>window.__fig = window.__fig || {};</script>
+<header>
+  <div class="eyebrow">Estates Data Portfolio · compliance</div>
+  <h1>P09 · Compliance tracker</h1>
+  <div class="sub">Statutory inspection compliance with tested status logic, risk scoring and a weekly digest.</div>
+</header>
+<div class="banner"><strong>Synthetic data.</strong> Synthetic data for portfolio demonstration. No real university, building, person or performance data is shown or implied.</div>
+<nav class="picker"><a href="foundation.html" class="">F · Synthetic generator</a><a href="lakehouse.html" class="">P01 · Lakehouse</a><a href="orchestration.html" class="">P02 · Airflow orchestration</a><a href="data-quality.html" class="">P03 · Data quality</a><a href="dbt-marts.html" class="">P04 · dbt marts</a><a href="cicd.html" class="">P05 · CI/CD</a><a href="space-utilisation.html" class="">P06 · Space utilisation</a><a href="assets-maintenance.html" class="">P07 · Assets &amp; maintenance</a><a href="net-zero-carbon.html" class="">P08 · Net zero &amp; carbon</a><a href="compliance.html" class="">P09 · Compliance tracker</a><a href="institutional-return.html" class="">P10 · Institutional return</a><a href="ifc-analytics.html" class="">P11 · IFC analytics</a><a href="cobie-validator.html" class="">P12 · COBie validator</a><a href="uniclass-mapper.html" class="">P13 · Uniclass mapper</a><a href="iso19650-checker.html" class="">P14 · ISO 19650 checker</a><a href="bms-iot.html" class="">P15 · BMS IoT ingestion</a><a href="energy-anomaly.html" class="">P16 · Energy anomaly</a><a href="air-quality.html" class="">P17 · Air quality &amp; occupancy</a><a href="digital-twin.html" class="">P18 · Digital twin layer</a><a href="spatial-map.html" class="">P19 · Spatial carbon map</a><a href="governance.html" class="">P20 · Governance &amp; literacy</a></nav>
+<main>
+<div class="note">Status logic is a single tested view: <em>Compliant · Due ≤ 30 days · Overdue · Failed – remedial open · No record</em>, with days overdue and a risk score of criticality × overdue band × failure flag. Boundary cases (due today, due in exactly 30 days, completed late, failed then re-passed) each have a unit test.</div>
+<div class="grid g4">
+<div class="card kpi"><div class="l">Inspections</div><div class="v">40</div><div class="n">small profile, 5 types × 8 buildings</div></div>
+<div class="card kpi"><div class="l">Overdue</div><div class="v">5</div><div class="n">10 with open remedial</div></div>
+<div class="card kpi"><div class="l">Compliant</div><div class="v">25</div><div class="n">0 due within 30 days</div></div>
+<div class="card kpi"><div class="l">Remedial actions</div><div class="v">10</div><div class="n">tracked with ageing</div></div>
+</div>
+<h2>Status mix</h2>
+<div class="card"><div id="p9-status" class="chart"></div><script>window.__fig["p9-status"]={"data": [{"type": "pie", "labels": ["Compliant", "Failed - remedial open", "Overdue"], "values": ["25", "10", "5"], "marker": {"colors": ["#4da3ff", "#57d9a3", "#ffb454"]}, "hole": 0.45}], "layout": {"title": "Inspections by status", "paper_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 20, "r": 20, "t": 45, "b": 20}}};</script></div>
+<div class="scroll"><table id="p9-statustbl" class="sortable"><thead><tr><th>status</th><th>inspections</th></tr></thead><tbody><tr><td>Compliant</td><td>25</td></tr><tr><td>Failed - remedial open</td><td>10</td></tr><tr><td>Overdue</td><td>5</td></tr></tbody></table></div>
+<h2>RAG matrix — inspection type × building</h2>
+<div class="card"><div id="p9-rag" class="chart tall"></div><script>window.__fig["p9-rag"]={"data": [{"type": "heatmap", "z": [[0, 0, 3, 0, 0, 0, 3, 0], [0, 0, 0, 0, 0, 3, 3, 0], [0, 3, 3, 0, 0, 0, 3, 0], [3, 3, 3, 3, 3, 0, 0, 3], [0, 0, 0, 3, 0, 0, 0, 3]], "x": ["Building B", "Building C", "Building D", "Building E", "Building F", "Building G", "Science Block 1", "Science Block 2"], "y": ["Electrical condition report", "Fire alarm servicing", "Gas safety check", "Legionella control check", "Lift thorough examination"], "colorscale": [[0, "#57d9a3"], [0.5, "#ffb454"], [1, "#ff6b6b"]], "hovertemplate": "%{y} / %{x}<extra><\/extra>", "text": [["Compliant", "Compliant", "Failed - remedial open", "Compliant", "Compliant", "Compliant", "Overdue", "Compliant"], ["Compliant", "Compliant", "Compliant", "Compliant", "Compliant", "Failed - remedial open", "Failed - remedial open", "Compliant"], ["Compliant", "Failed - remedial open", "Failed - remedial open", "Compliant", "Compliant", "Compliant", "Failed - remedial open", "Compliant"], ["Overdue", "Failed - remedial open", "Overdue", "Overdue", "Overdue", "Compliant", "Compliant", "Failed - remedial open"], ["Compliant", "Compliant", "Compliant", "Failed - remedial open", "Compliant", "Compliant", "Compliant", "Failed - remedial open"]], "texttemplate": "%{text}", "textfont": {"size": 10}}], "layout": {"title": "Red = overdue or failed \u00b7 Amber = due soon \u00b7 Green = compliant", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 170, "r": 20, "t": 45, "b": 60}}};</script></div>
+<h2>Overdue and at-risk inspections</h2>
+<div class="scroll"><table id="p9-overdue" class="sortable"><thead><tr><th>inspection_id</th><th>building_name</th><th>inspection_name</th><th>due_date</th><th>completed_date</th><th>result</th><th>status</th><th>days_overdue</th><th>risk_score</th></tr></thead><tbody><tr><td>IN-000002</td><td>B001</td><td>INSP-FIRE</td><td>2025-11-01</td><td>2025-11-11</td><td>Fail</td><td>Failed - remedial open</td><td>0</td><td>4</td><td>Fire alarm servicing</td><td>6</td><td>Science Block 1</td></tr><tr><td>IN-000004</td><td>B001</td><td>INSP-GAS</td><td>2026-02-11</td><td>2026-02-09</td><td>Fail</td><td>Failed - remedial open</td><td>0</td><td>4</td><td>Gas safety check</td><td>12</td><td>Science Block 1</td></tr><tr><td>IN-000005</td><td>B001</td><td>INSP-ELEC</td><td>2025-11-08</td><td>None</td><td>None</td><td>Overdue</td><td>331</td><td>3</td><td>Electrical condition report</td><td>60</td><td>Science Block 1</td></tr><tr><td>IN-000006</td><td>B002</td><td>INSP-LEG</td><td>2025-12-01</td><td>None</td><td>None</td><td>Overdue</td><td>308</td><td>3</td><td>Legionella control check</td><td>3</td><td>Building B</td></tr><tr><td>IN-000011</td><td>B003</td><td>INSP-LEG</td><td>2026-03-29</td><td>2026-04-04</td><td>Fail</td><td>Failed - remedial open</td><td>0</td><td>4</td><td>Legionella control check</td><td>3</td><td>Building C</td></tr><tr><td>IN-000014</td><td>B003</td><td>INSP-GAS</td><td>2025-12-15</td><td>2025-12-30</td><td>Fail</td><td>Failed - remedial open</td><td>0</td><td>4</td><td>Gas safety check</td><td>12</td><td>Building C</td></tr><tr><td>IN-000016</td><td>B004</td><td>INSP-LEG</td><td>2025-12-01</td><td>None</td><td>None</td><td>Overdue</td><td>308</td><td>3</td><td>Legionella control check</td><td>3</td><td>Building D</td></tr><tr><td>IN-000019</td><td>B004</td><td>INSP-GAS</td><td>2025-10-01</td><td>2025-09-28</td><td>Fail</td><td>Failed - remedial open</td><td>0</td><td>4</td><td>Gas safety check</td><td>12</td><td>Building D</td></tr><tr><td>IN-000020</td><td>B004</td><td>INSP-ELEC</td><td>2025-11-19</td><td>2025-11-27</td><td>Fail</td><td>Failed - remedial open</td><td>0</td><td>4</td><td>Electrical condition report</td><td>60</td><td>Building D</td></tr><tr><td>IN-000021</td><td>B005</td><td>INSP-LEG</td><td>2026-03-30</td><td>None</td><td>None</td><td>Overdue</td><td>189</td><td>3</td><td>Legionella control check</td><td>3</td><td>Building E</td></tr><tr><td>IN-000023</td><td>B005</td><td>INSP-LIFT</td><td>2025-10-31</td><td>2025-10-27</td><td>Fail</td><td>Failed - remedial open</td><td>0</td><td>4</td><td>Lift thorough examination</td><td>6</td><td>Building E</td></tr><tr><td>IN-000026</td><td>B006</td><td>INSP-LEG</td><td>2025-12-01</td><td>None</td><td>None</td><td>Overdue</td><td>308</td><td>3</td><td>Legionella control check</td><td>3</td><td>Building F</td></tr><tr><td>IN-000032</td><td>B007</td><td>INSP-FIRE</td><td>2025-11-01</td><td>2025-11-11</td><td>Fail</td><td>Failed - remedial open</td><td>0</td><td>4</td><td>Fire alarm servicing</td><td>6</td><td>Building G</td></tr><tr><td>IN-000036</td><td>B008</td><td>INSP-LEG</td><td>2026-03-16</td><td>2026-03-28</td><td>Fail</td><td>Failed - remedial open</td><td>0</td><td>4</td><td>Legionella control check</td><td>3</td><td>Science Block 2</td></tr><tr><td>IN-000038</td><td>B008</td><td>INSP-LIFT</td><td>2025-11-21</td><td>2025-11-25</td><td>Fail</td><td>Failed - remedial open</td><td>0</td><td>4</td><td>Lift thorough examination</td><td>6</td><td>Science Block 2</td></tr></tbody></table></div>
+<h2>Remedial action ageing</h2>
+<div class="card"><div id="p9-remedial" class="chart"></div><script>window.__fig["p9-remedial"]={"data": [{"type": "bar", "x": ["REM-000019", "REM-000023", "REM-000002", "REM-000032", "REM-000020", "REM-000038", "REM-000014", "REM-000004", "REM-000036", "REM-000011"], "y": [176, 146, 30, 30, 30, 30, 30, 30, 30, 30], "orientation": "v", "marker": {"color": "#ff6b6b"}}], "layout": {"title": "Days open per remedial action", "paper_bgcolor": "#16212c", "plot_bgcolor": "#16212c", "font": {"color": "#e8eef4"}, "margin": {"l": 60, "r": 20, "t": 45, "b": 60}, "xaxis": {"title": "days", "gridcolor": "#2a3a4a"}, "yaxis": {"title": "", "gridcolor": "#2a3a4a", "automargin": true}}};</script></div>
+<div class="scroll"><table id="p9-remtbl" class="sortable"><thead><tr><th>remedial_id</th><th>inspection_id</th><th>building_id</th><th>opened_date</th><th>closed_date</th><th>age_days</th><th>still_open</th><th>description</th><th>contractor</th><th>estimated_cost_gbp</th></tr></thead><tbody><tr><td>IN-000019</td><td>REM-000019</td><td>B004</td><td>INSP-GAS</td><td>2025-10-06</td><td>None</td><td>Remedial for IN-000019 (INSP-GAS) at B004</td><td>Alpha Compliance Ltd</td><td>1500</td><td>176</td><td>True</td></tr><tr><td>IN-000023</td><td>REM-000023</td><td>B005</td><td>INSP-LIFT</td><td>2025-11-05</td><td>None</td><td>Remedial for IN-000023 (INSP-LIFT) at B005</td><td>Beta Safety Services</td><td>2000</td><td>146</td><td>True</td></tr><tr><td>IN-000002</td><td>REM-000002</td><td>B001</td><td>INSP-FIRE</td><td>2025-11-06</td><td>2025-12-06</td><td>Remedial for IN-000002 (INSP-FIRE) at B001</td><td>Alpha Compliance Ltd</td><td>2500</td><td>30</td><td>False</td></tr><tr><td>IN-000032</td><td>REM-000032</td><td>B007</td><td>INSP-FIRE</td><td>2025-11-06</td><td>2025-12-06</td><td>Remedial for IN-000032 (INSP-FIRE) at B007</td><td>Beta Safety Services</td><td>3000</td><td>30</td><td>False</td></tr><tr><td>IN-000020</td><td>REM-000020</td><td>B004</td><td>INSP-ELEC</td><td>2025-11-24</td><td>2025-12-24</td><td>Remedial for IN-000020 (INSP-ELEC) at B004</td><td>Alpha Compliance Ltd</td><td>3500</td><td>30</td><td>False</td></tr><tr><td>IN-000038</td><td>REM-000038</td><td>B008</td><td>INSP-LIFT</td><td>2025-11-26</td><td>2025-12-26</td><td>Remedial for IN-000038 (INSP-LIFT) at B008</td><td>Beta Safety Services</td><td>4000</td><td>30</td><td>False</td></tr><tr><td>IN-000014</td><td>REM-000014</td><td>B003</td><td>INSP-GAS</td><td>2025-12-20</td><td>2026-01-19</td><td>Remedial for IN-000014 (INSP-GAS) at B003</td><td>Alpha Compliance Ltd</td><td>4500</td><td>30</td><td>False</td></tr><tr><td>IN-000004</td><td>REM-000004</td><td>B001</td><td>INSP-GAS</td><td>2026-02-16</td><td>2026-03-18</td><td>Remedial for IN-000004 (INSP-GAS) at B001</td><td>Beta Safety Services</td><td>5000</td><td>30</td><td>False</td></tr><tr><td>IN-000036</td><td>REM-000036</td><td>B008</td><td>INSP-LEG</td><td>2026-03-21</td><td>2026-04-20</td><td>Remedial for IN-000036 (INSP-LEG) at B008</td><td>Alpha Compliance Ltd</td><td>5500</td><td>30</td><td>False</td></tr><tr><td>IN-000011</td><td>REM-000011</td><td>B003</td><td>INSP-LEG</td><td>2026-04-03</td><td>2026-05-03</td><td>Remedial for IN-000011 (INSP-LEG) at B003</td><td>Beta Safety Services</td><td>6000</td><td>30</td><td>False</td></tr></tbody></table></div>
+<h2>Upcoming due dates</h2>
+<div class="scroll"><table id="p9-due" class="sortable"><thead><tr><th>inspection_id</th><th>building_name</th><th>inspection_name</th><th>due_date</th><th>status</th></tr></thead><tbody><tr><td>IN-000001</td><td>Science Block 1</td><td>Legionella control check</td><td>2026-03-06</td><td>Compliant</td></tr><tr><td>IN-000002</td><td>Science Block 1</td><td>Fire alarm servicing</td><td>2025-11-01</td><td>Failed - remedial open</td></tr><tr><td>IN-000003</td><td>Science Block 1</td><td>Lift thorough examination</td><td>2026-02-25</td><td>Compliant</td></tr><tr><td>IN-000004</td><td>Science Block 1</td><td>Gas safety check</td><td>2026-02-11</td><td>Failed - remedial open</td></tr><tr><td>IN-000005</td><td>Science Block 1</td><td>Electrical condition report</td><td>2025-11-08</td><td>Overdue</td></tr><tr><td>IN-000006</td><td>Building B</td><td>Legionella control check</td><td>2025-12-01</td><td>Overdue</td></tr><tr><td>IN-000007</td><td>Building B</td><td>Fire alarm servicing</td><td>2025-11-12</td><td>Compliant</td></tr><tr><td>IN-000008</td><td>Building B</td><td>Lift thorough examination</td><td>2025-10-18</td><td>Compliant</td></tr><tr><td>IN-000009</td><td>Building B</td><td>Gas safety check</td><td>2026-01-04</td><td>Compliant</td></tr><tr><td>IN-000010</td><td>Building B</td><td>Electrical condition report</td><td>2025-10-04</td><td>Compliant</td></tr><tr><td>IN-000011</td><td>Building C</td><td>Legionella control check</td><td>2026-03-29</td><td>Failed - remedial open</td></tr><tr><td>IN-000012</td><td>Building C</td><td>Fire alarm servicing</td><td>2026-02-07</td><td>Compliant</td></tr><tr><td>IN-000013</td><td>Building C</td><td>Lift thorough examination</td><td>2026-01-04</td><td>Compliant</td></tr><tr><td>IN-000014</td><td>Building C</td><td>Gas safety check</td><td>2025-12-15</td><td>Failed - remedial open</td></tr><tr><td>IN-000015</td><td>Building C</td><td>Electrical condition report</td><td>2026-01-11</td><td>Compliant</td></tr><tr><td>IN-000016</td><td>Building D</td><td>Legionella control check</td><td>2025-12-01</td><td>Overdue</td></tr><tr><td>IN-000017</td><td>Building D</td><td>Fire alarm servicing</td><td>2025-11-04</td><td>Compliant</td></tr><tr><td>IN-000018</td><td>Building D</td><td>Lift thorough examination</td><td>2026-01-07</td><td>Compliant</td></tr><tr><td>IN-000019</td><td>Building D</td><td>Gas safety check</td><td>2025-10-01</td><td>Failed - remedial open</td></tr><tr><td>IN-000020</td><td>Building D</td><td>Electrical condition report</td><td>2025-11-19</td><td>Failed - remedial open</td></tr><tr><td>IN-000021</td><td>Building E</td><td>Legionella control check</td><td>2026-03-30</td><td>Overdue</td></tr><tr><td>IN-000022</td><td>Building E</td><td>Fire alarm servicing</td><td>2026-02-05</td><td>Compliant</td></tr><tr><td>IN-000023</td><td>Building E</td><td>Lift thorough examination</td><td>2025-10-31</td><td>Failed - remedial open</td></tr><tr><td>IN-000024</td><td>Building E</td><td>Gas safety check</td><td>2026-03-28</td><td>Compliant</td></tr><tr><td>IN-000025</td><td>Building E</td><td>Electrical condition report</td><td>2025-12-21</td><td>Compliant</td></tr><tr><td>IN-000026</td><td>Building F</td><td>Legionella control check</td><td>2025-12-01</td><td>Overdue</td></tr><tr><td>IN-000027</td><td>Building F</td><td>Fire alarm servicing</td><td>2026-02-01</td><td>Compliant</td></tr><tr><td>IN-000028</td><td>Building F</td><td>Lift thorough examination</td><td>2025-11-18</td><td>Compliant</td></tr><tr><td>IN-000029</td><td>Building F</td><td>Gas safety check</td><td>2026-02-17</td><td>Compliant</td></tr><tr><td>IN-000030</td><td>Building F</td><td>Electrical condition report</td><td>2026-01-29</td><td>Compliant</td></tr><tr><td>IN-000031</td><td>Building G</td><td>Legionella control check</td><td>2026-02-23</td><td>Compliant</td></tr><tr><td>IN-000032</td><td>Building G</td><td>Fire alarm servicing</td><td>2025-11-01</td><td>Failed - remedial open</td></tr><tr><td>IN-000033</td><td>Building G</td><td>Lift thorough examination</td><td>2026-03-31</td><td>Compliant</td></tr><tr><td>IN-000034</td><td>Building G</td><td>Gas safety check</td><td>2025-09-26</td><td>Compliant</td></tr><tr><td>IN-000035</td><td>Building G</td><td>Electrical condition report</td><td>2025-10-28</td><td>Compliant</td></tr><tr><td>IN-000036</td><td>Science Block 2</td><td>Legionella control check</td><td>2026-03-16</td><td>Failed - remedial open</td></tr><tr><td>IN-000037</td><td>Science Block 2</td><td>Fire alarm servicing</td><td>2025-09-30</td><td>Compliant</td></tr><tr><td>IN-000038</td><td>Science Block 2</td><td>Lift thorough examination</td><td>2025-11-21</td><td>Failed - remedial open</td></tr><tr><td>IN-000039</td><td>Science Block 2</td><td>Gas safety check</td><td>2026-02-09</td><td>Compliant</td></tr><tr><td>IN-000040</td><td>Science Block 2</td><td>Electrical condition report</td><td>2026-02-27</td><td>Compliant</td></tr></tbody></table></div>
+</main>
+<footer>
+  Generated from the same gold marts and acceptance evidence quoted in the project README. Figures are reproduced exactly as measured; see the repository for tests and SQL that tie them back.
+  <br>Repository: <code>estates-data-portfolio</code>
+</footer>
+<script>
+// Render every Plotly figure embedded on this page.
+for (const [id, fig] of Object.entries(window.__fig || {})) {
+  const el = document.getElementById(id);
+  if (el && window.Plotly) {
+    el.style.width = '100%';
+    Plotly.newPlot(id, fig.data, fig.layout, {displaylogo:false, responsive:true});
+  }
+};
+// Sortable tables: click a header to sort ascending/descending.
+document.querySelectorAll('table.sortable').forEach(function (table) {
+  table.querySelectorAll('th').forEach(function (th, idx) {
+    th.addEventListener('click', function () {
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+      const dir = th.dataset.dir === 'asc' ? -1 : 1;
+      th.dataset.dir = dir === 1 ? 'asc' : 'desc';
+      rows.sort(function (a, b) {
+        const av = a.cells[idx]?.innerText ?? '';
+        const bv = b.cells[idx]?.innerText ?? '';
+        const an = parseFloat(av.replace(/[^0-9.\-]/g, ''));
+        const bn = parseFloat(bv.replace(/[^0-9.\-]/g, ''));
+        if (!Number.isNaN(an) && !Number.isNaN(bn)) return (an - bn) * dir;
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+});
+
+</script>
+</body>
+</html>
