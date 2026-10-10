@@ -159,7 +159,13 @@ def test_bms_trends_export_is_produced_when_a_raw_dir_is_given(tmp_path):
 def test_run_accepts_string_paths(tmp_path):
     """Callers pass str as often as Path; the TypeError should not surface from
     the middle of a pipeline run."""
-    result = run(start=START, duration_hours=1.0, faults=[], out_dir=str(tmp_path / "p15"), raw_dir=str(tmp_path / "raw"))
+    result = run(
+        start=START,
+        duration_hours=1.0,
+        faults=[],
+        out_dir=str(tmp_path / "p15"),
+        raw_dir=str(tmp_path / "raw"),
+    )
     assert result.export_path is not None
     assert (tmp_path / "p15" / "truth.json").exists()
 
