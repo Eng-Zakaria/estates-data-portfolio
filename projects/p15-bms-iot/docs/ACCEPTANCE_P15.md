@@ -171,6 +171,8 @@ asserts the file and the code agree on the set.
 No live Node-RED or TimescaleDB, so these are structural assertions over the
 committed artefacts.
 
+### Flow (12 tests, `tests/test_flows.py`)
+
 | assertion | result |
 |---|---|
 | merged `p15_bms.json` is valid JSON with one tab per concern (ingest, registry seed) | pass |

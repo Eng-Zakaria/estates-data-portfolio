@@ -70,6 +70,43 @@ jobs:
         run: |
           python -m quality.cli run || echo "(DQ run failed; P03 page will show a notice)"
 
+      # These project pipelines are fast, deterministic and pure-Python, so the
+      # demo pages for P10, P12, P14 and P18 publish real numbers. Each is
+      # continue-on-error: a page that cannot be built degrades to a notice
+      # naming the command that produces it, rather than failing the deploy.
+      - name: P10 institutional return artefacts
+        continue-on-error: true
+        run: python projects/p10-institutional-return/src/main.py --return-date 2026-03-31 --out data/p10_output
+
+      - name: P12 COBie sample workbooks
+        continue-on-error: true
+        run: |
+          python projects/p12-cobie-validator/src/make_sample_cobie.py
+          python projects/p12-cobie-validator/src/cli.py validate data/cobie/valid.xlsx --out data/cobie/report_valid || true
+
+      - name: P14 ISO 19650 sample project and check
+        continue-on-error: true
+        run: |
+          python projects/p14-iso19650-checker/src/make_sample.py --out data/iso19650/sample --n 120 --seed 42
+          python projects/p14-iso19650-checker/src/cli.py check data/iso19650/sample \
+            --config projects/p14-iso19650-checker/conventions/uk_national_annex.yml \
+            --out data/iso19650/report || true
+
+      - name: P18 digital twin crosswalk, relationships, Brick and coverage
+        continue-on-error: true
+        run: |
+          python projects/p18-digital-twin-layer/src/crosswalk.py
+          python projects/p18-digital-twin-layer/src/relationships.py
+          python projects/p18-digital-twin-layer/src/brick.py
+          python projects/p18-digital-twin-layer/src/coverage.py
+
+      - name: P17 air quality and occupancy outputs
+        continue-on-error: true
+        run: |
+          cd projects/p17-air-quality-occupancy
+          python -m src.cli all --truth-dir ../../data/truth --output-dir ../../data/p17_output \
+            || echo "(P17 page will show a notice)"
+
       - name: Build interactive demo pages
         run: python scripts/build_demos.py
 

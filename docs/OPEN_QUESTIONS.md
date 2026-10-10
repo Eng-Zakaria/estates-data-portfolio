@@ -64,6 +64,40 @@
 - DESNZ factors are single-year (2025); add a factor-year coverage test + fallback rule when multi-year reporting lands (P08).
 - Upstream caveat: per §11 above, silver CAFM is missing ~30% of legitimate work orders; P04 `fct_work_order` faithfully reproduces silver (4,171 → 4,171, §4 of `docs/ACCEPTANCE_P04.md`) but inherits the gap until the P01 fix lands.
 
+## P15 follow-ups (2026-10-10 — human action needed)
+- **The live stack has never been started.** Docker Desktop's Linux engine would not run in the build
+  environment and `com.docker.service` cannot be started without elevation, so `make iot-up`,
+  `make iot-demo`, the Grafana dashboards, the flow import into a fresh Node-RED and the
+  `schema.sql` migration against a real TimescaleDB are all **unverified**. Everything that does not
+  need a broker or a database is tested (237 tests, 95% coverage). Full list of unverified items:
+  `projects/p15-bms-iot/docs/ACCEPTANCE_P15.md` §7. **Human action:** run `make iot-up && make iot-demo`
+  on a machine with Docker Desktop, add screenshots under `projects/p15-bms-iot/docs/img/`, and record
+  the actual time-to-first-data in Grafana against the spec's 2-minute target.
+- **Detection metrics are self-referential.** The simulator that injects the faults is the simulator
+  the detector was developed against, so 100% recall and 0 false positives on the clean run are an
+  optimistic estimate of real performance. Mitigated, not solved, by the hand-built fixtures in
+  `projects/p15-bms-iot/tests/test_health.py`, which state each expected finding independently.
+  **Human action:** re-measure against real plant data once any exists; expect the false-positive
+  count to rise, since synthetic healthy plant is smoother than real plant.
+- **The plausible ranges in `contracts/validation_rules.json` are engineering judgement**, not a
+  standard and not from a vendor document (supply air -20..90 C, CO2 250..10,000 ppm, and so on).
+  They are labelled as such in `projects/p15-bms-iot/docs/topic-taxonomy.md`. A real deployment must
+  replace them with each controller's own configured limits: a range check built from assumptions
+  will either reject good readings or pass bad ones. **Human action:** obtain the site's controller
+  configuration and re-baseline the contract. This is the single highest-value change to the
+  ingestion behaviour.
+- **`source_address` in the point registry is a labelled placeholder** (`SYNTH/...`), shaped like a
+  BACnet object reference but resolving to nothing. A live deployment populates it from the site's
+  BACnet object list or Modbus register map.
+- **Retention and compression are sizing guesses** (7-day compression, 400-day raw retention). A real
+  policy is a conversation with the estates data protection contact, particularly because room
+  occupancy counts, while aggregate, sit close to that boundary.
+- **The BACpypes3 simulated BACnet/IP device (a stretch goal in the spec) was not built.** Nothing
+  here speaks BACnet or Modbus; the mapping is documented in
+  `projects/p15-bms-iot/docs/mapping-to-real-systems.md` and the COV deadband and Modbus word-swap
+  problems are described there rather than tested. **Human action:** if a gateway is ever built, add a
+  Modbus register fixture so the byte-order problem is caught by a test.
+
 ## P16 follow-ups (2026-10-08 — human decision needed)
 - **Overnight-baseload threshold does not transfer between profiles** (measured, `scripts/threshold_separation.py`):
   0 false positives on the small profile, **21 of 58** normal electricity meters on the default profile, while the
