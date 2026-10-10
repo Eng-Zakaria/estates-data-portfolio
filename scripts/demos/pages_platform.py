@@ -177,20 +177,36 @@ def lakehouse():
 
 
 def orchestration():
-    runs = D.query(
-        D.REPO / "data" / "pipeline_ops.duckdb",
-        "SELECT dag_id, task_id, status, COUNT(*) AS n, ROUND(SUM(duration_s),1) AS secs, "
-        "SUM(rows_in) AS rows_in, SUM(rows_out) AS rows_out "
-        "FROM ops.pipeline_runs GROUP BY 1,2,3 ORDER BY 1,2",
-    )
-    raw_runs = D.query(
-        D.REPO / "data" / "pipeline_ops.duckdb",
-        "SELECT * FROM ops.pipeline_runs ORDER BY ts DESC LIMIT 200",
-    )
+    # Prefer the live ops store; fall back to the committed run-history CSV so
+    # the page still shows real runs on a deployment that cannot start Airflow.
+    runs_csv = D.csv(D.REPO / "platform" / "orchestration" / "docs" / "pipeline_runs.csv")
+    if runs_csv is not None and len(runs_csv):
+        runs = (
+            runs_csv.groupby(["dag_id", "task_id", "status"], as_index=False)
+            .agg(n=("run_id", "count"),
+                 secs=("duration_s", "sum"),
+                 rows_in=("rows_in", "sum"),
+                 rows_out=("rows_out", "sum"))
+        )
+        raw_runs = runs_csv
+        source = "platform/orchestration/docs/pipeline_runs.csv"
+    else:
+        runs = D.query(
+            D.REPO / "data" / "pipeline_ops.duckdb",
+            "SELECT dag_id, task_id, status, COUNT(*) AS n, ROUND(SUM(duration_s),1) AS secs, "
+            "SUM(rows_in) AS rows_in, SUM(rows_out) AS rows_out "
+            "FROM ops.pipeline_runs GROUP BY 1,2,3 ORDER BY 1,2",
+        )
+        raw_runs = D.query(
+            D.REPO / "data" / "pipeline_ops.duckdb",
+            "SELECT * FROM ops.pipeline_runs ORDER BY ts DESC LIMIT 200",
+        )
+        source = "data/pipeline_ops.duckdb"
+
     dag_dir = D.REPO / "platform" / "orchestration" / "dags"
     dags = sorted(p.stem for p in dag_dir.glob("*.py") if not p.stem.startswith("_")) if dag_dir.exists() else []
 
-    total = int(raw_runs.shape[0]) if raw_runs is not None else 0
+    total = int(len(raw_runs)) if raw_runs is not None else 0
     failed = int((raw_runs["status"] != "success").sum()) if raw_runs is not None and len(raw_runs) else 0
     body = [
         note(
@@ -198,10 +214,12 @@ def orchestration():
             "compares incoming columns to the data contract and quarantines the file instead of "
             "crashing; failure callbacks write to <code>ops.pipeline_runs</code> and email Mailpit "
             "without failing the other pipelines."
+            + (f" <em>Run history below is read from <code>{source}</code>.</em>"
+               if source.endswith(".csv") else "")
         ),
         '<div class="grid g4">',
-        kpi(len(dags), "DAGs", ", ".join(dags[:4]) + ("…" if len(dags) > 4 else "") if dags else "—"),
-        kpi(_fmt(total), "Recorded task runs", "ops.pipeline_runs"),
+        kpi(len(dags), "DAGs", ", ".join(dags[:3]) + "…" if len(dags) > 3 else ""),
+        kpi(_fmt(total), "Recorded task runs", source.split("/")[-1]),
         kpi(_fmt(failed), "Non-success runs", "corrupt-file demo is expected to fail loudly"),
         kpi("30 days", "Backfill window", "meter half-hourly, 2026-02-01 → 2026-03-02"),
         "</div>",
@@ -212,11 +230,12 @@ def orchestration():
         "<h2>Run history</h2>",
     ]
     if runs is not None and len(runs):
+        secs = pd.to_numeric(runs["secs"], errors="coerce").fillna(0.0)
         body.append(chart(
             "p2-duration",
             bar([f"{r.dag_id}.{r.task_id}" for _, r in runs.iterrows()],
-                list(runs["secs"]), title="Seconds per DAG / task", y_title="seconds",
-                horizontal=True),
+                [round(float(s), 1) for s in secs],
+                title="Seconds per DAG / task", y_title="seconds", horizontal=True),
             tall=True,
         ))
         body.append(table(
@@ -228,18 +247,18 @@ def orchestration():
         ))
     else:
         body.append(note(
-            "`data/pipeline_ops.duckdb` not found. Bring the stack up with "
-            "<code>make airflow-up</code> and run a DAG, or <code>make airflow-backfill</code>."
+            "No run history found. Bring the stack up with <code>make airflow-up</code> and run a "
+            "DAG, or <code>make airflow-backfill</code>."
         ))
 
     if raw_runs is not None and len(raw_runs):
         body.append("<h2>Most recent runs</h2>")
+        cols = [c for c in ["ts", "dag_id", "task_id", "status", "duration_s",
+                            "rows_in", "rows_out"] if c in raw_runs.columns]
         body.append(table(
-            "p2-recent",
-            ["ts", "dag_id", "task_id", "status", "duration_s", "rows_in", "rows_out"],
-            [[r.ts, r.dag_id, r.task_id,
-              (r.status, "ok" if r.status == "success" else "bad"),
-              r.duration_s, r.rows_in, r.rows_out] for _, r in raw_runs.iterrows()],
+            "p2-recent", cols,
+            [[r[c] if c != "status" else (r[c], "ok" if r[c] == "success" else "bad")
+              for c in cols] for _, r in raw_runs.iterrows()],
         ))
     return (
         picker(),

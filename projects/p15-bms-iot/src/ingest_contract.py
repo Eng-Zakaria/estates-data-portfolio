@@ -100,9 +100,15 @@ def main() -> None:
     dead.to_parquet(args.out / "bms_dead_letter.parquet", index=False)
 
     total = len(raw)
-    rate = len(accepted) / total if total else 0.0
+    valid = total - len(dead)
+    # two rates, because they answer different questions: the first is the
+    # pipeline's loss rate (messages a lossless link should have delivered), the
+    # second is its share of everything the simulator sent, malformed included
+    valid_rate = len(accepted) / valid if valid else 0.0
+    overall_rate = len(accepted) / total if total else 0.0
     print(f"messages: {total}")
-    print(f"accepted: {len(accepted)} ({rate:.4%})")
+    print(f"valid: {valid}")
+    print(f"accepted: {len(accepted)} ({valid_rate:.4%} of valid, {overall_rate:.4%} of all)")
     print(f"dead-letter: {len(dead)}")
     if not dead.empty:
         print("\nreasons:")

@@ -53,6 +53,8 @@ jobs:
           # scikit-learn. Installing them here keeps those demo pages populated.
           pip install duckdb pyarrow pandas pyyaml openpyxl pydantic-settings scikit-learn scipy
           pip install "great-expectations==1.23.2"
+          # P11 extracts IFC with IfcOpenShell (pinned; see DATA.md).
+          pip install "ifcopenshell==0.9.0"
 
       - name: Generate small-profile data
         run: python -m campus_synth.cli generate --profile small --seed 42 --out data/raw --defects 0.03
@@ -110,6 +112,17 @@ jobs:
           python -m src.cli all --truth-dir ../../data/truth --output-dir ../../data/p17_output \
             || echo "(P17 page will show a notice)"
 
+      - name: P11 synthetic IFC model, extraction and reconciliation
+        continue-on-error: true
+        env:
+          PYTHONPATH: projects/p11-ifc-analytics/src:packages/campus_synth/src:platform/src
+        run: |
+          python projects/p11-ifc-analytics/src/ifc2tables/make_sample_ifc.py --out data/ifc/sample.ifc
+          python -m ifc2tables.cli extract data/ifc/sample.ifc --out data/gold/ifc
+          python -m ifc2tables.cli recon --tables data/gold/ifc --out data/gold/ifc || true
+
+      # P15 needs the MQTT/Node-RED/TimescaleDB compose stack, so the deployed page
+      # shows the committed fault-detection evidence rather than live readings.
       - name: Build interactive demo pages
         run: python scripts/build_demos.py
 

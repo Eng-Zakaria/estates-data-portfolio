@@ -532,9 +532,9 @@ def bms_iot():
     flows = sorted((base / "flows").glob("*.json")) if (base / "flows").exists() else []
 
     if accepted is None:
-        return (picker(), "P15 · BMS IoT ingestion",
-                "MQTT → Node-RED → TimescaleDB → Grafana with dead-letter handling.",
-                note("P15 readings not found. Run the P15 pipeline."), "")
+        # No live stack here (P15 needs MQTT + Node-RED + TimescaleDB). The
+        # committed fault-detection evidence is the honest fallback.
+        return bms_static(base, registry, faults, flows)
 
     accepted = accepted.copy()
     accepted["ts"] = pd.to_datetime(accepted["ts"], errors="coerce", utc=True)
@@ -623,6 +623,76 @@ def bms_iot():
         "P15 · BMS / sensor ingestion",
         "MQTT → Node-RED → TimescaleDB → Grafana, with validation, dead-letter handling and fault monitoring.",
         "\n".join(body),
+        "",
+    )
+
+
+def bms_static(base, registry, faults, flows):
+    """Deployment-safe P15 page built from committed evidence only."""
+    body = [
+        note(
+            "The live reading tables need the MQTT → Node-RED → TimescaleDB stack, so this page "
+            "shows the <strong>committed fault-detection evidence</strong> instead of live data. "
+            "Reproduce the live version locally with <code>make iot-up</code> then "
+            "<code>make iot-demo</code>."
+        ),
+    ]
+    if faults is not None and len(faults):
+        det = faults["detected"].astype(str).str.lower().isin(["true", "1", "yes"])
+        n_det = int(det.sum())
+        delay = pd.to_numeric(faults.get("delay_minutes"), errors="coerce")
+
+        body.append('<div class="grid g4">')
+        body.append(kpi(len(faults), "Injected faults", "across the fault catalogue"))
+        body.append(kpi(f"{n_det}/{len(faults)}", "Detected", f"{n_det/len(faults)*100:.0f}% recall"))
+        body.append(kpi(faults["fault"].nunique(), "Fault types", "SEM rule ids"))
+        body.append(kpi(_fmt(delay.mean(), 1), "Mean delay (min)", "detection latency"))
+        body.append("</div>")
+
+        body.append("<h2>Detection recall by fault type</h2>")
+        by_type = faults.assign(detected=det).groupby("fault", as_index=False).agg(
+            injected=("detected", "size"), detected=("detected", "sum"))
+        by_type["recall"] = by_type["detected"] / by_type["injected"] * 100
+        body.append(chart("p15-recall", bar(list(by_type["fault"]),
+                                           [round(v, 1) for v in by_type["recall"]],
+                                           title="Fault detection recall by type",
+                                           y_title="% detected", horizontal=True), tall=True))
+        body.append(table("p15-recalltbl",
+                          ["fault type", "injected", "detected", "recall %"],
+                          [[r.fault, r.injected, r.detected, f"{r.recall:.0f}"]
+                           for _, r in by_type.iterrows()]))
+
+        rules = faults.groupby("rule_id", as_index=False).size().rename(columns={"size": "faults"})
+        body.append("<h2>Semantic validation rules</h2>")
+        body.append(table("p15-rules", ["rule id", "faults detected"],
+                          [[r.rule_id, r.faults] for _, r in rules.iterrows()],
+                          caption="Rule ids are declared in "
+                                  "<code>projects/p15-bms-iot/contracts/validation_rules.json</code>."))
+        cols = [c for c in faults.columns][:10]
+        body.append("<h2>Injected fault detail</h2>")
+        body.append(table("p15-faults", cols,
+                          [[r[c] for c in cols] for _, r in faults.iterrows()]))
+    else:
+        body.append(note("No committed fault-detection evidence found."))
+
+    if registry is not None and len(registry):
+        body.append("<h2>Point registry</h2>")
+        body.append(note(
+            "The canonical <code>point_id</code> mapping: source address, equipment, point class "
+            "and unit. This is what lets a vendor point name survive a supplier change."
+        ))
+        body.append(table("p15-reg", list(registry.columns)[:8],
+                          [list(r) for _, r in registry.head(60).iterrows()]))
+
+    body.append("<h2>Node-RED flows</h2>")
+    body.append(table("p15-flows", ["flow file"],
+                      [[f.name] for f in flows] if flows else [],
+                      caption="Exported flow JSON — imports cleanly on a fresh Node-RED."))
+    return (
+        picker(),
+        "P15 · BMS / sensor ingestion",
+        "MQTT → Node-RED → TimescaleDB → Grafana, with validation, dead-letter handling and fault monitoring.",
+        "\n".join(x for x in body if x),
         "",
     )
 
