@@ -17,7 +17,7 @@ dependencies = [
   "duckdb>=1.0",
   "rapidfuzz>=3.0",
   # P11: pinned per docs/PLAN_P11.md (API verified empirically)
-  "ifcopenshell==0.9.0",
+  "ifcopenshell==0.9.0.post1",
 ]
 
 [project.optional-dependencies]
