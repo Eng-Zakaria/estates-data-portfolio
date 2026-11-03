@@ -65,7 +65,7 @@ jobs:
       - run: terraform -chdir=infra/terraform fmt -check && terraform -chdir=infra/terraform init -backend=false && terraform -chdir=infra/terraform validate
 
       - name: TFLint
-        uses: terraform-linters/setup-tflint@v4
+        uses: terraform-linters/setup-tflint@v6
       - run: tflint --chdir=infra/terraform --init && tflint --chdir=infra/terraform
 
       - name: Docker compose config check
